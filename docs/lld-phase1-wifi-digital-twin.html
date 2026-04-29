@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WiFi Digital Twin — LLD Phase 1</title>
+<style>
+  :root {
+    --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --bg4: #1a1f27;
+    --border: #30363d; --text: #c9d1d9; --text-dim: #8b949e;
+    --accent: #58a6ff; --accent2: #3fb950; --accent3: #f78166;
+    --accent4: #d2a8ff; --accent5: #ffa657; --accent6: #56d364;
+    --yellow: #e3b341; --red: #f85149; --teal: #39d353;
+    --kw: #ff7b72; --fn: #d2a8ff; --str: #a5d6ff; --num: #79c0ff;
+    --cm: #8b949e; --kw2: #ffa657; --type: #3fb950;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'SF Mono','Fira Code',monospace; font-size: 13px; line-height: 1.6; }
+
+  /* TOP NAV */
+  nav { position: sticky; top: 0; z-index: 200; background: var(--bg2); border-bottom: 1px solid var(--border); padding: 10px 24px; display: flex; align-items: center; gap: 12px; height: 42px; }
+  nav .logo { color: var(--accent4); font-weight: bold; font-size: 14px; }
+  nav .nav-ver { color: var(--text-dim); font-size: 10px; }
+  nav .hld-link { color: var(--accent); font-size: 10px; text-decoration: none; border: 1px solid var(--accent); padding: 2px 8px; border-radius: 4px; }
+  nav .hld-link:hover { background: var(--accent); color: var(--bg); }
+
+  /* LAYOUT */
+  .layout { display: flex; min-height: calc(100vh - 42px); }
+
+  /* SIDEBAR */
+  .sidebar { width: 230px; min-width: 230px; background: var(--bg2); border-right: 1px solid var(--border); position: sticky; top: 42px; height: calc(100vh - 42px); overflow-y: auto; flex-shrink: 0; padding: 16px 0 32px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .sb-label { color: var(--text-dim); font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; padding: 12px 16px 4px; display: block; opacity: 0.6; }
+  .sb-divider { border: none; border-top: 1px solid var(--border); margin: 6px 0; }
+  .sidebar a { display: block; padding: 5px 16px; color: var(--text-dim); text-decoration: none; font-size: 11px; border-left: 2px solid transparent; transition: all 0.15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sidebar a:hover { color: var(--accent); border-left-color: var(--accent); background: var(--bg3); }
+  .sidebar a.sub { padding-left: 28px; font-size: 10px; color: #555f6b; }
+  .sidebar a.sub:hover { color: var(--text-dim); border-left-color: var(--border); }
+  .sidebar a.active { color: var(--accent4); border-left-color: var(--accent4); background: var(--bg3); }
+
+  /* MAIN */
+  .page { flex: 1; min-width: 0; max-width: 1180px; padding: 32px 32px; }
+  h1 { font-size: 26px; color: var(--accent4); margin-bottom: 6px; }
+  h2 { font-size: 17px; color: var(--accent); margin: 40px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 13px; color: var(--accent5); margin: 24px 0 10px; }
+  h4 { font-size: 11px; color: var(--accent2); margin: 14px 0 6px; }
+  p { color: var(--text-dim); margin-bottom: 10px; font-size: 12px; }
+  .subtitle { color: var(--text-dim); font-size: 12px; margin-bottom: 20px; }
+
+  /* CALLOUT */
+  .callout { background: var(--bg2); border-left: 3px solid var(--accent); padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 14px 0; }
+  .callout.green { border-color: var(--accent2); }
+  .callout.yellow { border-color: var(--yellow); }
+  .callout.red { border-color: var(--red); }
+  .callout.purple { border-color: var(--accent4); }
+  .callout strong { color: var(--accent); }
+  .callout.green strong { color: var(--accent2); }
+  .callout.yellow strong { color: var(--yellow); }
+  .callout.red strong { color: var(--red); }
+  .callout.purple strong { color: var(--accent4); }
+  .callout p { margin: 0; font-size: 11px; }
+
+  /* CODE BLOCKS */
+  .code-block { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 16px 18px; margin: 12px 0; overflow-x: auto; }
+  .code-block pre { font-size: 11px; line-height: 1.65; white-space: pre; color: var(--text); }
+  .kw  { color: var(--kw); }    /* keywords: class, def, if, return */
+  .fn  { color: var(--fn); }    /* function names */
+  .st  { color: var(--str); }   /* strings */
+  .nm  { color: var(--num); }   /* numbers */
+  .cm  { color: var(--cm); font-style: italic; }  /* comments */
+  .kw2 { color: var(--kw2); }   /* built-ins, types */
+  .tp  { color: var(--type); }  /* type annotations */
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 11px; }
+  th { background: var(--bg3); color: var(--accent); text-align: left; padding: 7px 12px; border-bottom: 2px solid var(--border); }
+  td { padding: 6px 12px; border-bottom: 1px solid var(--border); color: var(--text-dim); }
+  tr:hover td { background: var(--bg2); }
+  .check { color: var(--accent2); } .cross { color: var(--red); } .var { color: var(--yellow); }
+
+  /* ARCH BOXES */
+  .arch-grid { display: grid; gap: 14px; margin: 16px 0; }
+  .arch-2col { grid-template-columns: repeat(2, 1fr); }
+  .arch-3col { grid-template-columns: repeat(3, 1fr); }
+  .arch-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .arch-box.blue { border-color: var(--accent); }
+  .arch-box.green { border-color: var(--accent2); }
+  .arch-box.purple { border-color: var(--accent4); }
+  .arch-box.orange { border-color: var(--accent5); }
+  .arch-box.teal { border-color: var(--teal); }
+  .arch-box.red { border-color: var(--red); }
+  .arch-box .box-title { font-weight: bold; font-size: 12px; margin-bottom: 8px; }
+  .arch-box.blue .box-title { color: var(--accent); }
+  .arch-box.green .box-title { color: var(--accent2); }
+  .arch-box.purple .box-title { color: var(--accent4); }
+  .arch-box.orange .box-title { color: var(--accent5); }
+  .arch-box.teal .box-title { color: var(--teal); }
+  .arch-box.red .box-title { color: var(--red); }
+  .arch-box .sub { display: block; color: var(--text-dim); font-size: 10px; margin: 2px 0 2px 8px; }
+  .arch-box .sub::before { content: "├ "; color: var(--border); }
+  .arch-box .sub:last-child::before { content: "└ "; color: var(--border); }
+
+  /* FLOW */
+  .flow { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 18px; margin: 14px 0; overflow-x: auto; }
+  .flow pre { color: var(--text); font-size: 10.5px; line-height: 1.7; }
+
+  /* BADGE */
+  .badge { display: inline-flex; align-items: center; gap: 4px; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-size: 10px; margin: 2px; }
+  .badge.blue { color: var(--accent); border-color: var(--accent); }
+  .badge.green { color: var(--accent2); border-color: var(--accent2); }
+  .badge.purple { color: var(--accent4); border-color: var(--accent4); }
+  .badge.orange { color: var(--accent5); border-color: var(--accent5); }
+  .badge.red { color: var(--red); border-color: var(--red); }
+
+  /* MCS TABLE special */
+  .mcs-table td:nth-child(5) { color: var(--accent2); font-weight: bold; }
+  .mcs-table tr.wifi7 { background: rgba(210,168,255,0.06); }
+  .mcs-table tr.wifi7 td { color: var(--accent4); }
+
+  footer { margin-top: 60px; padding: 20px 0; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 10px; text-align: center; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">🔧 WiFi Digital Twin — LLD Phase 1</span>
+  <span class="nav-ver">v1.0 &nbsp;|&nbsp; April 2026 &nbsp;|&nbsp; Private</span>
+  <a class="hld-link" href="hld-wifi-digital-twin.html">← HLD v1.1</a>
+</nav>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div>
+    <span class="sb-label">Overview</span>
+    <a href="#scope">00 &nbsp;Phase 1 Scope</a>
+  </div>
+  <hr class="sb-divider">
+  <div>
+    <span class="sb-label">Data Layer</span>
+    <a href="#models">L1 &nbsp;Data Models</a>
+    <a class="sub" href="#models">↳ Enumerations</a>
+    <a class="sub" href="#models">↳ SiteRequirements</a>
+    <a class="sub" href="#models">↳ ClientDevice</a>
+    <a class="sub" href="#models">↳ Application</a>
+    <a class="sub" href="#models">↳ NetworkDesign</a>
+    <a class="sub" href="#models">↳ RRMParams / WiFi7Params</a>
+    <a class="sub" href="#models">↳ DPM (full manifest)</a>
+    <a class="sub" href="#models">↳ Result models</a>
+  </div>
+  <hr class="sb-divider">
+  <div>
+    <span class="sb-label">Computation Engines</span>
+    <a href="#linkbudget">L2 &nbsp;Link Budget Engine</a>
+    <a class="sub" href="#linkbudget">↳ MCS reference table</a>
+    <a class="sub" href="#linkbudget">↳ WiFi6 / WiFi7 strategy</a>
+    <a class="sub" href="#linkbudget">↳ SNR → MCS algorithm</a>
+    <a href="#airtime">L3 &nbsp;Airtime Calculator</a>
+    <a class="sub" href="#airtime">↳ Rev Wi-Fi formula</a>
+    <a class="sub" href="#airtime">↳ SSID overhead table</a>
+    <a class="sub" href="#airtime">↳ OFDMA modifier</a>
+    <a class="sub" href="#airtime">↳ VoIP trap</a>
+    <a href="#apselect">L4 &nbsp;AP Selection Engine</a>
+    <a class="sub" href="#apselect">↳ AP model library</a>
+    <a class="sub" href="#apselect">↳ Selection algorithm</a>
+    <a href="#channel">L5 &nbsp;Channel Planning Engine</a>
+    <a class="sub" href="#channel">↳ Channel sets by domain</a>
+    <a class="sub" href="#channel">↳ CCI scoring</a>
+  </div>
+  <hr class="sb-divider">
+  <div>
+    <span class="sb-label">Agent Layer</span>
+    <a href="#intake">L6 &nbsp;Intake Agent</a>
+    <a class="sub" href="#intake">↳ Socratic flow</a>
+    <a class="sub" href="#intake">↳ DPM source flags</a>
+    <a href="#design">L7 &nbsp;Design Agent + Orchestrator</a>
+    <a class="sub" href="#design">↳ Iterative loop</a>
+    <a class="sub" href="#design">↳ State machine</a>
+    <a href="#config">L8 &nbsp;Config Agent</a>
+    <a class="sub" href="#config">↳ XIQ template JSON</a>
+    <a class="sub" href="#config">↳ AutoRF profile</a>
+    <a class="sub" href="#config">↳ EXOS / VOSS CLI</a>
+  </div>
+  <hr class="sb-divider">
+  <div>
+    <span class="sb-label">API Layer</span>
+    <a href="#api">L9 &nbsp;API Layer</a>
+    <a class="sub" href="#api">↳ REST endpoints</a>
+    <a class="sub" href="#api">↳ WebSocket channels</a>
+    <a class="sub" href="#api">↳ E2E data flow</a>
+  </div>
+  <hr class="sb-divider">
+  <div>
+    <span class="sb-label">Future</span>
+    <a href="#mixedmode">App A &nbsp;Mixed-Mode Params</a>
+    <a class="sub" href="#mixedmode">↳ Additional inputs needed</a>
+    <a class="sub" href="#mixedmode">↳ Phase 1 inheritance</a>
+  </div>
+</aside>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <h1>Low Level Design — Phase 1</h1>
+  <div class="subtitle">WiFi Digital Twin Platform &nbsp;|&nbsp; v1.0 &nbsp;|&nbsp; April 2026 &nbsp;|&nbsp; Private</div>
+  <div>
+    <span class="badge purple">Uniform WiFi 6 or WiFi 7</span>
+    <span class="badge blue">No Floor Plan (Phase 1)</span>
+    <span class="badge green">Strategy Pattern</span>
+    <span class="badge orange">Pydantic v2</span>
+    <span class="badge green">FastAPI + WebSocket</span>
+  </div>
+
+  <!-- SCOPE -->
+  <section id="scope">
+    <h2>00. Phase 1 Scope &amp; Constraints</h2>
+    <div class="callout green">
+      <strong>What Phase 1 builds:</strong> The complete Design Loop — Socratic intake → DPM → capacity plan → link budget → AP selection → channel planning → XIQ config + EXOS/VOSS CLI. User selects WiFi 6 <em>or</em> WiFi 7 as the AP generation for the entire site. Comparison Engine runs both strategies on the same DPM inputs.
+    </div>
+    <table>
+      <tr><th>Constraint</th><th>Value</th><th>Reason</th></tr>
+      <tr><td>AP generation</td><td>WiFi 6 OR WiFi 7 — user picks one</td><td>Mixed-mode deferred — needs topology</td></tr>
+      <tr><td>Site topology</td><td>None — user estimates RF area (m²)</td><td>No floor plan in Phase 1</td></tr>
+      <tr><td>AP placement</td><td>Uniform distribution assumed</td><td>No coordinates until Phase 4 / Sprint 4+</td></tr>
+      <tr><td>Live EP1 feed</td><td class="cross">❌ Sprint 2</td><td>Design loop only in Sprint 1</td></tr>
+      <tr><td>RRM simulation</td><td class="cross">❌ Sprint 2</td><td>Config generation only</td></tr>
+      <tr><td>Multi-user collab</td><td class="cross">❌ Sprint 2</td><td>Single-user CLI-testable backend first</td></tr>
+    </table>
+
+    <h3>File Map</h3>
+    <div class="flow">
+<pre>
+src/
+├── models/
+│   ├── enums.py          — WiFiGen, Band, ChannelWidth, SiteType, RFEnvironment …
+│   ├── site.py           — SiteRequirements
+│   ├── devices.py        — ClientDevice, Application
+│   ├── network.py        — NetworkDesignParams, RRMParams, WiFi7Params
+│   ├── dpm.py            — DesignParameterManifest (full DPM)
+│   └── results.py        — MCSResult, LinkBudgetResult, CapacityPlan,
+│                           ChannelPlan, ConfigPackage, ComparisonReport
+├── engines/
+│   ├── link_budget.py    — L2: LinkBudgetStrategy, WiFi6LinkBudget, WiFi7LinkBudget
+│   ├── airtime.py        — L3: AirtimeCalculator, SSID overhead, OFDMA modifier
+│   ├── ap_selector.py    — L4: AP_LIBRARY, select_ap()
+│   └── channel_planner.py— L5: plan_channels(), cci_score()
+├── agents/
+│   ├── intake_agent.py   — L6: Socratic → DPM
+│   ├── design_agent.py   — L7: iterative coverage+capacity loop
+│   ├── orchestrator.py   — L7: state machine
+│   ├── config_agent.py   — L8: XIQ JSON + CLI scripts
+│   ├── teaching_agent.py — cross-cutting: 4 modes, bridge primary
+│   └── rag_validator.py  — cross-cutting: 3-layer validation
+├── rag/
+│   └── server.py         — local RAG API (localhost:8001)
+└── api/
+    ├── main.py           — FastAPI app, REST + WebSocket
+    ├── routes/           — session, intake, dpm, design, config, compare
+    └── deps.py           — DB session, Redis, strategy factory
+</pre>
+    </div>
+  </section>
+
+  <!-- L1 DATA MODELS -->
+  <section id="models">
+    <h2>L1 — Data Models (Pydantic v2)</h2>
+    <div class="callout purple">
+      <strong>Design principle:</strong> DPM is the single handoff artifact between every agent and engine. All source flags ([User provided] / [Derived from X] / [Default — confirm?]) are preserved in model metadata. User can override any derived field before confirming.
+    </div>
+
+    <h3>Key Enumerations</h3>
+    <div class="code-block"><pre>
+<span class="kw">class</span> <span class="tp">WiFiGen</span>(str, Enum):
+    WIFI6 = <span class="st">"wifi6"</span>    <span class="cm"># AP3000 / AP4000</span>
+    WIFI6E = <span class="st">"wifi6e"</span>  <span class="cm"># AP4000 (6 GHz capable)</span>
+    WIFI7 = <span class="st">"wifi7"</span>    <span class="cm"># AP5020 / AP5022 / AP5060</span>
+
+<span class="kw">class</span> <span class="tp">RFEnvironment</span>(str, Enum):
+    OPEN_SPACE   = <span class="st">"open_space"</span>    <span class="cm"># −95 dBm noise floor, 90% airtime</span>
+    OPEN_OFFICE  = <span class="st">"open_office"</span>   <span class="cm"># −90 dBm, 80%</span>
+    OFFICE       = <span class="st">"office"</span>        <span class="cm"># −87 dBm, 70%</span>
+    DENSE_OFFICE = <span class="st">"dense_office"</span>  <span class="cm"># −85 dBm, 60%</span>
+    INDUSTRIAL   = <span class="st">"industrial"</span>    <span class="cm"># −80 dBm, 50%</span>
+
+<span class="kw">class</span> <span class="tp">RFCoverageTier</span>(str, Enum):
+    CAPACITY = <span class="st">"capacity"</span>  <span class="cm"># −67 dBm — highest SNR, best MCS</span>
+    DATA     = <span class="st">"data"</span>      <span class="cm"># −75 dBm — good data rates</span>
+    BASIC    = <span class="st">"basic"</span>     <span class="cm"># −80 dBm — minimum connectivity</span>
+</pre></div>
+
+    <h3>SiteRequirements (Section A)</h3>
+    <div class="code-block"><pre>
+<span class="kw">class</span> <span class="tp">SiteRequirements</span>(BaseModel):
+    site_type:             <span class="tp">SiteType</span>
+    coverage_area_m2:      <span class="tp">float</span>  = Field(gt=<span class="nm">0</span>)
+    num_floors:            <span class="tp">int</span>    = Field(ge=<span class="nm">1</span>)
+    ceiling_height_m:      <span class="tp">float</span>  = Field(default=<span class="nm">3.0</span>, ge=<span class="nm">2.0</span>, le=<span class="nm">15.0</span>)
+    wall_type:             <span class="tp">WallType</span>
+    rf_environment:        <span class="tp">RFEnvironment</span>
+    regulatory_domain:     <span class="tp">str</span>    = Field(min_length=<span class="nm">2</span>, max_length=<span class="nm">3</span>)
+    <span class="cm"># Derived — set by engine, overridable by user</span>
+    noise_floor_dbm:       <span class="tp">Optional[float]</span> = <span class="kw">None</span>
+    available_airtime_pct: <span class="tp">Optional[float]</span> = <span class="kw">None</span>
+    unii_bands_available:  <span class="tp">Optional[list[str]]</span> = <span class="kw">None</span>
+
+    <span class="fn">@model_validator</span>(mode=<span class="st">'after'</span>)
+    <span class="kw">def</span> <span class="fn">derive_noise_and_airtime</span>(self):
+        lookup = {
+            RFEnvironment.OPEN_SPACE:   (<span class="nm">-95</span>, <span class="nm">90.0</span>),
+            RFEnvironment.OPEN_OFFICE:  (<span class="nm">-90</span>, <span class="nm">80.0</span>),
+            RFEnvironment.OFFICE:       (<span class="nm">-87</span>, <span class="nm">70.0</span>),
+            RFEnvironment.DENSE_OFFICE: (<span class="nm">-85</span>, <span class="nm">60.0</span>),
+            RFEnvironment.INDUSTRIAL:   (<span class="nm">-80</span>, <span class="nm">50.0</span>),
+        }
+        <span class="kw">if</span> self.noise_floor_dbm <span class="kw">is</span> <span class="kw">None</span>:
+            self.noise_floor_dbm, _ = lookup[self.rf_environment]
+        <span class="kw">if</span> self.available_airtime_pct <span class="kw">is</span> <span class="kw">None</span>:
+            _, self.available_airtime_pct = lookup[self.rf_environment]
+        <span class="kw">return</span> self
+</pre></div>
+
+    <h3>ClientDevice (Section B) — key constraint</h3>
+    <div class="code-block"><pre>
+<span class="kw">class</span> <span class="tp">ClientDevice</span>(BaseModel):
+    device_type:           <span class="tp">str</span>
+    protocol:              <span class="tp">WiFiProtocol</span>
+    tx_chains:             <span class="tp">int</span>   = Field(ge=<span class="nm">1</span>, le=<span class="nm">8</span>)
+    concurrent_assoc_pct:  <span class="tp">float</span> = Field(default=<span class="nm">0.75</span>, ge=<span class="nm">0.0</span>, le=<span class="nm">1.0</span>)
+    concurrent_active_pct: <span class="tp">float</span> = Field(default=<span class="nm">0.50</span>, ge=<span class="nm">0.0</span>, le=<span class="nm">1.0</span>)
+
+    <span class="fn">@model_validator</span>(mode=<span class="st">'after'</span>)
+    <span class="kw">def</span> <span class="fn">active_le_assoc</span>(self):  <span class="cm"># DPM Rule 6: active% ≤ assoc%</span>
+        <span class="kw">if</span> self.concurrent_active_pct > self.concurrent_assoc_pct:
+            <span class="kw">raise</span> ValueError(<span class="st">"concurrent_active_pct must be ≤ concurrent_assoc_pct"</span>)
+        <span class="kw">return</span> self
+
+    <span class="fn">@property</span>
+    <span class="kw">def</span> <span class="fn">active_count</span>(self) -> <span class="tp">int</span>:
+        <span class="kw">return</span> int(self.quantity * self.concurrent_active_pct)
+</pre></div>
+
+    <h3>WiFi 7 Parameters (Section H — WiFi7 strategy only)</h3>
+    <div class="code-block"><pre>
+<span class="kw">class</span> <span class="tp">WiFi7Params</span>(BaseModel):
+    mlo_mode:        <span class="tp">str</span>  = <span class="st">"EMLSR"</span>   <span class="cm"># EMLSR / EMLMR / STR / disabled</span>
+    channel_width_320: <span class="tp">bool</span> = <span class="kw">False</span>   <span class="cm"># 320 MHz on 6 GHz</span>
+    puncturing:      <span class="tp">bool</span> = <span class="kw">True</span>     <span class="cm"># preamble puncturing on 6 GHz</span>
+    multi_ap_coord:  <span class="tp">bool</span> = <span class="kw">True</span>     <span class="cm"># only on AP5020/5022/5060</span>
+    harq_enabled:    <span class="tp">bool</span> = <span class="kw">True</span>     <span class="cm"># chipset-managed, flag for design note</span>
+    mcs12_13_expect: <span class="tp">bool</span> = <span class="kw">True</span>     <span class="cm"># expect 4K-QAM at SNR ≥ 36 dB</span>
+    rnr_advertise:   <span class="tp">bool</span> = <span class="kw">True</span>     <span class="cm"># Reduced Neighbor Report on 2.4/5 GHz</span>
+    wpa3_required:   <span class="tp">bool</span> = <span class="kw">True</span>     <span class="cm"># mandatory on 6 GHz</span>
+    mfp_required:    <span class="tp">bool</span> = <span class="kw">True</span>     <span class="cm"># 802.11w mandatory on 6 GHz</span>
+</pre></div>
+
+    <h3>Full DPM</h3>
+    <div class="code-block"><pre>
+<span class="kw">class</span> <span class="tp">DesignParameterManifest</span>(BaseModel):
+    session_id:   <span class="tp">str</span>      = Field(default_factory=<span class="kw">lambda</span>: str(uuid4()))
+    created_at:   <span class="tp">datetime</span> = Field(default_factory=datetime.utcnow)
+    site:         <span class="tp">SiteRequirements</span>
+    clients:      <span class="tp">list[ClientDevice]</span>
+    applications: <span class="tp">dict[str, list[Application]]</span>  <span class="cm"># device_type → apps</span>
+    network:      <span class="tp">NetworkDesignParams</span>
+    channel:      <span class="tp">ChannelParams</span>
+    security:     <span class="tp">SecurityParams</span>
+    rrm:          <span class="tp">RRMParams</span>
+    wifi7:        <span class="tp">Optional[WiFi7Params]</span> = <span class="kw">None</span>  <span class="cm"># auto-populated for WIFI7</span>
+
+    <span class="fn">@model_validator</span>(mode=<span class="st">'after'</span>)
+    <span class="kw">def</span> <span class="fn">wifi7_params_required_for_be</span>(self):
+        <span class="kw">if</span> self.network.wifi_generation == WiFiGen.WIFI7 <span class="kw">and</span> self.wifi7 <span class="kw">is</span> <span class="kw">None</span>:
+            self.wifi7 = WiFi7Params()  <span class="cm"># apply defaults</span>
+        <span class="kw">return</span> self
+</pre></div>
+  </section>
+
+  <!-- L2 LINK BUDGET -->
+  <section id="linkbudget">
+    <h2>L2 — Link Budget Engine</h2>
+    <p>File: <code>src/engines/link_budget.py</code></p>
+
+    <h3>MCS Reference Table (1 SS, 20 MHz)</h3>
+    <table class="mcs-table">
+      <tr><th>MCS</th><th>Modulation</th><th>Code Rate</th><th>Min SNR (dB)</th><th>Rate 1SS/20MHz (Mbps)</th><th>Protocol</th></tr>
+      <tr><td>0</td><td>BPSK</td><td>1/2</td><td>2</td><td>8.6</td><td>802.11ax</td></tr>
+      <tr><td>1</td><td>QPSK</td><td>1/2</td><td>5</td><td>17.2</td><td>802.11ax</td></tr>
+      <tr><td>2</td><td>QPSK</td><td>3/4</td><td>8</td><td>25.8</td><td>802.11ax</td></tr>
+      <tr><td>3</td><td>16-QAM</td><td>1/2</td><td>11</td><td>34.4</td><td>802.11ax</td></tr>
+      <tr><td>4</td><td>16-QAM</td><td>3/4</td><td>14</td><td>51.6</td><td>802.11ax</td></tr>
+      <tr><td>5</td><td>64-QAM</td><td>2/3</td><td>17</td><td>68.8</td><td>802.11ax</td></tr>
+      <tr><td>6</td><td>64-QAM</td><td>3/4</td><td>19</td><td>77.4</td><td>802.11ax</td></tr>
+      <tr><td>7</td><td>64-QAM</td><td>5/6</td><td>21</td><td>86.0</td><td>802.11ax</td></tr>
+      <tr><td>8</td><td>256-QAM</td><td>3/4</td><td>24</td><td>103.2</td><td>802.11ax</td></tr>
+      <tr><td>9</td><td>256-QAM</td><td>5/6</td><td>26</td><td>114.7</td><td>802.11ax</td></tr>
+      <tr><td>10</td><td>1024-QAM</td><td>3/4</td><td>29</td><td>129.0</td><td>802.11ax</td></tr>
+      <tr><td>11</td><td>1024-QAM</td><td>5/6</td><td>33</td><td>143.4</td><td>802.11ax ← WiFi 6 ceiling</td></tr>
+      <tr class="wifi7"><td>12</td><td>4096-QAM</td><td>3/4</td><td>36</td><td>172.1</td><td>802.11be (WiFi 7 only)</td></tr>
+      <tr class="wifi7"><td>13</td><td>4096-QAM</td><td>5/6</td><td>38</td><td>191.2</td><td>802.11be (WiFi 7 only)</td></tr>
+    </table>
+    <p><strong style="color:var(--accent2)">Scale rule:</strong> Rate × SS × (channel_width / 20). &nbsp;Example: MCS 11, 2SS, 80 MHz = 143.4 × 2 × 4 = <strong>1,147 Mbps</strong>. &nbsp;MCS 13, 4SS, 320 MHz = 191.2 × 4 × 16 = <strong>12,237 Mbps</strong>.</p>
+
+    <h3>Strategy Pattern</h3>
+    <div class="code-block"><pre>
+<span class="kw">class</span> <span class="tp">LinkBudgetStrategy</span>(ABC):
+    <span class="fn">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">snr_to_mcs</span>(self, protocol: <span class="tp">WiFiProtocol</span>, channel_width: <span class="tp">int</span>,
+                   snr_db: <span class="tp">float</span>, spatial_streams: <span class="tp">int</span>) -> <span class="tp">MCSResult</span>: ...
+    <span class="fn">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">max_mcs_index</span>(self) -> <span class="tp">int</span>: ...
+
+<span class="kw">class</span> <span class="tp">WiFi6LinkBudget</span>(LinkBudgetStrategy):
+    <span class="kw">def</span> <span class="fn">max_mcs_index</span>(self) -> <span class="tp">int</span>: <span class="kw">return</span> <span class="nm">11</span>   <span class="cm"># 1024-QAM 5/6</span>
+
+    <span class="kw">def</span> <span class="fn">snr_to_mcs</span>(self, ...) -> <span class="tp">MCSResult</span>:
+        eligible = [m <span class="kw">for</span> m <span class="kw">in</span> MCS_TABLE.values()
+                    <span class="kw">if</span> m.snr_required_db <= snr_db <span class="kw">and</span> m.mcs_index <= self.max_mcs_index()]
+        best      = max(eligible, key=<span class="kw">lambda</span> m: m.mcs_index)
+        data_rate = best.rate_1ss_20mhz * spatial_streams * (channel_width / <span class="nm">20</span>)
+        <span class="kw">return</span> MCSResult(data_rate_mbps=data_rate, ...)
+
+<span class="kw">class</span> <span class="tp">WiFi7LinkBudget</span>(WiFi6LinkBudget):   <span class="cm"># inherits WiFi 6 baseline</span>
+    <span class="kw">def</span> <span class="fn">max_mcs_index</span>(self) -> <span class="tp">int</span>: <span class="kw">return</span> <span class="nm">13</span>   <span class="cm"># 4K-QAM 5/6</span>
+
+    <span class="kw">def</span> <span class="fn">snr_to_mcs</span>(self, protocol, channel_width, snr_db, spatial_streams) -> <span class="tp">MCSResult</span>:
+        <span class="kw">if</span> snr_db >= <span class="nm">36</span> <span class="kw">and</span> protocol == WiFiProtocol.BE:
+            eligible = [m <span class="kw">for</span> m <span class="kw">in</span> MCS12_13.values() <span class="kw">if</span> m.snr_required_db <= snr_db]
+            <span class="kw">if</span> eligible:
+                best      = max(eligible, key=<span class="kw">lambda</span> m: m.mcs_index)
+                data_rate = best.rate_1ss_20mhz * spatial_streams * (channel_width / <span class="nm">20</span>)
+                <span class="kw">return</span> MCSResult(data_rate_mbps=data_rate, ...)
+        <span class="kw">return</span> super().snr_to_mcs(protocol, channel_width, snr_db, spatial_streams)
+</pre></div>
+
+    <h3>SNR Requirements by Coverage Tier</h3>
+    <table>
+      <tr><th>Coverage Tier</th><th>Design RSSI</th><th>Open Office (−90 dBm NF)</th><th>Dense Office (−85 dBm NF)</th><th>Best reachable MCS (WiFi 6)</th></tr>
+      <tr><td>Capacity (−67 dBm)</td><td>−67</td><td>23 dB SNR</td><td>18 dB SNR</td><td class="check">MCS 8 / MCS 7</td></tr>
+      <tr><td>Data (−75 dBm)</td><td>−75</td><td>15 dB SNR</td><td>10 dB SNR</td><td class="var">MCS 4 / MCS 3</td></tr>
+      <tr><td>Basic (−80 dBm)</td><td>−80</td><td>10 dB SNR</td><td>5 dB SNR</td><td class="cross">MCS 2 / MCS 1</td></tr>
+    </table>
+    <div class="callout yellow">
+      <strong>WiFi 7 4K-QAM note:</strong> MCS 12/13 requires SNR ≥ 36–38 dB. This is only achievable near the AP — Capacity tier (−67 dBm) in an open-space environment (noise floor −95 dBm) gives 28 dB SNR — still 8 dB short. 4K-QAM activates automatically only in near-field conditions. The design engine documents this in the comparison report.
+    </div>
+  </section>
+
+  <!-- L3 AIRTIME -->
+  <section id="airtime">
+    <h2>L3 — Airtime Calculator</h2>
+    <p>File: <code>src/engines/airtime.py</code></p>
+
+    <h3>Core Formula (Revolution Wi-Fi model)</h3>
+    <div class="flow">
+<pre>
+Airtime per device (%)  =  (App_Throughput_Kbps × TCP_overhead × Aggregation_factor)
+                           ÷  Device_Throughput_Kbps  × 100
+
+Available Airtime per Radio (%)  =  RF_Environment_Airtime_%  −  SSID_Beacon_Overhead_%
+                                    × OFDMA_efficiency_modifier  (if WiFi 6/7 + small frames)
+
+AP Radios Required  =  ⌈ Σ(Active_Devices × Airtime_per_Device) ÷ Available_Airtime ⌉
+</pre>
+    </div>
+
+    <h3>SSID Beacon Overhead Lookup</h3>
+    <table>
+      <tr><th>SSIDs</th><th>2.4 GHz</th><th>5 GHz</th><th>6 GHz</th><th>Note</th></tr>
+      <tr><td>1</td><td>2.5%</td><td>2.5%</td><td>1.5%</td><td rowspan="6" style="color:var(--text-dim);font-size:10px;vertical-align:top;padding-top:10px;">6 GHz lower: beacons at higher MBR. WLANPros: keep SSIDs ≤ 4 per radio.</td></tr>
+      <tr><td>2</td><td>5.0%</td><td>5.0%</td><td>3.0%</td></tr>
+      <tr><td>3</td><td>7.5%</td><td>7.5%</td><td>4.5%</td></tr>
+      <tr><td>4</td><td>10.0%</td><td>10.0%</td><td>6.0%</td></tr>
+      <tr><td>5</td><td>12.5%</td><td>12.5%</td><td>7.5%</td></tr>
+      <tr><td>6</td><td>15.0%</td><td>15.0%</td><td>9.0%</td></tr>
+    </table>
+
+    <div class="arch-grid arch-2col">
+      <div class="callout red">
+        <strong>VoIP Trap:</strong> G.711 (128 Kbps) appears to use 0.64% airtime. Actual: <strong>1.68%</strong> — 2.5× due to 160-byte frames (no AMPDU aggregation, high per-frame overhead). Always compute via avg_frame_bytes + latency_sensitive flags.
+      </div>
+      <div class="callout green">
+        <strong>OFDMA Modifier:</strong> When ≥50% of active devices transmit frames &lt;256 bytes, multiply available airtime by <strong>1.30</strong> (30% gain). Matches Rev Wi-Fi guidance. 5G analogy: packing multiple UEs into one slot via scheduler.
+      </div>
+    </div>
+  </section>
+
+  <!-- L4 AP SELECTION -->
+  <section id="apselect">
+    <h2>L4 — AP Selection Engine</h2>
+    <p>File: <code>src/engines/ap_selector.py</code></p>
+
+    <h3>AP Model Library</h3>
+    <table>
+      <tr><th>Model</th><th>WiFi</th><th>Bands</th><th>Max SS</th><th>PoE</th><th>SDR</th><th>Multi-AP</th><th>Max CW (6GHz)</th></tr>
+      <tr><td>AP3000</td><td>6</td><td>2.4+5</td><td>2×2:2</td><td>802.3at</td><td class="cross">❌</td><td class="cross">❌</td><td class="na">—</td></tr>
+      <tr><td>AP4000</td><td>6E</td><td>2.4+5+6</td><td>2×2:2</td><td>802.3bt</td><td class="cross">❌</td><td class="cross">❌</td><td>160 MHz</td></tr>
+      <tr><td>AP5020</td><td>7</td><td>2.4+5+6</td><td>4×4:4</td><td>at/bt</td><td class="check">✅</td><td class="check">✅</td><td>320 MHz</td></tr>
+      <tr><td>AP5022</td><td>7</td><td>2.4+5+6+sec</td><td>4×4:4</td><td>802.3bt</td><td class="check">✅</td><td class="check">✅</td><td>320 MHz</td></tr>
+      <tr><td>AP5060/U/D</td><td>7</td><td>2.4+5+6 outdoor</td><td>4×4:4</td><td>802.3bt</td><td class="check">✅</td><td class="check">✅</td><td>320 MHz</td></tr>
+    </table>
+
+    <h3>Selection Logic</h3>
+    <div class="flow">
+<pre>
+1. Filter by WiFi generation from DPM (WiFi6 → AP3000/AP4000; WiFi7 → AP5020+)
+2. Filter by band requirement (6 GHz needed? → AP4000 or AP5020+)
+3. Check PoE budget — warn if 802.3bt required but switch not verified
+4. If AP5020 on 802.3at: warn TX power reduced on 6 GHz radio
+5. If 6 GHz band distribution > 50% + SDR capable: flag dual-6GHz SDR mode option
+6. If WiFi 7 + Multi-AP Coord + ap_count ≥ 2: note cluster formation
+7. Return: APSelectionResult { model, warnings[], notes[], PoE_class }
+</pre>
+    </div>
+  </section>
+
+  <!-- L5 CHANNEL PLANNING -->
+  <section id="channel">
+    <h2>L5 — Channel Planning Engine</h2>
+    <p>File: <code>src/engines/channel_planner.py</code></p>
+
+    <h3>Channel Sets</h3>
+    <table>
+      <tr><th>Band</th><th>US (no DFS)</th><th>US (DFS enabled)</th><th>Channel Width</th></tr>
+      <tr><td>2.4 GHz</td><td>1, 6, 11 (fixed)</td><td>1, 6, 11 (always)</td><td>20 MHz only</td></tr>
+      <tr><td>5 GHz U-NII-1</td><td>36, 40, 44, 48</td><td>36, 40, 44, 48</td><td>20/40/80/160</td></tr>
+      <tr><td>5 GHz U-NII-2a</td><td class="cross">❌ DFS — skipped</td><td class="check">52, 56, 60, 64</td><td>20/40/80</td></tr>
+      <tr><td>5 GHz U-NII-2c</td><td class="cross">❌ DFS — skipped</td><td class="check">100–144 (12 ch)</td><td>20/40/80/160</td></tr>
+      <tr><td>5 GHz U-NII-3</td><td>149, 153, 157, 161, 165</td><td>149, 153, 157, 161, 165</td><td>20/40/80</td></tr>
+      <tr><td>6 GHz PSC</td><td>5,21,37,53,69,85,101,117,133,149,165,181,197</td><td>Same</td><td>20/40/80/160/320</td></tr>
+    </table>
+    <p style="font-size:10px;color:var(--text-dim)">80 MHz no-DFS (US): 4 non-overlapping channels (36, 52→skip, 149, 157). With DFS: up to 14 × 80 MHz. 320 MHz (WiFi 7 6 GHz): 2 PSC-aligned channels.</p>
+
+    <h3>CCI Scoring</h3>
+    <div class="code-block"><pre>
+<span class="kw">def</span> <span class="fn">cci_score</span>(ap_count: <span class="tp">int</span>, available_channels: <span class="tp">int</span>) -> <span class="tp">tuple[float, str]</span>:
+    reuse = ap_count / available_channels <span class="kw">if</span> available_channels > <span class="nm">0</span> <span class="kw">else</span> <span class="nm">999</span>
+    <span class="kw">if</span>   reuse < <span class="nm">1.5</span>:  <span class="kw">return</span> reuse / <span class="nm">5.0</span>, <span class="st">"LOW"</span>
+    <span class="kw">elif</span> reuse < <span class="nm">3.0</span>:  <span class="kw">return</span> reuse / <span class="nm">5.0</span>, <span class="st">"MEDIUM"</span>
+    <span class="kw">else</span>:              <span class="kw">return</span> min(reuse / <span class="nm">5.0</span>, <span class="nm">1.0</span>), <span class="st">"HIGH"</span>
+<span class="cm"># Target: reuse < 1.5 → each channel used by fewer than 1.5 APs on average</span>
+</pre></div>
+  </section>
+
+  <!-- L6 INTAKE AGENT -->
+  <section id="intake">
+    <h2>L6 — Intake Agent (Socratic → DPM)</h2>
+    <p>File: <code>src/agents/intake_agent.py</code></p>
+
+    <h3>Socratic Dialogue Flow</h3>
+    <div class="flow">
+<pre>
+START
+  │
+  ▼ Section A — Site (8 questions)
+  Site type → Area m² → Floors → Ceiling height → Wall type
+  → RF environment → Regulatory domain → Coverage tier
+  [Teaching Agent: "RF environment sets your noise floor — same concept
+   as interference rise / RSSI offset in 5G NR coverage modeling"]
+  │
+  ▼ Section B — Client Devices  (repeat per device type)
+  Device type → Protocol → Spatial streams → Band support
+  → Quantity → Concurrent assoc % → Concurrent active %
+  [Teaching Agent: "Concurrent active % ≈ PRB scheduling ratio —
+   fraction of devices in a transmission at any given TTI"]
+  │
+  ▼ Section C — Applications  (per device type)
+  App type → Throughput SLA → Background flag
+  [Warning if VoIP: "G.711 @ 128 Kbps uses 2.5× more airtime than the
+   raw throughput suggests — small frames cannot aggregate"]
+  │
+  ▼ Section D — Network Design
+  AP model → Channel widths → SSID count → MBR → Growth %
+  │
+  ▼ Section E — Channel Planning
+  DFS preference → CCI threshold override?
+  │
+  ▼ Section F — Security
+  Security per SSID (WPA2/WPA3) → 802.11r/k/v → VLAN IDs
+  │
+  ▼ Section G — RRM
+  RRM mode (XIQ cloud / per-AP / static) → TX power min/max
+  │
+  IF wifi_generation == WIFI7:
+  ▼ Section H — WiFi 7
+  MLO mode (EMLSR/EMLMR/STR) → 320 MHz? → Multi-AP Coord?
+  [Teaching Agent: "MLO ≈ Carrier Aggregation. EMLSR = one link active
+   at a time (≈ NR DC one-leg). STR = simultaneous links (≈ full CA)"]
+  │
+  ▼ SHOW DPM to user — all ~60 parameters with source flags
+  ⚠ [Default — confirm?] fields highlighted
+  → User edits any field → engine re-derives dependents
+  → CONFIRM → DesignEngine.run()
+</pre>
+    </div>
+
+    <h3>DPM Source Flags</h3>
+    <table>
+      <tr><th>Flag</th><th>Meaning</th><th>UI Treatment</th></tr>
+      <tr><td>[User provided]</td><td>Directly entered by user in dialogue</td><td>White text, no warning</td></tr>
+      <tr><td>[Derived from X]</td><td>Calculated from another parameter</td><td>Blue text, shows derivation chain</td></tr>
+      <tr><td>[Default — confirm?]</td><td>System assumption, not asked explicitly</td><td>⚠ yellow warning, user must acknowledge</td></tr>
+    </table>
+  </section>
+
+  <!-- L7 DESIGN AGENT -->
+  <section id="design">
+    <h2>L7 — Design Agent + Orchestrator</h2>
+    <p>Files: <code>src/agents/design_agent.py</code>, <code>src/agents/orchestrator.py</code></p>
+
+    <h3>Design Engine Iterative Loop</h3>
+    <div class="code-block"><pre>
+<span class="kw">def</span> <span class="fn">run_design</span>(dpm: <span class="tp">DesignParameterManifest</span>, strategy: <span class="tp">LinkBudgetStrategy</span>) -> <span class="tp">DesignResult</span>:
+    <span class="kw">for</span> iteration <span class="kw">in</span> range(<span class="nm">5</span>):  <span class="cm"># max 5 iterations</span>
+        link_budgets    = run_link_budget(dpm, strategy)           <span class="cm"># L2</span>
+        airtime         = {band: calculate_airtime(dpm, lb, band)  <span class="cm"># L3</span>
+                           <span class="kw">for</span> band, lb <span class="kw">in</span> link_budgets.items()}
+        ap_count_cap    = max(a.radios_required <span class="kw">for</span> a <span class="kw">in</span> airtime.values())
+        ap_count_cov    = coverage_driven_count(dpm)               <span class="cm"># L2 cell radius</span>
+        ap_count_final  = math.ceil(
+            max(ap_count_cap, ap_count_cov) * (<span class="nm">1</span> + dpm.network.capacity_growth_pct))
+
+        gap = abs(ap_count_cap - ap_count_cov) / max(<span class="nm">1</span>, ap_count_cap)
+        <span class="kw">if</span> gap <= <span class="nm">0.20</span>: <span class="kw">break</span>   <span class="cm"># converged — gap < 20%</span>
+        dpm = adjust_for_gap(dpm, ap_count_cap, ap_count_cov)     <span class="cm"># tune MBR/width</span>
+
+    ap_select    = select_ap(dpm)                                  <span class="cm"># L4</span>
+    channel_plan = plan_channels(dpm, CapacityPlan(ap_count_final=ap_count_final, ...))  <span class="cm"># L5</span>
+    validation   = rag_validator.validate(dpm, ...)                <span class="cm"># RAG layer</span>
+    <span class="kw">return</span> DesignResult(link_budgets=link_budgets, capacity_plan=...,
+                        channel_plan=channel_plan, ap_selection=ap_select, ...)
+</pre></div>
+
+    <h3>Orchestrator State Machine</h3>
+    <div class="flow">
+<pre>
+STATES:   INTAKE → DPM_REVIEW → DESIGNING → [COMPARING] → CONFIGURING → VALIDATING → COMPLETE
+
+INTAKE     ──on: intake_complete──────────►  DPM_REVIEW
+DPM_REVIEW ──on: dpm_confirmed────────────►  DESIGNING
+DPM_REVIEW ──on: user_edit (any field)────►  INTAKE        (re-derive dependents, resume)
+DESIGNING  ──on: design_complete, compare──►  COMPARING
+DESIGNING  ──on: design_complete, single──►  CONFIGURING
+COMPARING  ──on: comparison_complete──────►  CONFIGURING
+CONFIGURING──on: config_generated─────────►  VALIDATING
+VALIDATING ──on: rag_pass─────────────────►  COMPLETE
+VALIDATING ──on: rag_fail─────────────────►  CONFIGURING   (Teaching Agent explains → adjust)
+</pre>
+    </div>
+  </section>
+
+  <!-- L8 CONFIG AGENT -->
+  <section id="config">
+    <h2>L8 — Config Agent</h2>
+    <p>File: <code>src/agents/config_agent.py</code></p>
+    <p>Generates three outputs per session: XIQ Device Template JSON, EXOS CLI script, VOSS CLI script. Plus a separate AutoRF profile (dual output — static + AutoRF).</p>
+
+    <h3>XIQ Device Template (key fields)</h3>
+    <div class="code-block"><pre>
+{
+  <span class="st">"template_name"</span>: <span class="st">"WiFiTwin-AP5020-{session_id}"</span>,
+  <span class="st">"radio_profiles"</span>: {
+    <span class="st">"wifi1_5ghz"</span>: {
+      <span class="st">"channel"</span>:       <span class="st">"auto"</span>,
+      <span class="st">"channel_width"</span>: <span class="nm">80</span>,
+      <span class="st">"tx_power_min"</span>:  <span class="nm">13</span>,     <span class="cm">// WLANPros target</span>
+      <span class="st">"tx_power_max"</span>:  <span class="nm">23</span>,
+      <span class="st">"mbr"</span>:           <span class="nm">12</span>,     <span class="cm">// Mbps — controls cell size</span>
+      <span class="st">"ofdma"</span>:         <span class="kw">true</span>,
+      <span class="st">"mlo_enabled"</span>:   <span class="kw">true</span>   <span class="cm">// WiFi 7 only</span>
+    },
+    <span class="st">"wifi2_6ghz"</span>: {
+      <span class="st">"channel"</span>:       <span class="st">"psc"</span>,
+      <span class="st">"channel_width"</span>: <span class="nm">80</span>,
+      <span class="st">"security"</span>:      <span class="st">"wpa3-sae"</span>,  <span class="cm">// mandatory on 6 GHz</span>
+      <span class="st">"mfp"</span>:           <span class="st">"required"</span>, <span class="cm">// 802.11w mandatory</span>
+      <span class="st">"rnr"</span>:           <span class="kw">true</span>,       <span class="cm">// Reduced Neighbor Report</span>
+      <span class="st">"puncturing"</span>:    <span class="kw">true</span>        <span class="cm">// WiFi 7 only</span>
+    }
+  },
+  <span class="st">"ft_enabled"</span>:      <span class="kw">true</span>,   <span class="cm">// 802.11r</span>
+  <span class="st">"neighbor_report"</span>: <span class="kw">true</span>,   <span class="cm">// 802.11k</span>
+  <span class="st">"bss_transition"</span>:  <span class="kw">true</span>    <span class="cm">// 802.11v</span>
+}
+</pre></div>
+
+    <h3>AutoRF Profile (separate — dual output)</h3>
+    <div class="code-block"><pre>
+{
+  <span class="st">"autoRF_profile"</span>:        <span class="st">"WiFiTwin-AutoRF-{session_id}"</span>,
+  <span class="st">"cci_threshold_dbm"</span>:     <span class="nm">-85</span>,    <span class="cm">// WLANPros default</span>
+  <span class="st">"retry_threshold_pct"</span>:   <span class="nm">20</span>,
+  <span class="st">"util_threshold_pct"</span>:    <span class="nm">70</span>,
+  <span class="st">"scan_interval_sec"</span>:     <span class="nm">300</span>,
+  <span class="st">"dynamic_channel_width"</span>: <span class="kw">false</span>,  <span class="cm">// ALWAYS false — WLANPros ❌</span>
+  <span class="st">"client_load_balancing"</span>: <span class="kw">false</span>   <span class="cm">// disabled in normal density</span>
+}
+</pre></div>
+
+    <h3>EXOS CLI Template (key blocks)</h3>
+    <div class="code-block"><pre>
+<span class="cm"># WiFi Digital Twin — EXOS SwitchEngine Config</span>
+<span class="cm"># AP: {ap_model} | Generated: {timestamp}</span>
+
+create vlan <span class="st">"{ssid_name}"</span> tag {vlan_id}
+configure vlan <span class="st">"{ssid_name}"</span> add ports {ap_port} tagged
+configure inline-power ports {ap_port} operator-limit {poe_watts}
+enable inline-power ports {ap_port}
+configure dot1p type {vlan_id} 6    <span class="cm"># VO → CoS 6</span>
+configure dot1p type {vlan_id} 5    <span class="cm"># VI → CoS 5</span>
+</pre></div>
+
+    <h3>VOSS CLI Template (FA I-SID mapping)</h3>
+    <div class="code-block"><pre>
+<span class="cm"># WiFi Digital Twin — VOSS Fabric Engine Config</span>
+interface GigabitEthernet {port}
+  flex-uni enable
+  fa enable
+vlan create {vlan_id} type port-mstprstp 0
+vlan i-sid {vlan_id} {isid_value}
+interface GigabitEthernet {port}
+  vlan tagging {vlan_id}
+</pre></div>
+  </section>
+
+  <!-- L9 API -->
+  <section id="api">
+    <h2>L9 — API Layer</h2>
+    <p>File: <code>src/api/main.py</code> &nbsp;·&nbsp; FastAPI + WebSocket + PostgreSQL + Redis</p>
+
+    <h3>REST Endpoints</h3>
+    <table>
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td>POST</td><td>/api/v1/session</td><td>Create DesignSession → return session_id</td></tr>
+      <tr><td>POST</td><td>/api/v1/intake/answer</td><td>Submit one Socratic answer, receive next question + Teaching note</td></tr>
+      <tr><td>POST</td><td>/api/v1/dpm/{id}</td><td>Submit calibrated DPM, trigger validation</td></tr>
+      <tr><td>GET</td><td>/api/v1/dpm/{id}</td><td>Retrieve current DPM with source flags</td></tr>
+      <tr><td>POST</td><td>/api/v1/design/{id}</td><td>Run DesignEngine (strategy from DPM.wifi_gen)</td></tr>
+      <tr><td>POST</td><td>/api/v1/compare/{id}</td><td>Run ComparisonEngine — WiFi 6 vs WiFi 7 on same DPM</td></tr>
+      <tr><td>GET</td><td>/api/v1/config/{id}</td><td>Download ConfigPackage (XIQ JSON + EXOS + VOSS scripts)</td></tr>
+      <tr><td>POST</td><td>/api/v1/validate/{id}</td><td>Trigger RAG validation pass</td></tr>
+      <tr><td>GET</td><td>/api/v1/health</td><td>Service health check</td></tr>
+    </table>
+
+    <h3>WebSocket Channels</h3>
+    <div class="code-block"><pre>
+<span class="cm"># Socratic intake — live question/answer stream</span>
+WS /ws/intake/{session_id}
+  Client → <span class="st">{ "answer": "...", "field": "site_type" }</span>
+  Server → <span class="st">{ "next_question": "...", "teaching_note": "...",
+               "source_flag": "User provided", "dpm_preview": {...} }</span>
+
+<span class="cm"># Design progress — streamed results as each engine completes</span>
+WS /ws/design/{session_id}
+  Server → <span class="st">{ "step": "link_budget|airtime|ap_select|channel|config",
+               "progress_pct": 0-100, "partial_result": {...} }</span>
+</pre></div>
+
+    <h3>E2E Data Flow</h3>
+    <div class="flow">
+<pre>
+Client (browser / CLI)
+    │ POST /api/v1/session
+    ▼
+DesignSession created (PostgreSQL) + Redis presence entry
+    │ WS /ws/intake/{id}
+    ▼
+IntakeAgent: Socratic loop
+  LangChain ConversationChain + DPM builder
+  Teaching Agent fires after each answer
+    │ POST /api/v1/dpm  (user confirms)
+    ▼
+DPM validated (Pydantic) → strategy selected (WiFi6 or WiFi7)
+    │ POST /api/v1/design
+    ▼
+DesignEngine.run(dpm, strategy)  — streamed via WS
+  ├── L2 LinkBudgetEngine    → LinkBudgetResult[]
+  ├── L3 AirtimeCalculator   → AirtimeDemand per band
+  ├── L4 APSelectionEngine   → APSelectionResult
+  ├── L5 ChannelPlanner      → ChannelPlan
+  └── RAGValidator           → ValidationReport
+    │
+    ├── POST /api/v1/compare  (if user wants WiFi6 vs WiFi7 delta)
+    │   ComparisonEngine runs both strategies → ComparisonReport
+    │
+    ▼ POST /api/v1/config
+ConfigAgent.generate(dpm, design_result)
+  ├── XIQ Device Template JSON
+  ├── AutoRF Profile JSON
+  ├── EXOS CLI script
+  └── VOSS CLI script
+    │ GET /api/v1/config/{id}
+    ▼
+User downloads ConfigPackage → ready for XIQ push + EXOS/VOSS SSH
+</pre>
+    </div>
+  </section>
+
+  <!-- APPENDIX A — MIXED MODE -->
+  <section id="mixedmode">
+    <h2>Appendix A — Mixed-Mode Input Parameters (Sprint 4+)</h2>
+    <div class="callout yellow">
+      <strong>Why this appendix:</strong> Phase 1 designs for uniform WiFi 6 or WiFi 7. A future sprint (<code>feature/mixed-topology</code>) allows co-existing AP generations. The parameters below are what that LLD will need <em>beyond</em> the Phase 1 DPM — documented here so the scope boundary is clear and the future LLD has a starting point.
+    </div>
+
+    <h3>Additional Parameters for Mixed-Mode</h3>
+    <table>
+      <tr><th>Parameter</th><th>Type</th><th>Purpose in Mixed-Mode</th></tr>
+      <tr><td>Floor plan file</td><td>SVG / DXF / PNG upload</td><td>Coordinate system for AP placement</td></tr>
+      <tr><td>Floor plan scale</td><td>float (m/pixel)</td><td>Convert pixel → physical distance</td></tr>
+      <tr><td>AP placement list</td><td>list[(x, y, ap_model, zone_id)]</td><td>Per-AP position + model assignment</td></tr>
+      <tr><td>Zone definitions</td><td>list[Polygon]</td><td>Named RF zones with boundary polygons</td></tr>
+      <tr><td>Wall/obstacle layer</td><td>GeoJSON / raster mask</td><td>Per-wall attenuation in path loss</td></tr>
+      <tr><td>Zone adjacency graph</td><td>graph[zone_id → zone_id]</td><td>Derived from placement — drives roam analysis</td></tr>
+      <tr><td>Roam boundary pairs</td><td>list[(zone_a, zone_b)]</td><td>Where inter-generation roaming happens</td></tr>
+      <tr><td>Per-zone channel width</td><td>dict[zone_id, ChannelWidth]</td><td>320 MHz zone vs 160 MHz zone boundary</td></tr>
+      <tr><td>Multi-AP Coord clusters</td><td>list[list[ap_id]]</td><td>WiFi 7 APs that form coordination clusters</td></tr>
+      <tr><td>Inter-generation roam policy</td><td>enum: warn / block / downgrade</td><td>What happens when client roams to WiFi 6 AP</td></tr>
+      <tr><td>Per-zone AP generation</td><td>dict[zone_id, WiFiGen]</td><td>WiFi 6 vs WiFi 7 assignment per zone</td></tr>
+      <tr><td>Mixed comparison target</td><td>enum</td><td>Compare mixed vs pure-WiFi6 / vs pure-WiFi7</td></tr>
+    </table>
+
+    <h3>What Phase 1 Provides to Mixed-Mode</h3>
+    <div class="arch-grid arch-3col">
+      <div class="arch-box green">
+        <div class="box-title">Inherited Directly</div>
+        <span class="sub">LinkBudgetStrategy ABC</span>
+        <span class="sub">WiFi6LinkBudget implementation</span>
+        <span class="sub">WiFi7LinkBudget implementation</span>
+        <span class="sub">All Pydantic data models</span>
+        <span class="sub">ConfigAgent templates (per model)</span>
+        <span class="sub">ChannelPlanner (per-zone runs)</span>
+      </div>
+      <div class="arch-box blue">
+        <div class="box-title">Extended by Mixed-Mode</div>
+        <span class="sub">MixedAPStrategy (zone routing)</span>
+        <span class="sub">DPM + zone_map field</span>
+        <span class="sub">ChannelPlan + boundary reconcile</span>
+        <span class="sub">ComparisonEngine mode 3</span>
+        <span class="sub">ConfigPackage multi-template</span>
+        <span class="sub">RRM Sim zone-aware inputs</span>
+      </div>
+      <div class="arch-box orange">
+        <div class="box-title">New in Mixed-Mode Only</div>
+        <span class="sub">Floor plan parser</span>
+        <span class="sub">AP placement UI (drag + drop)</span>
+        <span class="sub">Adjacency graph builder</span>
+        <span class="sub">Roam capability map per zone-pair</span>
+        <span class="sub">320→160 MHz ACI boundary model</span>
+        <span class="sub">MLO loss-on-roam event model</span>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>Key principle:</strong> Mixed-mode does NOT rewrite Phase 1 engines. It wraps them with zone routing — each zone runs its generation's strategy, boundaries are reconciled post-hoc. The <code>MixedAPStrategy</code> is a composition: <code>zone_map[zone_id] → LinkBudgetStrategy</code>.
+    </div>
+  </section>
+
+  <footer>
+    WiFi Digital Twin Platform — LLD Phase 1 v1.0 | April 2026 | Private &amp; Confidential<br>
+    Implements HLD v1.1 Sprint 1 modules L1–L9 | feature/wifi6-baseline + feature/wifi7-complete
+  </footer>
+
+</div><!-- /.page -->
+</div><!-- /.layout -->
+
+<script>
+  const links = document.querySelectorAll('.sidebar a:not(.sub)');
+  const ids = [...links].map(a => a.getAttribute('href').slice(1));
+  const sections = ids.map(id => document.getElementById(id)).filter(Boolean);
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = [...links].find(l => l.getAttribute('href') === '#' + e.target.id);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
