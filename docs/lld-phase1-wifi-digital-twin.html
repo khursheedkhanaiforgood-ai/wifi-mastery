@@ -148,6 +148,7 @@
     <a class="sub" href="#models">↳ NetworkDesign</a>
     <a class="sub" href="#models">↳ RRMParams / WiFi7Params</a>
     <a class="sub" href="#models">↳ DPM (full manifest)</a>
+    <a class="sub" href="#dpm-ref">↳ DPM Parameter Reference</a>
     <a class="sub" href="#models">↳ Result models</a>
   </div>
   <hr class="sb-divider">
@@ -375,6 +376,126 @@ src/
             self.wifi7 = WiFi7Params()  <span class="cm"># apply defaults</span>
         <span class="kw">return</span> self
 </pre></div>
+
+  <!-- DPM PARAMETER REFERENCE TABLE -->
+  <h3 id="dpm-ref" style="margin-top:2rem;">DPM Parameter Reference</h3>
+  <p style="color:var(--muted);font-size:.9rem;margin-bottom:1rem;">
+    All ~67 Design Parameter Manifest fields. Source badges:
+    <span style="background:#1d4ed8;color:#fff;padding:1px 6px;border-radius:3px;font-size:.8rem;font-family:monospace;">User</span>
+    <span style="background:#166534;color:#fff;padding:1px 6px;border-radius:3px;font-size:.8rem;font-family:monospace;margin-left:4px;">Derived</span>
+    <span style="background:#92400e;color:#fff;padding:1px 6px;border-radius:3px;font-size:.8rem;font-family:monospace;margin-left:4px;">Default</span>
+    <span style="background:#7f1d1d;color:#fff;padding:1px 6px;border-radius:3px;font-size:.8rem;font-family:monospace;margin-left:4px;">Fixed</span>
+    &nbsp;— "Used By" links navigate to the consuming engine section.
+  </p>
+  <style>
+    #dpm-ref-table { width:100%; border-collapse:collapse; font-size:.85rem; }
+    #dpm-ref-table th { background:var(--card-bg); color:var(--accent); padding:7px 10px; text-align:left; border-bottom:2px solid var(--border); white-space:nowrap; }
+    #dpm-ref-table td { padding:5px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
+    #dpm-ref-table tr:hover td { background:rgba(59,130,246,.06); }
+    #dpm-ref-table td:nth-child(1) { color:var(--muted); font-size:.8rem; width:2.5rem; }
+    #dpm-ref-table td:nth-child(3) { font-family:monospace; color:var(--code-fg,#e2e8f0); }
+    #dpm-ref-table td:nth-child(4) { color:var(--muted); font-size:.8rem; }
+    .src-u  { background:#1d4ed8;color:#fff;padding:1px 5px;border-radius:3px;font-size:.75rem;font-family:monospace;white-space:nowrap; }
+    .src-d  { background:#166534;color:#fff;padding:1px 5px;border-radius:3px;font-size:.75rem;font-family:monospace;white-space:nowrap; }
+    .src-def{ background:#92400e;color:#fff;padding:1px 5px;border-radius:3px;font-size:.75rem;font-family:monospace;white-space:nowrap; }
+    .src-f  { background:#7f1d1d;color:#fff;padding:1px 5px;border-radius:3px;font-size:.75rem;font-family:monospace;white-space:nowrap; }
+    .ub a   { color:var(--accent); text-decoration:none; margin-right:4px; font-size:.8rem; }
+    .ub a:hover { text-decoration:underline; }
+    .sec-header td { background:rgba(59,130,246,.12); color:var(--accent); font-weight:600; font-size:.8rem; letter-spacing:.05em; padding:4px 10px; }
+  </style>
+  <table id="dpm-ref-table">
+    <thead>
+      <tr>
+        <th>#</th><th>Section</th><th>Parameter</th><th>Type / Default</th><th>Source</th><th>Used By</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- SECTION A: SITE -->
+      <tr class="sec-header"><td colspan="6">A — Site Requirements</td></tr>
+      <tr><td>1</td><td>A</td><td>site_name</td><td>str</td><td><span class="src-u">User</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>2</td><td>A</td><td>site_type</td><td>SiteType enum</td><td><span class="src-u">User</span></td><td class="ub"><a href="#linkbudget">L2</a><a href="#airtime">L3</a><a href="#channel">L5</a></td></tr>
+      <tr><td>3</td><td>A</td><td>coverage_area_m2</td><td>float, >0</td><td><span class="src-u">User</span></td><td class="ub"><a href="#apselect">L4</a><a href="#design">L7</a></td></tr>
+      <tr><td>4</td><td>A</td><td>floor_count</td><td>int ≥1, default=1</td><td><span class="src-u">User</span></td><td class="ub"><a href="#apselect">L4</a><a href="#channel">L5</a></td></tr>
+      <tr><td>5</td><td>A</td><td>ceiling_height_m</td><td>float, default=3.0</td><td><span class="src-u">User</span></td><td class="ub"><a href="#linkbudget">L2</a></td></tr>
+      <tr><td>6</td><td>A</td><td>wall_material</td><td>WallMaterial enum</td><td><span class="src-u">User</span></td><td class="ub"><a href="#linkbudget">L2</a></td></tr>
+      <tr><td>7</td><td>A</td><td>target_rssi_dbm</td><td>float, default=−67</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#linkbudget">L2</a><a href="#apselect">L4</a></td></tr>
+      <tr><td>8</td><td>A</td><td>target_snr_db</td><td>float, default=25.0</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#linkbudget">L2</a></td></tr>
+      <tr><td>9</td><td>A</td><td>wifi_generation</td><td>WiFiGen enum (WIFI6/WIFI7)</td><td><span class="src-u">User</span></td><td class="ub"><a href="#linkbudget">L2</a><a href="#config">L8</a></td></tr>
+      <tr><td>10</td><td>A</td><td>ap_tx_power_dbm</td><td>float, default=20.0</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#linkbudget">L2</a></td></tr>
+      <tr><td>11</td><td>A</td><td>client_tx_power_dbm</td><td>float, default=15.0</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#linkbudget">L2</a></td></tr>
+      <!-- SECTION B: CLIENTS -->
+      <tr class="sec-header"><td colspan="6">B — Client Devices</td></tr>
+      <tr><td>12</td><td>B</td><td>device_type</td><td>DeviceType enum</td><td><span class="src-u">User</span></td><td class="ub"><a href="#airtime">L3</a><a href="#intake">L6</a></td></tr>
+      <tr><td>13</td><td>B</td><td>count</td><td>int ≥1</td><td><span class="src-u">User</span></td><td class="ub"><a href="#airtime">L3</a><a href="#apselect">L4</a></td></tr>
+      <tr><td>14</td><td>B</td><td>spatial_streams</td><td>int 1–8, default=2</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#linkbudget">L2</a><a href="#airtime">L3</a></td></tr>
+      <tr><td>15</td><td>B</td><td>protocol</td><td>Protocol enum (ax/be)</td><td><span class="src-u">User</span></td><td class="ub"><a href="#linkbudget">L2</a></td></tr>
+      <tr><td>16</td><td>B</td><td>band_capability</td><td>BandCap enum (2G/5G/6G/TRI)</td><td><span class="src-u">User</span></td><td class="ub"><a href="#channel">L5</a><a href="#design">L7</a></td></tr>
+      <tr><td>17</td><td>B</td><td>concurrency_pct</td><td>float 0–100, default=70</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#airtime">L3</a></td></tr>
+      <tr><td>18</td><td>B</td><td>roaming_sensitivity</td><td>RoamSens enum, default=NORMAL</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <!-- SECTION C: APPLICATIONS -->
+      <tr class="sec-header"><td colspan="6">C — Applications</td></tr>
+      <tr><td>19</td><td>C</td><td>app_name</td><td>str</td><td><span class="src-u">User</span></td><td class="ub"><a href="#airtime">L3</a></td></tr>
+      <tr><td>20</td><td>C</td><td>traffic_kbps</td><td>float >0</td><td><span class="src-u">User</span></td><td class="ub"><a href="#airtime">L3</a></td></tr>
+      <tr><td>21</td><td>C</td><td>traffic_type</td><td>TrafficType enum</td><td><span class="src-u">User</span></td><td class="ub"><a href="#airtime">L3</a><a href="#config">L8</a></td></tr>
+      <tr><td>22</td><td>C</td><td>qos_up</td><td>WMM enum, default=BE</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>23</td><td>C</td><td>qos_down</td><td>WMM enum, default=BE</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>24</td><td>C</td><td>avg_frame_bytes</td><td>int, default=1500</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#airtime">L3</a></td></tr>
+      <tr><td>25</td><td>C</td><td>uses_ampdu</td><td>bool, default=True</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#airtime">L3</a></td></tr>
+      <!-- SECTION D: NETWORK -->
+      <tr class="sec-header"><td colspan="6">D — Network Design</td></tr>
+      <tr><td>26</td><td>D</td><td>ssid_count</td><td>int 1–16</td><td><span class="src-u">User</span></td><td class="ub"><a href="#airtime">L3</a><a href="#config">L8</a></td></tr>
+      <tr><td>27</td><td>D</td><td>ssid_names</td><td>list[str]</td><td><span class="src-u">User</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>28</td><td>D</td><td>vlan_ids</td><td>list[int]</td><td><span class="src-u">User</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>29</td><td>D</td><td>security_per_ssid</td><td>list[SecurityType]</td><td><span class="src-u">User</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>30</td><td>D</td><td>uplink_mbps</td><td>float >0</td><td><span class="src-u">User</span></td><td class="ub"><a href="#airtime">L3</a><a href="#design">L7</a></td></tr>
+      <tr><td>31</td><td>D</td><td>poe_budget_w</td><td>float, default=30.0</td><td><span class="src-u">User</span></td><td class="ub"><a href="#apselect">L4</a></td></tr>
+      <tr><td>32</td><td>D</td><td>switch_model</td><td>str | None</td><td><span class="src-u">User</span></td><td class="ub"><a href="#apselect">L4</a><a href="#config">L8</a></td></tr>
+      <tr><td>33</td><td>D</td><td>fabric_attach_enabled</td><td>bool, default=False</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>34</td><td>D</td><td>vlan_mapping</td><td>dict[str,int] | None</td><td><span class="src-u">User</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>35</td><td>D</td><td>ft_enabled</td><td>bool, default=True</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>36</td><td>D</td><td>neighbor_reports</td><td>bool, default=True</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>37</td><td>D</td><td>bss_transition</td><td>bool, default=True</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <!-- SECTION E: CHANNEL -->
+      <tr class="sec-header"><td colspan="6">E — Channel Planning</td></tr>
+      <tr><td>38</td><td>E</td><td>bands_enabled</td><td>list[Band], default=[2G,5G,6G]</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#channel">L5</a><a href="#config">L8</a></td></tr>
+      <tr><td>39</td><td>E</td><td>channel_width_2g</td><td>int {20}, fixed</td><td><span class="src-f">Fixed</span></td><td class="ub"><a href="#channel">L5</a></td></tr>
+      <tr><td>40</td><td>E</td><td>channel_width_5g</td><td>int {20,40,80}, default=80</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#channel">L5</a><a href="#linkbudget">L2</a></td></tr>
+      <tr><td>41</td><td>E</td><td>channel_width_6g</td><td>int {80,160,320}, default=160</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#channel">L5</a><a href="#linkbudget">L2</a></td></tr>
+      <tr><td>42</td><td>E</td><td>dfs_preference</td><td>DFSPref enum, default=PREFER_NON_DFS</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#channel">L5</a></td></tr>
+      <tr><td>43</td><td>E</td><td>cci_threshold_dbm</td><td>float, default=−80</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#channel">L5</a></td></tr>
+      <tr><td>44</td><td>E</td><td>psc_only_6g</td><td>bool, default=True</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#channel">L5</a></td></tr>
+      <tr><td>45</td><td>E</td><td>rnr_enabled</td><td>bool, default=True</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>46</td><td>E</td><td>dynamic_channel_width</td><td>bool, default=False</td><td><span class="src-f">Fixed</span></td><td class="ub"><a href="#channel">L5</a><a href="#config">L8</a></td></tr>
+      <!-- SECTION F: SECURITY -->
+      <tr class="sec-header"><td colspan="6">F — Security</td></tr>
+      <tr><td>47</td><td>F</td><td>auth_method</td><td>AuthMethod enum</td><td><span class="src-u">User</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>48</td><td>F</td><td>wpa3_required</td><td>bool, default=False</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>49</td><td>F</td><td>pmf_mode</td><td>PMF enum {DISABLED,OPTIONAL,REQUIRED}, default=OPTIONAL</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>50</td><td>F</td><td>owe_transition</td><td>bool, default=False</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>51</td><td>F</td><td>radius_server</td><td>str | None</td><td><span class="src-u">User</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>52</td><td>F</td><td>radius_port</td><td>int, default=1812</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>53</td><td>F</td><td>guest_isolation</td><td>bool, default=True</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <!-- SECTION G: RRM -->
+      <tr class="sec-header"><td colspan="6">G — RRM Parameters</td></tr>
+      <tr><td>54</td><td>G</td><td>auto_rf_enabled</td><td>bool, default=True</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a><a href="#design">L7</a></td></tr>
+      <tr><td>55</td><td>G</td><td>tx_power_min_dbm</td><td>float, default=10</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>56</td><td>G</td><td>tx_power_max_dbm</td><td>float, default=23</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>57</td><td>G</td><td>channel_lock</td><td>bool, default=False</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#channel">L5</a><a href="#config">L8</a></td></tr>
+      <tr><td>58</td><td>G</td><td>client_aware_rrm</td><td>bool, default=True</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <tr><td>59</td><td>G</td><td>coverage_hole_threshold_dbm</td><td>float, default=−80</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#design">L7</a><a href="#config">L8</a></td></tr>
+      <tr><td>60</td><td>G</td><td>beacon_interval_ms</td><td>int, default=100</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#airtime">L3</a><a href="#config">L8</a></td></tr>
+      <tr><td>61</td><td>G</td><td>dtim_period</td><td>int {1,2,3}, default=2</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#config">L8</a></td></tr>
+      <!-- SECTION H: WIFI7 -->
+      <tr class="sec-header"><td colspan="6">H — WiFi 7 Extensions (WIFI7 only)</td></tr>
+      <tr><td>62</td><td>H</td><td>mlo_enabled</td><td>bool, default=True</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#linkbudget">L2</a><a href="#config">L8</a></td></tr>
+      <tr><td>63</td><td>H</td><td>mlo_links</td><td>int {2,3}, default=2</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#linkbudget">L2</a></td></tr>
+      <tr><td>64</td><td>H</td><td>preamble_puncturing</td><td>bool, default=True</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#channel">L5</a></td></tr>
+      <tr><td>65</td><td>H</td><td>mcs13_threshold_snr_db</td><td>float, default=36.0</td><td><span class="src-f">Fixed</span></td><td class="ub"><a href="#linkbudget">L2</a></td></tr>
+      <tr><td>66</td><td>H</td><td>channel_width_320</td><td>bool, default=False</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#channel">L5</a><a href="#linkbudget">L2</a></td></tr>
+      <tr><td>67</td><td>H</td><td>harq_enabled</td><td>bool, default=True</td><td><span class="src-def">Default</span></td><td class="ub"><a href="#linkbudget">L2</a><a href="#design">L7</a></td></tr>
+    </tbody>
+  </table>
+
   </section>
 
   <!-- L2 LINK BUDGET -->
