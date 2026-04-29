@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WiFi Mastery — Design · Configure · Deploy · Troubleshoot</title>
+<style>
+  :root {
+    --bg: #0a0f1e;
+    --surface: #111827;
+    --border: #1e2d45;
+    --accent: #3b82f6;
+    --accent2: #22d3ee;
+    --accent3: #a78bfa;
+    --accent4: #34d399;
+    --warn: #f59e0b;
+    --danger: #f87171;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --code-bg: #0d1a2e;
+    --sidebar-w: 260px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; display: flex; min-height: 100vh; }
+
+  /* ── Sidebar ── */
+  #sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: 0; left: 0;
+    overflow-y: auto;
+    padding: 0 0 40px 0;
+    z-index: 100;
+  }
+  .s-logo {
+    padding: 18px 16px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    color: var(--accent);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  .s-logo span { color: var(--muted); font-weight: 400; }
+  .s-section {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--muted);
+    padding: 14px 16px 4px;
+    font-weight: 600;
+  }
+  .s-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all .15s;
+    text-decoration: none;
+  }
+  .s-link:hover { color: var(--text); background: rgba(59,130,246,.07); border-left-color: var(--accent); }
+  .s-link.active { color: var(--accent); background: rgba(59,130,246,.12); border-left-color: var(--accent); }
+  .s-num { font-size: 10px; font-weight: 700; color: var(--accent); min-width: 20px; }
+  .s-num.c2 { color: var(--accent2); }
+  .s-num.c3 { color: var(--accent3); }
+  .s-num.c4 { color: var(--accent4); }
+  .s-num.cw { color: var(--warn); }
+
+  /* ── Main ── */
+  #main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 0 40px 80px;
+    max-width: 960px;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    padding: 48px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 36px;
+  }
+  .hero-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(59,130,246,.12);
+    border: 1px solid rgba(59,130,246,.25);
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+  }
+  .hero h1 { font-size: 32px; font-weight: 800; line-height: 1.2; margin-bottom: 12px; }
+  .hero h1 span { color: var(--accent); }
+  .hero p { color: var(--muted); font-size: 15px; line-height: 1.6; max-width: 680px; }
+  .hero-stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-n { font-size: 26px; font-weight: 800; color: var(--accent); }
+  .stat-n.c2 { color: var(--accent2); }
+  .stat-n.c3 { color: var(--accent3); }
+  .stat-n.c4 { color: var(--accent4); }
+  .stat-n.cw { color: var(--warn); }
+  .stat-l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+
+  /* ── Sections ── */
+  .section { display: none; }
+  .section.active { display: block; }
+  .section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section h2 span { color: var(--accent); }
+  .section h3 { font-size: 15px; font-weight: 600; color: var(--accent2); margin: 24px 0 10px; }
+  .section h4 { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin: 20px 0 8px; }
+  .section p { font-size: 14px; line-height: 1.7; color: var(--muted); margin-bottom: 12px; }
+  .section ul { padding-left: 20px; margin-bottom: 12px; }
+  .section li { font-size: 14px; line-height: 1.7; color: var(--muted); margin-bottom: 4px; }
+  .section li strong { color: var(--text); }
+
+  /* ── Tables ── */
+  .tbl-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #0d1a2e; color: var(--accent); font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: .06em; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+  td strong { color: var(--text); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(59,130,246,.04); }
+
+  /* ── Code ── */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-size: 12.5px;
+    line-height: 1.7;
+    overflow-x: auto;
+    margin: 12px 0;
+    color: #7dd3fc;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  }
+  .comment { color: #4b6a8e; }
+  .cmd { color: #34d399; }
+  .warn-inline { color: var(--warn); }
+
+  /* ── Callouts ── */
+  .callout {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 16px 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+  .callout.danger { background: rgba(248,113,113,.08); border-left: 3px solid var(--danger); color: #fca5a5; }
+  .callout.warn { background: rgba(245,158,11,.08); border-left: 3px solid var(--warn); color: #fcd34d; }
+  .callout.info { background: rgba(59,130,246,.08); border-left: 3px solid var(--accent); color: #93c5fd; }
+  .callout.success { background: rgba(52,211,153,.08); border-left: 3px solid var(--accent4); color: #6ee7b7; }
+  .callout strong { font-weight: 700; }
+
+  /* ── Pillars grid (home) ── */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 28px 0;
+  }
+  .pillar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    cursor: pointer;
+    transition: border-color .2s, transform .1s;
+  }
+  .pillar:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .pillar-icon { font-size: 24px; margin-bottom: 10px; }
+  .pillar h3 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .pillar p { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* ── Checklist ── */
+  .chk { list-style: none; padding: 0; }
+  .chk li { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; font-size: 13.5px; color: var(--muted); border-bottom: 1px solid rgba(255,255,255,.04); }
+  .chk li::before { content: '☐'; color: var(--accent); font-size: 14px; min-width: 16px; }
+  .chk-done li::before { content: '✓'; color: var(--accent4); }
+
+  /* ── Tag badges ── */
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 3px;
+    margin-left: 6px;
+  }
+  .tag.wifi7 { background: rgba(167,139,250,.15); color: var(--accent3); border: 1px solid rgba(167,139,250,.3); }
+  .tag.wifi6 { background: rgba(59,130,246,.15); color: #93c5fd; border: 1px solid rgba(59,130,246,.3); }
+  .tag.voss { background: rgba(34,211,238,.12); color: var(--accent2); border: 1px solid rgba(34,211,238,.25); }
+  .tag.exos { background: rgba(52,211,153,.12); color: var(--accent4); border: 1px solid rgba(52,211,153,.25); }
+  .tag.xiq { background: rgba(245,158,11,.12); color: var(--warn); border: 1px solid rgba(245,158,11,.25); }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #1e2d45; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<nav id="sidebar">
+  <div class="s-logo">WiFi<span> Mastery</span></div>
+
+  <div class="s-section">Overview</div>
+  <a class="s-link active" onclick="show('home')"><span class="s-num">⌂</span>Home</a>
+
+  <div class="s-section">01 · Design</div>
+  <a class="s-link" onclick="show('rf')"><span class="s-num">D1</span>RF Fundamentals</a>
+  <a class="s-link" onclick="show('ssid')"><span class="s-num">D2</span>SSID Architecture</a>
+  <a class="s-link" onclick="show('channel')"><span class="s-num">D3</span>Channel Planning</a>
+  <a class="s-link" onclick="show('security')"><span class="s-num">D4</span>Security Design</a>
+  <a class="s-link" onclick="show('qos')"><span class="s-num">D5</span>QoS Design</a>
+  <a class="s-link" onclick="show('vlan')"><span class="s-num">D6</span>VLAN &amp; I-SID Mapping</a>
+
+  <div class="s-section">02 · Configuration</div>
+  <a class="s-link" onclick="show('xiq-policy')"><span class="s-num c2">C1</span>XIQ Network Policy</a>
+  <a class="s-link" onclick="show('ssid-profiles')"><span class="s-num c2">C2</span>SSID Profiles</a>
+  <a class="s-link" onclick="show('user-profiles')"><span class="s-num c2">C3</span>User Profiles &amp; QoS</a>
+  <a class="s-link" onclick="show('guest')"><span class="s-num c2">C4</span>Guest Isolation</a>
+  <a class="s-link" onclick="show('fa')"><span class="s-num c2">C5</span>Fabric Attach</a>
+
+  <div class="s-section">03 · Deployment</div>
+  <a class="s-link" onclick="show('placement')"><span class="s-num c3">P1</span>AP Placement</a>
+  <a class="s-link" onclick="show('poe')"><span class="s-num c3">P2</span>PoE Requirements</a>
+  <a class="s-link" onclick="show('onboarding')"><span class="s-num c3">P3</span>XIQ Onboarding</a>
+  <a class="s-link" onclick="show('checklist')"><span class="s-num c3">P4</span>Deployment Checklist</a>
+
+  <div class="s-section">04 · Troubleshooting</div>
+  <a class="s-link" onclick="show('client')"><span class="s-num c4">T1</span>Client Connectivity</a>
+  <a class="s-link" onclick="show('roaming')"><span class="s-num c4">T2</span>Roaming Issues</a>
+  <a class="s-link" onclick="show('rf-int')"><span class="s-num c4">T3</span>RF Interference</a>
+  <a class="s-link" onclick="show('debug')"><span class="s-num c4">T4</span>Debug Commands</a>
+  <a class="s-link" onclick="show('xiq-diag')"><span class="s-num c4">T5</span>XIQ Diagnostics</a>
+
+  <div class="s-section">05 · Reference</div>
+  <a class="s-link" onclick="show('standards')"><span class="s-num cw">R1</span>802.11 Standards</a>
+  <a class="s-link" onclick="show('ap3000')"><span class="s-num cw">R2</span>AP3000 Notes</a>
+  <a class="s-link" onclick="show('glossary')"><span class="s-num cw">R3</span>Glossary</a>
+</nav>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<main id="main">
+
+<!-- ──────────────── HOME ──────────────── -->
+<div id="home" class="section active">
+  <div class="hero">
+    <div class="hero-badge">Enterprise WiFi Knowledge Base</div>
+    <h1>WiFi <span>Mastery</span></h1>
+    <p>Design · Configure · Deploy · Troubleshoot — Extreme Networks AP3000, 5320 EXOS/VOSS, XIQ cloud management. Built from real lab deployments. Includes WiFi 6, WiFi 6E, and WiFi 7 (802.11be).</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-n">4</div><div class="stat-l">Pillars</div></div>
+      <div class="stat"><div class="stat-n c2">22</div><div class="stat-l">Sections</div></div>
+      <div class="stat"><div class="stat-n c3">50+</div><div class="stat-l">Glossary Terms</div></div>
+      <div class="stat"><div class="stat-n c4">WiFi 7</div><div class="stat-l">802.11be MLO</div></div>
+      <div class="stat"><div class="stat-n cw">8-Phase</div><div class="stat-l">Deploy Checklist</div></div>
+    </div>
+  </div>
+
+  <div class="pillars">
+    <div class="pillar" onclick="show('rf')">
+      <div class="pillar-icon">📐</div>
+      <h3>01 Design</h3>
+      <p>RF fundamentals, SSID architecture, channel planning, WPA3/OWE security, QoS, VLAN &amp; I-SID mapping</p>
+    </div>
+    <div class="pillar" onclick="show('xiq-policy')">
+      <div class="pillar-icon">⚙️</div>
+      <h3>02 Configuration</h3>
+      <p>XIQ network policy, SSID &amp; user profiles, guest isolation, Fabric Attach auto-provisioning</p>
+    </div>
+    <div class="pillar" onclick="show('placement')">
+      <div class="pillar-icon">🏗️</div>
+      <h3>03 Deployment</h3>
+      <p>AP placement, PoE requirements, XIQ onboarding, 8-phase pre/post deployment checklist</p>
+    </div>
+    <div class="pillar" onclick="show('client')">
+      <div class="pillar-icon">🔍</div>
+      <h3>04 Troubleshooting</h3>
+      <p>L1→L7 client decision tree, roaming, RF interference, EXOS/VOSS debug commands, XIQ diagnostics</p>
+    </div>
+  </div>
+
+  <h3>Key Conventions</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Convention</th><th>Rule</th></tr>
+    <tr><td><strong>Max SSIDs</strong></td><td>≤ 4 per radio (Corp + Guest + IoT + optional)</td></tr>
+    <tr><td><strong>I-SID calculation</strong></td><td>VLAN ID + 100,000 → VLAN 20 = I-SID 100020 <span class="tag voss">VOSS</span></td></tr>
+    <tr><td><strong>Guest SSID</strong></td><td>OWE + Transition Mode (legacy fallback to hidden Open SSID)</td></tr>
+    <tr><td><strong>Corp SSID</strong></td><td>WPA2/WPA3 Transition Mode (broad device compatibility)</td></tr>
+    <tr><td><strong>VOSS ACL posture</strong></td><td>Apply to <strong>both</strong> switches — Anycast means SW2 routes locally <span class="tag voss">VOSS</span></td></tr>
+    <tr><td><strong>Karl Rule</strong></td><td><code>enable ipforwarding vlan Default</code> — without it, no internet <span class="tag exos">EXOS</span></td></tr>
+    <tr><td><strong>DHCP reach-back</strong></td><td>Include port 10 in DHCP config — required for SW2 clients <span class="tag exos">EXOS</span></td></tr>
+    <tr><td><strong>PoE for AP3000</strong></td><td>802.3at (PoE+) required — 25.5W draw, 802.3af is insufficient</td></tr>
+  </table></div>
+
+  <h3>Horizon Lab Reference</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Device</th><th>Model</th><th>Role</th><th>Key Ports</th></tr>
+    <tr><td><strong>SW1</strong></td><td>Extreme 5320 <span class="tag exos">EXOS</span></td><td>L3 core, DHCP, routing</td><td>Port 1→modem, Port 10→NNI, Port 3+5→UNI</td></tr>
+    <tr><td><strong>SW2</strong></td><td>Extreme 5320 <span class="tag voss">VOSS</span></td><td>Fabric peer, Anycast GW</td><td>Port 10→NNI, Port 3+5→UNI</td></tr>
+    <tr><td><strong>AP</strong></td><td>Extreme AP3000 <span class="tag wifi6">WiFi 6</span></td><td>WiFi 6, 2×2 MIMO</td><td>SW2 Port 3 via PoE+</td></tr>
+    <tr><td><strong>Modem</strong></td><td>ISP Gateway</td><td>Internet exit</td><td>192.168.0.1 → SW1 Port 1</td></tr>
+  </table></div>
+</div>
+
+<!-- ──────────────── D1: RF ──────────────── -->
+<div id="rf" class="section">
+  <h2><span>D1</span> — RF Fundamentals</h2>
+  <h3>Signal Quality Targets</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Use Case</th><th>Min RSSI</th><th>Min SNR</th><th>Notes</th></tr>
+    <tr><td>Data / Web</td><td>-70 dBm</td><td>20 dB</td><td>Adequate for most data applications</td></tr>
+    <tr><td>VoIP / Voice</td><td>-67 dBm</td><td>25 dB</td><td>Latency-sensitive; SNR is critical</td></tr>
+    <tr><td>Video Streaming</td><td>-70 dBm</td><td>20 dB</td><td>Higher bandwidth but tolerates slightly lower SNR</td></tr>
+    <tr><td>IoT Sensors</td><td>-75 dBm</td><td>15 dB</td><td>Low data rate, tolerant of weaker signal</td></tr>
+    <tr><td>High Density</td><td>-65 dBm</td><td>25 dB</td><td>Dense: keep signal strong, cell size small</td></tr>
+  </table></div>
+
+  <h3>Band Comparison</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Band</th><th>Penetration</th><th>Range</th><th>Channels (non-overlapping)</th><th>Notes</th></tr>
+    <tr><td><strong>2.4 GHz</strong></td><td>Best</td><td>Longest</td><td>3 (1, 6, 11)</td><td>Congested; legacy devices; never 40 MHz</td></tr>
+    <tr><td><strong>5 GHz</strong></td><td>Good</td><td>Medium</td><td>25</td><td>UNII-2A/2C require DFS; UNII-1/3 preferred</td></tr>
+    <tr><td><strong>6 GHz</strong></td><td>Lower</td><td>Shorter</td><td>59</td><td>WiFi 6E/7 only; clean spectrum; no legacy; no DFS <span class="tag wifi7">WiFi 7</span></td></tr>
+  </table></div>
+
+  <h3>Free-Space Path Loss (approximate)</h3>
+  <p>Signal attenuates with distance. At 5 GHz, the loss is ~6 dB greater than 2.4 GHz at the same distance — shorter effective range per dBm of transmit power.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>Distance</th><th>2.4 GHz Loss</th><th>5 GHz Loss</th></tr>
+    <tr><td>10m</td><td>~60 dB</td><td>~66 dB</td></tr>
+    <tr><td>20m</td><td>~66 dB</td><td>~72 dB</td></tr>
+    <tr><td>50m</td><td>~74 dB</td><td>~80 dB</td></tr>
+  </table></div>
+
+  <h3>Obstacle Attenuation</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Material</th><th>2.4 GHz Loss</th><th>5 GHz Loss</th></tr>
+    <tr><td>Drywall / Plasterboard</td><td>3–5 dB</td><td>5–8 dB</td></tr>
+    <tr><td>Glass</td><td>2–3 dB</td><td>3–5 dB</td></tr>
+    <tr><td>Solid wood door</td><td>5–7 dB</td><td>7–10 dB</td></tr>
+    <tr><td>Concrete / Brick</td><td>10–15 dB</td><td>15–20 dB</td></tr>
+    <tr><td>Metal / Lift shaft</td><td>20–30+ dB</td><td>30+ dB</td></tr>
+  </table></div>
+
+  <div class="callout warn"><strong>Fresnel Zone:</strong> The ellipsoid of RF energy around the line-of-sight path must be ≥60% clear for optimal signal. A metal filing cabinet in the Fresnel zone can cause significant multipath even when LOS appears clear.</div>
+</div>
+
+<!-- ──────────────── D2: SSID ──────────────── -->
+<div id="ssid" class="section">
+  <h2><span>D2</span> — SSID Architecture</h2>
+  <div class="callout warn"><strong>Max 4 SSIDs per radio.</strong> Each SSID adds beacon overhead (~2% airtime per SSID). Beyond 4, overhead degrades throughput for all clients.</div>
+
+  <h3>Horizon 2-SSID Model</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>SSID</th><th>Security</th><th>VLAN</th><th>Purpose</th></tr>
+    <tr><td><strong>Horizon-Corp</strong></td><td>WPA2/WPA3 Transition</td><td>20</td><td>Staff, trusted devices</td></tr>
+    <tr><td><strong>Horizon-Guest</strong></td><td>OWE (Enhanced Open)</td><td>30</td><td>Visitors, BYOD</td></tr>
+  </table></div>
+
+  <h3>OWE Transition Mode</h3>
+  <p>OWE encrypts open networks without a password. Legacy devices that don't support OWE need a fallback.</p>
+  <pre><span class="comment"># How OWE Transition Mode works:</span>
+Horizon-Guest (OWE)      ← visible to OWE-capable clients → encrypted
+Horizon-Guest-hidden     ← hidden Open SSID → legacy devices fall back here
+                            Both are on same VLAN, same firewall rules</pre>
+  <div class="callout warn"><strong>XIQ gotcha:</strong> OWE Transition Mode is a <em>toggle</em> inside the Guest SSID profile — not a separate SSID you create. If you create the hidden SSID manually, XIQ creates duplicate BSSIDs. Use the toggle only.</div>
+
+  <h3>802.11k/v/r — Roaming Standards</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Standard</th><th>Function</th><th>Enable For</th></tr>
+    <tr><td><strong>802.11k</strong></td><td>Neighbour Report — AP sends nearby AP list to client</td><td>Corp + Guest</td></tr>
+    <tr><td><strong>802.11v</strong></td><td>BSS Transition Mgmt — AP nudges sticky clients to roam</td><td>Corp + Guest</td></tr>
+    <tr><td><strong>802.11r (FT)</strong></td><td>Fast BSS Transition — reduces re-auth to &lt;20ms</td><td>Corp only</td></tr>
+  </table></div>
+</div>
+
+<!-- ──────────────── D3: Channel ──────────────── -->
+<div id="channel" class="section">
+  <h2><span>D3</span> — Channel Planning</h2>
+  <h3>2.4 GHz — The Rules</h3>
+  <div class="callout danger"><strong>Only channels 1, 6, 11</strong> — never use overlapping channels (2–5, 7–10). Never deploy 40 MHz on 2.4 GHz.</div>
+
+  <h3>5 GHz UNII Bands</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Band</th><th>Channels</th><th>DFS?</th><th>Recommendation</th></tr>
+    <tr><td>UNII-1</td><td>36, 40, 44, 48</td><td>No</td><td>First choice — always available</td></tr>
+    <tr><td>UNII-2A</td><td>52–64</td><td>Yes</td><td>Use only if UNII-1/3 exhausted</td></tr>
+    <tr><td>UNII-2C</td><td>100–140</td><td>Yes</td><td>Use only if UNII-1/3 exhausted</td></tr>
+    <tr><td>UNII-3</td><td>149, 153, 157, 161, 165</td><td>No</td><td>First choice alongside UNII-1</td></tr>
+  </table></div>
+
+  <h3>6 GHz — Clean Spectrum <span class="tag wifi7">WiFi 7</span></h3>
+  <p>59 non-overlapping 20 MHz channels. No legacy devices, no DFS, no microwave. Clients use PSC (Preferred Scanning Channels) as entry points. Requires WiFi 6E or WiFi 7 AP (AP5010/AP5020 — not AP3000).</p>
+
+  <h3>WiFi 7 Multi-Link Operation (MLO) <span class="tag wifi7">WiFi 7</span></h3>
+  <p>MLO allows a single client to maintain simultaneous links on 2.4 + 5 + 6 GHz bands at the same time. This changes roaming from a "switch AP" event to a "switch link" event — sub-millisecond, transparent to applications.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>Feature</th><th>WiFi 6/6E</th><th>WiFi 7 MLO</th></tr>
+    <tr><td>Simultaneous bands</td><td>One at a time</td><td>2.4 + 5 + 6 GHz simultaneously</td></tr>
+    <tr><td>Roaming latency</td><td>&lt;20ms (802.11r)</td><td>&lt;1ms (link failover)</td></tr>
+    <tr><td>Max channel width</td><td>160 MHz</td><td>320 MHz (6 GHz only)</td></tr>
+    <tr><td>Modulation</td><td>1024-QAM</td><td>4096-QAM</td></tr>
+    <tr><td>Theoretical max</td><td>9.6 Gbps</td><td>46 Gbps</td></tr>
+  </table></div>
+</div>
+
+<!-- ──────────────── D4: Security ──────────────── -->
+<div id="security" class="section">
+  <h2><span>D4</span> — Security Design</h2>
+  <h3>Security Mode Decision Matrix</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Use Case</th><th>Mode</th><th>Why</th></tr>
+    <tr><td>Corporate staff — all modern devices</td><td>WPA3-SAE only</td><td>Strongest PSK security; forward secrecy</td></tr>
+    <tr><td>Corporate staff — mixed legacy</td><td><strong>WPA2/WPA3 Transition</strong></td><td>WPA3 clients get SAE; WPA2 clients get AES-CCMP</td></tr>
+    <tr><td>Guest / Visitors (no password)</td><td><strong>OWE Transition Mode</strong></td><td>OWE encrypts without password; legacy falls back to Open</td></tr>
+    <tr><td>Enterprise / 802.1X</td><td>WPA2-Enterprise or WPA3-Enterprise</td><td>Per-user auth via RADIUS; no shared PSK</td></tr>
+  </table></div>
+
+  <h3>WPA3 SAE vs WPA2 PSK</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Property</th><th>WPA2-PSK</th><th>WPA3-SAE</th></tr>
+    <tr><td>Key exchange</td><td>4-way handshake (capturable)</td><td>Dragonfly (mutual, not capturable)</td></tr>
+    <tr><td>Offline dictionary attack</td><td>Vulnerable (PMKID capture)</td><td>Not possible</td></tr>
+    <tr><td>Forward secrecy</td><td>No</td><td>Yes — past traffic safe if key later compromised</td></tr>
+    <tr><td>PMF requirement</td><td>Optional</td><td>Mandatory</td></tr>
+  </table></div>
+
+  <div class="callout info"><strong>PMF (802.11w / Protected Management Frames)</strong> encrypts deauth and disassoc frames. Without PMF, an attacker can forge deauth frames to disconnect clients (deauth attack). WPA3 mandates PMF. For WPA2 deployments, set PMF to Optional (not Required) for maximum compatibility.</div>
+
+  <h3>Security Standards Timeline</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Standard</th><th>Year</th><th>Status</th></tr>
+    <tr><td>WEP</td><td>1997</td><td style="color:var(--danger)">Broken — never use</td></tr>
+    <tr><td>WPA (TKIP)</td><td>2003</td><td style="color:var(--danger)">Deprecated</td></tr>
+    <tr><td>WPA2 (AES-CCMP)</td><td>2004</td><td style="color:var(--warn)">Widely used — use WPA2/WPA3 Transition</td></tr>
+    <tr><td>802.11w PMF</td><td>2009</td><td style="color:var(--accent4)">Enable on all WPA2 networks</td></tr>
+    <tr><td>WPA3 (SAE + OWE)</td><td>2018</td><td style="color:var(--accent4)">Current standard — mandate where possible</td></tr>
+  </table></div>
+</div>
+
+<!-- ──────────────── D5: QoS ──────────────── -->
+<div id="qos" class="section">
+  <h2><span>D5</span> — QoS Design</h2>
+  <h3>WMM Access Categories</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>AC</th><th>Traffic Type</th><th>802.1p CoS</th><th>DSCP</th><th>Priority</th></tr>
+    <tr><td><strong>AC_VO</strong></td><td>Voice (VoIP, SIP, RTP)</td><td>6–7</td><td>46 (EF)</td><td>Highest</td></tr>
+    <tr><td><strong>AC_VI</strong></td><td>Video (streaming, conferencing)</td><td>4–5</td><td>34 (AF41)</td><td>High</td></tr>
+    <tr><td><strong>AC_BE</strong></td><td>Best Effort (data, web)</td><td>0–3</td><td>0</td><td>Normal</td></tr>
+    <tr><td><strong>AC_BK</strong></td><td>Background (backup, print)</td><td>1–2</td><td>10 (AF11)</td><td>Lowest</td></tr>
+  </table></div>
+
+  <h3>Trust Boundary</h3>
+  <pre><span class="comment"># Trust DSCP from Corp clients (managed devices mark correctly)</span>
+Phone marks DSCP EF → AP maps to AC_VO → 802.1p CoS 6 → preserved across Fabric
+
+<span class="comment"># Do NOT trust DSCP from Guest</span>
+Guest DSCP → reset to CS0 (best effort) at AP ingress
+<span class="comment"># Prevents Guest from marking all traffic AC_VO to steal priority</span></pre>
+
+  <h3>VOSS QoS Advantage</h3>
+  <p>In VOSS SPB Fabric, 802.1p CoS is carried inside the MAC-in-MAC tunnel header across the NNI. QoS set at the UNI edge (Port 3) is preserved end-to-end through the Fabric without re-marking at each hop — a key advantage over VXLAN which strips CoS markings. <span class="tag voss">VOSS</span></p>
+</div>
+
+<!-- ──────────────── D6: VLAN/I-SID ──────────────── -->
+<div id="vlan" class="section">
+  <h2><span>D6</span> — VLAN &amp; I-SID Mapping</h2>
+  <div class="callout info"><strong>I-SID Convention:</strong> I-SID = VLAN ID + 100,000. This is the universal convention in VOSS/Fabric deployments. VLAN 10 → I-SID 100010, VLAN 20 → I-SID 100020, VLAN 30 → I-SID 100030.</div>
+
+  <h3>Horizon Service Map</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Service</th><th>VLAN ID</th><th>I-SID</th><th>Subnet</th><th>Gateway (Anycast)</th></tr>
+    <tr><td>Management</td><td>10</td><td>100010</td><td>10.10.0.0/24</td><td>10.10.0.1</td></tr>
+    <tr><td>Corp Users</td><td>20</td><td>100020</td><td>10.20.0.0/24</td><td>10.20.0.1</td></tr>
+    <tr><td>Guest</td><td>30</td><td>100030</td><td>10.30.0.0/24</td><td>10.30.0.1</td></tr>
+  </table></div>
+
+  <h3>EXOS vs VOSS Service Identity</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Concept</th><th>EXOS</th><th>VOSS / Fabric Engine</th></tr>
+    <tr><td>Layer 2 segment</td><td>VLAN (802.1Q tag)</td><td>I-SID (24-bit global service ID)</td></tr>
+    <tr><td>Inter-VLAN routing</td><td>SVI + ipforwarding (per-VLAN command)</td><td>Anycast Gateway (same IP on both switches)</td></tr>
+    <tr><td>Default route</td><td><code>configure iproute add default &lt;modem&gt;</code></td><td><code>ip-shortcut</code> under router isis → SW2 learns from SW1</td></tr>
+    <tr><td>Trunk between switches</td><td>Manual tagged VLAN on uplink</td><td>NNI with <code>isis enable</code> — carries all I-SIDs</td></tr>
+  </table></div>
+</div>
+
+<!-- ──────────────── C1: XIQ Policy ──────────────── -->
+<div id="xiq-policy" class="section">
+  <h2><span>C1</span> — XIQ Network Policy <span class="tag xiq">XIQ</span></h2>
+  <h3>Policy Structure</h3>
+  <pre>Network Policy
+  ├── SSID Profile  (radio: band, rates, band steering, 802.11r)
+  ├── User Profile  (VLAN + Firewall Rules + QoS)
+  └── Device Template (AP model: power, channel, 6 GHz)</pre>
+
+  <h3>Common Gotchas</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Gotcha</th><th>Symptom</th><th>Fix</th></tr>
+    <tr><td>PSK Key Value field empty</td><td>"Wrong password" on Corp SSID</td><td>Network Policy → SSID → Corp → Key Value → enter PSK</td></tr>
+    <tr><td>OWE Transition Mode not toggled</td><td>Legacy devices can't join Guest</td><td>SSID profile → OWE Transition Mode toggle ON</td></tr>
+    <tr><td>IP Objects not created</td><td>Firewall rule creation fails</td><td>Common Objects → IP Objects → create subnets first</td></tr>
+    <tr><td>Partial Update after SSID change</td><td>Old SSID persists on AP</td><td>Always use Complete Update after SSID adds/removals</td></tr>
+    <tr><td>FA global not enabled</td><td>Switch doesn't provision I-SIDs</td><td>Enable FA globally on switch + per-port</td></tr>
+  </table></div>
+
+  <h3>Push Sequence</h3>
+  <pre><span class="comment"># Step 1: Create IP Objects (prerequisite for firewall rules)</span>
+Configure → Network Policies → Common Objects → IP Objects → + Add
+  10.10.0.0/24 (Corp-Mgmt), 10.20.0.0/24 (Corp-Users), 10.30.0.0/24 (Guest)
+
+<span class="comment"># Step 2: Create Network Policy</span>
+Configure → Network Policies → + Add Policy → "Horizon-WiFi-Policy"
+  → Add SSIDs: Corp + Guest
+  → Add User Profiles: Corp-Users (VLAN 20), Guest-Users (VLAN 30)
+  → Add Device Template: AP3000
+
+<span class="comment"># Step 3: Assign to AP</span>
+Manage → Devices → select AP → Actions → Assign Network Policy
+
+<span class="comment"># Step 4: Push</span>
+Configure → Network Policies → Push Updates
+→ Select: Complete Update (always for first push)
+→ Select devices → Push</pre>
+</div>
+
+<!-- ──────────────── C2: SSID Profiles ──────────────── -->
+<div id="ssid-profiles" class="section">
+  <h2><span>C2</span> — SSID Profiles</h2>
+  <h3>Key Settings</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Field</th><th>Corp</th><th>Guest</th><th>Notes</th></tr>
+    <tr><td>Band Steering</td><td>Enabled</td><td>Enabled</td><td>Push dual-band clients to 5 GHz</td></tr>
+    <tr><td>802.11k</td><td>Enabled</td><td>Enabled</td><td>Faster roaming target selection</td></tr>
+    <tr><td>802.11v</td><td>Enabled</td><td>Enabled</td><td>Solves sticky client problem</td></tr>
+    <tr><td>802.11r (FT)</td><td>Enabled</td><td>Disabled</td><td>FT for Corp; not needed for Guest</td></tr>
+    <tr><td>Min Basic Rate</td><td>12/24 Mbps</td><td>6/12 Mbps</td><td>Higher rate = smaller cell = less airtime waste</td></tr>
+    <tr><td>Max Clients/Radio</td><td>50</td><td>30</td><td>AP3000 2×2 MIMO — don't exceed 50</td></tr>
+  </table></div>
+
+  <div class="callout info"><strong>WiFi 6 features (AP3000):</strong> OFDMA and BSS Coloring are auto-enabled on WiFi 6 APs — no manual configuration needed. TWT should be enabled on IoT-specific SSIDs to extend battery life.</div>
+  <div class="callout info"><strong>WiFi 7 MLO (AP5020):</strong> Clients aggregate 2.4+5+6 GHz simultaneously. Band steering is irrelevant for MLO clients — they use all bands at once. <span class="tag wifi7">WiFi 7</span></div>
+</div>
+
+<!-- ──────────────── C3: User Profiles ──────────────── -->
+<div id="user-profiles" class="section">
+  <h2><span>C3</span> — User Profiles &amp; QoS</h2>
+  <h3>User Profile = VLAN + Firewall + QoS</h3>
+  <pre>Client associates to SSID
+        ↓
+User Profile assigned
+        ↓
+Tagged to VLAN (20 Corp / 30 Guest)
+        ↓
+Firewall rules applied (deny Guest→Corp subnets)
+        ↓
+QoS marking applied (DSCP trust or reset)</pre>
+
+  <h3>Horizon User Profiles</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Profile</th><th>VLAN</th><th>Firewall</th><th>QoS</th></tr>
+    <tr><td>Corp-Users</td><td>20</td><td>Permit-All</td><td>Voice-Optimised (trust DSCP EF → AC_VO)</td></tr>
+    <tr><td>Guest-Users</td><td>30</td><td>Guest-FW (deny Corp)</td><td>Best-Effort (DSCP reset to CS0)</td></tr>
+  </table></div>
+</div>
+
+<!-- ──────────────── C4: Guest Isolation ──────────────── -->
+<div id="guest" class="section">
+  <h2><span>C4</span> — Guest Isolation</h2>
+  <div class="callout danger"><strong>Two layers required:</strong> XIQ firewall rules stop L3 Guest→Corp routing. L2 station isolation stops Guest→Guest traffic at the AP level. Firewall rules alone don't stop same-VLAN L2 traffic between Guest clients.</div>
+
+  <h3>XIQ Firewall Rules (applied in order)</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Rule</th><th>Action</th><th>Source</th><th>Destination</th></tr>
+    <tr><td>1</td><td style="color:var(--danger)">DENY</td><td>10.30.0.0/24 (Guest)</td><td>10.10.0.0/24 (Corp-Mgmt)</td></tr>
+    <tr><td>2</td><td style="color:var(--danger)">DENY</td><td>10.30.0.0/24 (Guest)</td><td>10.20.0.0/24 (Corp-Users)</td></tr>
+    <tr><td>3</td><td style="color:var(--accent4)">PERMIT</td><td>10.30.0.0/24 (Guest)</td><td>Any (internet)</td></tr>
+  </table></div>
+
+  <h3>VOSS ACL — Must Be on Both Switches</h3>
+  <div class="callout warn"><strong>Anycast posture change:</strong> In a VOSS Fabric with Anycast Gateway, SW2 routes locally — it never sends Guest traffic to SW1. If the ACL is only on SW1, Guest-to-Corp traffic from SW2 bypasses it entirely.</div>
+  <pre><span class="comment"># Apply on BOTH SW1 and SW2 (VOSS Fabric Engine):</span>
+ip filter acl GUEST_ISOLATION
+  deny ip 10.30.0.0/24 10.10.0.0/24
+  deny ip 10.30.0.0/24 10.20.0.0/24
+  permit ip any any
+  exit
+vlan filter ip GUEST_ISOLATION 30 in</pre>
+</div>
+
+<!-- ──────────────── C5: Fabric Attach ──────────────── -->
+<div id="fa" class="section">
+  <h2><span>C5</span> — Fabric Attach <span class="tag voss">VOSS</span></h2>
+  <h3>FA Negotiation Flow</h3>
+  <pre>1. AP boots → gets DHCP on management VLAN (untagged)
+2. AP sends LLDP frames with FA TLVs requesting I-SIDs
+3. Switch receives: <span class="cmd">show fa neighbor</span> → AP3000 MAC appears
+4. Switch grants I-SIDs dynamically on that port
+5. AP gets Corp + Guest VLANs without manual trunk config
+6. Verify: <span class="cmd">show fa assignment</span> → Port 3: I-SIDs Active + Dynamic</pre>
+
+  <h3>Switch CLI (VOSS)</h3>
+  <pre><span class="comment"># Enable FA globally (once)</span>
+fa enable
+
+<span class="comment"># Enable on AP port</span>
+interface gigabitEthernet 1/3
+  auto-sense enable
+  fa enable
+  exit
+
+<span class="comment"># Verify</span>
+show fa neighbor          <span class="comment"># AP3000 MAC on port 3</span>
+show fa assignment        <span class="comment"># Port 3: 100020 + 100030 → Active, Dynamic</span></pre>
+
+  <div class="callout info"><strong>If <code>show fa neighbor</code> is empty:</strong> Check LLDP is not blocked on the switch port. Check <code>auto-sense enable</code> is configured. Check cable is seated.</div>
+</div>
+
+<!-- ──────────────── P1: AP Placement ──────────────── -->
+<div id="placement" class="section">
+  <h2><span>P1</span> — AP Placement</h2>
+  <h3>Coverage Targets</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Environment</th><th>Coverage Radius</th><th>Height</th></tr>
+    <tr><td>Open office</td><td>15–20m</td><td>2.4–3m ceiling</td></tr>
+    <tr><td>Classroom / meeting rooms</td><td>10–15m</td><td>2.4m ceiling</td></tr>
+    <tr><td>Warehouse</td><td>25–30m</td><td>5–8m, angled down</td></tr>
+    <tr><td>Corridor</td><td>20–25m (directional)</td><td>End of corridor, angled</td></tr>
+  </table></div>
+
+  <h3>Placement Rules</h3>
+  <ul>
+    <li><strong>Height:</strong> 2.4–3.0m ceiling is optimal. Below 2m = too close to clients, poor radiation pattern. Above 4m = 5 GHz coverage holes.</li>
+    <li><strong>Cell overlap:</strong> 15–20% overlap between adjacent APs — prevents coverage holes without excessive co-channel interference.</li>
+    <li><strong>Avoid:</strong> Lift shafts, metal walls, above suspended ceilings with dense concrete, near microwave ovens.</li>
+    <li><strong>High density:</strong> Reduce TX power and use smaller cells rather than fewer high-power APs. Dense deployments are SNR problems, not signal strength problems.</li>
+  </ul>
+</div>
+
+<!-- ──────────────── P2: PoE ──────────────── -->
+<div id="poe" class="section">
+  <h2><span>P2</span> — PoE Requirements</h2>
+  <div class="callout danger"><strong>AP3000 requires PoE+ (802.3at) — draws 25.5W.</strong> Standard PoE (802.3af) provides 15.4W maximum. The AP will brownout or fail to boot on a standard PoE port.</div>
+
+  <h3>PoE Standards</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Standard</th><th>Max Power</th><th>AP3000</th><th>AP5020 (WiFi 7)</th></tr>
+    <tr><td>802.3af (PoE)</td><td>15.4W</td><td style="color:var(--danger)">NO</td><td style="color:var(--danger)">NO</td></tr>
+    <tr><td>802.3at (PoE+)</td><td>30W</td><td style="color:var(--accent4)">YES</td><td style="color:var(--danger)">NO</td></tr>
+    <tr><td>802.3bt Type 3 (PoE++)</td><td>60W</td><td style="color:var(--accent4)">YES</td><td style="color:var(--accent4)">YES</td></tr>
+    <tr><td>802.3bt Type 4</td><td>100W</td><td style="color:var(--accent4)">YES</td><td style="color:var(--accent4)">YES</td></tr>
+  </table></div>
+
+  <pre><span class="comment"># Verify on 5320 switch:</span>
+show poe port 3
+<span class="comment"># Must show: Class 4, Oper Status: On</span>
+
+show poe detail
+<span class="comment"># Check total budget vs consumed</span>
+<span class="comment"># 5320-24T: 370W budget. 8 × AP3000 × 25.5W = 204W (within budget)</span></pre>
+</div>
+
+<!-- ──────────────── P3: Onboarding ──────────────── -->
+<div id="onboarding" class="section">
+  <h2><span>P3</span> — XIQ Onboarding <span class="tag xiq">XIQ</span></h2>
+  <h3>AP3000 Onboarding Steps</h3>
+  <pre><span class="comment"># 1. Add device in XIQ:</span>
+Manage → Devices → + Add Devices
+→ Serial Number + MAC Address (from AP label)
+→ Assign to Location (building → floor)
+
+<span class="comment"># 2. Physical: connect AP to PoE+ port</span>
+AP powers up → DHCP on VLAN 10 → calls home to hac.extremecloudiq.com
+
+<span class="comment"># 3. Verify connection:</span>
+show lldp neighbors          <span class="comment"># AP3000 MAC visible on port 3</span>
+show poe port 3              <span class="comment"># Class 4, Oper Status: On</span>
+<span class="comment"># XIQ: Manage → Devices → AP status: green</span>
+
+<span class="comment"># 4. Assign policy + push:</span>
+Manage → Devices → AP → Actions → Assign Network Policy
+Configure → Network Policies → Push Updates → Complete Update</pre>
+
+  <h3>Switch IQ Agent</h3>
+  <pre><span class="comment"># EXOS:</span>
+configure iqagent server hac.extremecloudiq.com
+enable iqagent
+show application iqagent status   <span class="comment"># Connection: Connected</span>
+
+<span class="comment"># VOSS:</span>
+application iqagent enable
+application iqagent server hac.extremecloudiq.com
+show application iqagent status</pre>
+</div>
+
+<!-- ──────────────── P4: Checklist ──────────────── -->
+<div id="checklist" class="section">
+  <h2><span>P4</span> — Deployment Checklist</h2>
+  <h3>Phase 1 — Design Sign-Off</h3>
+  <ul class="chk">
+    <li>SSID count ≤ 4 per radio</li>
+    <li>Each SSID maps to exactly one VLAN</li>
+    <li>I-SIDs calculated: VLAN + 100,000</li>
+    <li>Security mode confirmed: WPA2/WPA3-Transition + OWE-Transition</li>
+    <li>Guest isolation design: XIQ firewall + L2 station isolation</li>
+  </ul>
+
+  <h3>Phase 2 — Switch Configuration</h3>
+  <ul class="chk">
+    <li><strong>Karl Rule applied:</strong> <code>enable ipforwarding vlan Default</code> (EXOS)</li>
+    <li>DHCP enabled on ports 3, 5, <strong>10</strong> (port 10 = SW2 reach-back)</li>
+    <li>VOSS: IS-IS adjacency UP — <code>show isis adj</code></li>
+    <li>VOSS: I-SIDs show "Both" — <code>show isis spbm i-sid</code></li>
+    <li>VOSS: Guest ACL on <strong>both</strong> switches</li>
+  </ul>
+
+  <h3>Phase 3 — XIQ</h3>
+  <ul class="chk">
+    <li>IP Objects created (prerequisite for firewall rules)</li>
+    <li><strong>Corp PSK Key Value populated</strong></li>
+    <li><strong>OWE Transition Mode toggle ON</strong> for Guest SSID</li>
+    <li>Complete Update pushed (not Partial)</li>
+    <li>AP Config Status: "In Sync"</li>
+  </ul>
+
+  <h3>Phase 4 — Post-Deployment Verification</h3>
+  <ul class="chk">
+    <li>Corp client: IP in 10.20.0.0/24, ping gateway, ping 8.8.8.8</li>
+    <li>Guest client: IP in 10.30.0.0/24, ping internet, CANNOT ping Corp</li>
+    <li>Guest → Guest ping FAILS (L2 station isolation)</li>
+    <li>Roaming test: walk client between APs, SLA tab latency &lt;20ms</li>
+    <li>XIQ Network 360: all links green</li>
+  </ul>
+</div>
+
+<!-- ──────────────── T1: Client Connectivity ──────────────── -->
+<div id="client" class="section">
+  <h2><span>T1</span> — Client Connectivity</h2>
+  <h3>7-Step Decision Tree (L1→L7)</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Step</th><th>Check</th><th>Key Command</th></tr>
+    <tr><td>1</td><td>AP powered &amp; online?</td><td><code>show poe port 3</code> + XIQ status</td></tr>
+    <tr><td>2</td><td>SSID broadcasting?</td><td>Client WiFi scan</td></tr>
+    <tr><td>3</td><td>Client can associate?</td><td>XIQ Client 360 Auth Status</td></tr>
+    <tr><td>4</td><td>Client gets DHCP?</td><td><code>show dhcp lease vlan VLAN_20</code></td></tr>
+    <tr><td>5</td><td>Client reaches gateway?</td><td><code>show ipconfig vlan VLAN_20</code> (Karl Rule)</td></tr>
+    <tr><td>6</td><td>Client reaches internet?</td><td><code>show iproute</code> / <code>show ip route</code></td></tr>
+    <tr><td>7</td><td>ACL blocking?</td><td><code>show policy</code> / <code>show ip filter acl</code></td></tr>
+  </table></div>
+
+  <h3>Quick Symptom Reference</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Symptom</th><th>Most Likely Cause</th></tr>
+    <tr><td>Can't see SSID</td><td>Policy not pushed / AP offline</td></tr>
+    <tr><td>"Wrong password" on Corp</td><td>Key Value empty in XIQ</td></tr>
+    <tr><td>Legacy device can't join Guest</td><td>OWE Transition Mode not toggled</td></tr>
+    <tr><td>169.254.x.x (APIPA)</td><td>DHCP not on port 10 (SW2 reach-back missing)</td></tr>
+    <tr><td>IP but no gateway ping</td><td>Karl Rule missing (EXOS) or Anycast IP not set (VOSS)</td></tr>
+    <tr><td>Gateway ok but no internet</td><td>Default route missing / modem static routes missing</td></tr>
+    <tr><td>Guest reaches Corp</td><td>ACL missing on SW2 (VOSS Anycast bypass)</td></tr>
+  </table></div>
+</div>
+
+<!-- ──────────────── T2: Roaming ──────────────── -->
+<div id="roaming" class="section">
+  <h2><span>T2</span> — Roaming Issues</h2>
+  <h3>Sticky Client</h3>
+  <p>A client that refuses to roam despite a closer AP having better signal. Root cause: 802.11 gives roaming control to the client — the AP cannot force disconnection without 802.11v.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>RSSI at Current AP</th><th>Expected Behaviour</th></tr>
+    <tr><td>≥ -65 dBm</td><td>Stay on current AP</td></tr>
+    <tr><td>-65 to -70 dBm</td><td>AP considers 802.11v nudge</td></tr>
+    <tr><td>-70 to -75 dBm</td><td>Client should roam if better AP visible</td></tr>
+    <tr><td>&lt; -75 dBm</td><td>Must roam — below usable threshold</td></tr>
+  </table></div>
+
+  <h3>Roaming Issues Quick Reference</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr>
+    <tr><td>Sticky client</td><td>802.11v not enabled</td><td>Enable 802.11v + 802.11k in SSID profile</td></tr>
+    <tr><td>VoIP drops on roam</td><td>802.11r not negotiated</td><td>Enable FT on source + target SSID profile</td></tr>
+    <tr><td>Disconnect on roam</td><td>Client FT incompatibility</td><td>WPA2/WPA3 Transition Mode; or disable FT for Guest</td></tr>
+    <tr><td>6 GHz never used</td><td>No WiFi 6E AP or PSC not broadcast</td><td>AP5010/5020 required; enable 6 GHz radio</td></tr>
+  </table></div>
+
+  <div class="callout info"><strong>WiFi 7 MLO roaming:</strong> With MLO, a "roam" becomes a link state change — one radio link degrades, another takes over. Sub-millisecond, transparent to the application. Traditional 802.11r is largely superseded for MLO clients. <span class="tag wifi7">WiFi 7</span></div>
+</div>
+
+<!-- ──────────────── T3: RF Interference ──────────────── -->
+<div id="rf-int" class="section">
+  <h2><span>T3</span> — RF Interference</h2>
+  <h3>SNR = Signal − Noise Floor</h3>
+  <pre>Normal noise floor: -95 dBm
+RSSI: -68 dBm → SNR = 27 dB  ← Good
+RSSI: -68 dBm, noise floor -80 dBm → SNR = 12 dB  ← Interference present</pre>
+
+  <h3>Interference Types</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Type</th><th>Source</th><th>Band</th><th>Fix</th></tr>
+    <tr><td>Co-channel (CCI)</td><td>Overlapping APs on same channel</td><td>2.4 + 5 GHz</td><td>Fix channel plan; reduce TX power</td></tr>
+    <tr><td>Adjacent-channel</td><td>APs on overlapping channels (e.g., 1+2)</td><td>2.4 GHz worst</td><td>1/6/11 only — never adjacent channels</td></tr>
+    <tr><td>Non-WiFi</td><td>Microwave, BT, baby monitors</td><td>2.4 GHz mostly</td><td>Band steering to 5 GHz; deploy 6 GHz AP</td></tr>
+    <tr><td>DFS radar</td><td>Radar system</td><td>UNII-2A/2C</td><td>Move to UNII-1/UNII-3</td></tr>
+  </table></div>
+
+  <h3>BSS Coloring (WiFi 6) <span class="tag wifi6">WiFi 6</span></h3>
+  <p>Tags each BSS with a 6-bit color (1–63). Frames from a different-color BSS are treated as background noise if below threshold — allows spatial reuse of the same channel in dense deployments without explicit coordination.</p>
+
+  <h3>6 GHz: Zero Non-WiFi Interference <span class="tag wifi7">WiFi 7</span></h3>
+  <p>6 GHz has no microwave ovens, no Bluetooth, no legacy WiFi, no DFS radar. The single strongest argument for deploying WiFi 6E (AP5010) or WiFi 7 (AP5020) in high-density environments.</p>
+</div>
+
+<!-- ──────────────── T4: Debug Commands ──────────────── -->
+<div id="debug" class="section">
+  <h2><span>T4</span> — Debug Commands</h2>
+  <h3>First 5 Commands at Any Site</h3>
+  <pre><span class="cmd">show application iqagent status</span>    <span class="comment"># XIQ cloud alive?</span>
+<span class="cmd">show vlan detail</span>                   <span class="comment"># VLANs + SVIs configured?</span>
+<span class="cmd">show iproute</span>                       <span class="comment"># (EXOS) Default route present?</span>
+<span class="cmd">show ip route</span>                      <span class="comment"># (VOSS) Default route + Fabric routes?</span>
+<span class="cmd">show isis adj</span>                      <span class="comment"># (VOSS) Fabric adjacency UP?</span></pre>
+
+  <h3>EXOS Key Commands <span class="tag exos">EXOS</span></h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Command</th><th>What to Look For</th></tr>
+    <tr><td><code>show ipconfig vlan VLAN_20</code></td><td>IP forwarding: Enabled (Karl Rule)</td></tr>
+    <tr><td><code>show iproute</code></td><td>0.0.0.0/0 via modem IP</td></tr>
+    <tr><td><code>show dhcp lease vlan VLAN_20</code></td><td>Active leases listed</td></tr>
+    <tr><td><code>show dhcp configuration vlan VLAN_20</code></td><td>Ports 3,5,10 included</td></tr>
+    <tr><td><code>show poe port 3</code></td><td>Class 4, Oper Status: On</td></tr>
+    <tr><td><code>show lldp neighbors</code></td><td>AP3000 MAC + port visible</td></tr>
+  </table></div>
+
+  <h3>VOSS Key Commands <span class="tag voss">VOSS</span></h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Command</th><th>What to Look For</th></tr>
+    <tr><td><code>show isis adj</code></td><td>State: UP — if empty/DOWN, Fabric broken</td></tr>
+    <tr><td><code>show spbm</code></td><td>Ethertype 0x8100 — must match both switches</td></tr>
+    <tr><td><code>show i-sid</code></td><td>I-SIDs 100010/20/30 — Type: ELAN, State: Active</td></tr>
+    <tr><td><code>show isis spbm i-sid</code></td><td>"Both" = Fabric active; "Local Only" = NNI down</td></tr>
+    <tr><td><code>show fa assignment</code></td><td>Port 3 I-SIDs: Active + Dynamic</td></tr>
+    <tr><td><code>show ip route</code></td><td>0.0.0.0/0 → 0.00.01 nick-name (SW2)</td></tr>
+  </table></div>
+</div>
+
+<!-- ──────────────── T5: XIQ Diagnostics ──────────────── -->
+<div id="xiq-diag" class="section">
+  <h2><span>T5</span> — XIQ Diagnostics <span class="tag xiq">XIQ</span></h2>
+  <h3>Network 360 Monitor</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Visual Element</th><th>Meaning</th></tr>
+    <tr><td>Green switch-to-switch line</td><td>IS-IS/Fabric adjacency healthy</td></tr>
+    <tr><td>Red/Orange line</td><td>Fabric or physical link down</td></tr>
+    <tr><td>AP branching from Port 3</td><td>AP connected + FA negotiated</td></tr>
+    <tr><td>Yellow warning icon</td><td>Config issue or degraded health</td></tr>
+  </table></div>
+
+  <h3>Client 360 — Topology Strip</h3>
+  <pre>[iPhone] → [AP3000 Port 3] → [NNI Port 10 — MAC-in-MAC] → [SW1 Port 1] → [Modem]
+
+Each hop:
+  Wireless (iPhone→AP):  RSSI ≥ -70 dBm, SNR ≥ 20 dB
+  Fabric Entry (AP→SW):  I-SIDs Active
+  Fabric Transit (NNI):  IS-IS State: UP
+  Internet Exit:         0.0.0.0/0 present</pre>
+
+  <h3>Remote Sniffer (Wireshark)</h3>
+  <pre>Device 360 → Diagnostics → Remote Sniffer → Port 10 (NNI)
+→ Open in Wireshark → filter: spbm  or  ieee8021ah
+→ Inside Backbone header: B-SA, B-DA, I-SID
+→ Proves IS-IS control plane and SPB data plane aligned</pre>
+</div>
+
+<!-- ──────────────── R1: Standards ──────────────── -->
+<div id="standards" class="section">
+  <h2><span>R1</span> — 802.11 Standards</h2>
+  <h3>WiFi Generation Timeline</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Generation</th><th>Standard</th><th>Year</th><th>Bands</th><th>Max PHY Rate</th><th>Key Feature</th></tr>
+    <tr><td>WiFi 1</td><td>802.11b</td><td>1999</td><td>2.4 GHz</td><td>11 Mbps</td><td>DSSS — mass market</td></tr>
+    <tr><td>WiFi 2</td><td>802.11a</td><td>1999</td><td>5 GHz</td><td>54 Mbps</td><td>OFDM, 5 GHz pioneer</td></tr>
+    <tr><td>WiFi 3</td><td>802.11g</td><td>2003</td><td>2.4 GHz</td><td>54 Mbps</td><td>OFDM on 2.4 GHz</td></tr>
+    <tr><td>WiFi 4</td><td>802.11n</td><td>2009</td><td>2.4+5 GHz</td><td>600 Mbps</td><td>MIMO, 40 MHz</td></tr>
+    <tr><td>WiFi 5</td><td>802.11ac</td><td>2013</td><td>5 GHz</td><td>3.5 Gbps</td><td>MU-MIMO downlink, 80/160 MHz</td></tr>
+    <tr><td>WiFi 6 <span class="tag wifi6">WiFi 6</span></td><td>802.11ax</td><td>2019</td><td>2.4+5 GHz</td><td>9.6 Gbps</td><td>OFDMA, BSS Coloring, TWT</td></tr>
+    <tr><td>WiFi 6E</td><td>802.11ax ext</td><td>2021</td><td>2.4+5+6 GHz</td><td>9.6 Gbps</td><td>Adds 6 GHz clean spectrum</td></tr>
+    <tr><td>WiFi 7 <span class="tag wifi7">WiFi 7</span></td><td>802.11be</td><td>2024</td><td>2.4+5+6 GHz</td><td>46 Gbps</td><td>MLO, 320 MHz, 4K-QAM, &lt;1ms</td></tr>
+  </table></div>
+
+  <h3>WiFi 7 Key Technologies <span class="tag wifi7">WiFi 7</span></h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Technology</th><th>What It Does</th><th>Benefit</th></tr>
+    <tr><td><strong>MLO</strong></td><td>Simultaneous 2.4+5+6 GHz links</td><td>Aggregated throughput, &lt;1ms latency, seamless failover</td></tr>
+    <tr><td><strong>320 MHz channels</strong></td><td>Double the width of WiFi 6 (6 GHz only)</td><td>Up to 2× peak throughput</td></tr>
+    <tr><td><strong>4096-QAM</strong></td><td>12 bits per symbol vs 10-bit 1024-QAM</td><td>+20% throughput gain</td></tr>
+    <tr><td><strong>Multi-AP Coordination</strong></td><td>APs coordinate transmissions</td><td>Reduces interference in dense deployments</td></tr>
+    <tr><td><strong>CMU-MIMO</strong></td><td>Coordinated MU-MIMO across APs</td><td>Enterprise-grade spatial reuse</td></tr>
+  </table></div>
+</div>
+
+<!-- ──────────────── R2: AP3000 ──────────────── -->
+<div id="ap3000" class="section">
+  <h2><span>R2</span> — AP3000 Notes</h2>
+  <h3>Specifications</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Spec</th><th>Value</th></tr>
+    <tr><td>WiFi Generation</td><td>WiFi 6 (802.11ax) — 2.4 + 5 GHz only (no 6 GHz)</td></tr>
+    <tr><td>MIMO</td><td>2×2:2 — 2 spatial streams per radio</td></tr>
+    <tr><td>Power Required</td><td><strong>25.5W — 802.3at (PoE+) required</strong></td></tr>
+    <tr><td>Fabric Attach</td><td>Yes — LLDP-based I-SID negotiation</td></tr>
+    <tr><td>Management</td><td>XIQ cloud (primary) + local GUI</td></tr>
+    <tr><td>Recommended max clients</td><td>~50 per radio</td></tr>
+    <tr><td>Outdoor variant</td><td>AP3000X — IP67, vandal-resistant</td></tr>
+  </table></div>
+
+  <h3>AP3000 Does NOT Support</h3>
+  <ul>
+    <li>6 GHz radio (no WiFi 6E, no WiFi 7)</li>
+    <li>Multi-Link Operation (WiFi 7 — requires AP5020)</li>
+    <li>320 MHz channel width</li>
+  </ul>
+
+  <h3>Upgrade Path</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Model</th><th>Generation</th><th>Bands</th><th>MIMO</th><th>PoE</th></tr>
+    <tr><td>AP3000</td><td>WiFi 6</td><td>2.4+5 GHz</td><td>2×2</td><td>802.3at (PoE+)</td></tr>
+    <tr><td>AP5010</td><td>WiFi 6E</td><td>2.4+5+6 GHz</td><td>4×4</td><td>802.3bt (PoE++)</td></tr>
+    <tr><td>AP5020</td><td>WiFi 7</td><td>2.4+5+6 GHz</td><td>8×8</td><td>802.3bt (PoE++)</td></tr>
+  </table></div>
+</div>
+
+<!-- ──────────────── R3: Glossary ──────────────── -->
+<div id="glossary" class="section">
+  <h2><span>R3</span> — Glossary</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>Term</th><th>Definition</th></tr>
+    <tr><td><strong>802.1X</strong></td><td>IEEE port-based network access control using EAP and RADIUS</td></tr>
+    <tr><td><strong>802.11k</strong></td><td>Neighbour Report — AP shares list of nearby APs to accelerate roaming</td></tr>
+    <tr><td><strong>802.11r / FT</strong></td><td>Fast BSS Transition — reduces re-auth from ~100ms to &lt;20ms</td></tr>
+    <tr><td><strong>802.11v</strong></td><td>BSS Transition Management — AP nudges sticky client to roam</td></tr>
+    <tr><td><strong>802.11w / PMF</strong></td><td>Protected Management Frames — encrypts deauth/disassoc against rogue attacks</td></tr>
+    <tr><td><strong>Anycast Gateway</strong></td><td>Both VOSS switches share same gateway IP; IS-IS coordinates — no VRRP needed</td></tr>
+    <tr><td><strong>APIPA</strong></td><td>169.254.x.x — self-assigned IP when DHCP fails; always means a DHCP problem</td></tr>
+    <tr><td><strong>BSS Coloring</strong></td><td>WiFi 6 — each BSS tagged with color; other-color frames ignored, reducing CCI</td></tr>
+    <tr><td><strong>DFS</strong></td><td>Dynamic Frequency Selection — mandatory radar detection before using UNII-2A/2C</td></tr>
+    <tr><td><strong>DSCP</strong></td><td>Differentiated Services Code Point — 6-bit IP header field for QoS marking</td></tr>
+    <tr><td><strong>ELAN</strong></td><td>Emulated LAN — I-SID service type for Layer 2 broadcast domain across Fabric</td></tr>
+    <tr><td><strong>FA (Fabric Attach)</strong></td><td>LLDP-based protocol allowing non-Fabric APs to request I-SIDs dynamically</td></tr>
+    <tr><td><strong>I-SID</strong></td><td>Individual Service Identifier — 24-bit global service ID in VOSS Fabric (VLAN+100,000 convention)</td></tr>
+    <tr><td><strong>IS-IS</strong></td><td>Intermediate System to IS — link-state routing protocol used as VOSS Fabric control plane</td></tr>
+    <tr><td><strong>Karl Rule</strong></td><td><code>enable ipforwarding vlan Default</code> — required on EXOS; without it clients get IPs but no internet</td></tr>
+    <tr><td><strong>MLO</strong></td><td>Multi-Link Operation — WiFi 7 feature: simultaneous 2.4+5+6 GHz links on one client</td></tr>
+    <tr><td><strong>MU-MIMO</strong></td><td>AP serves multiple clients simultaneously using separate spatial streams</td></tr>
+    <tr><td><strong>NNI</strong></td><td>Network-to-Network Interface — inter-switch Fabric link (Port 10 in Horizon lab)</td></tr>
+    <tr><td><strong>OFDMA</strong></td><td>WiFi 6 — divides channel into Resource Units to serve multiple clients simultaneously</td></tr>
+    <tr><td><strong>OKC</strong></td><td>Opportunistic Key Caching — WPA2-Enterprise fast roaming by caching PMK at APs</td></tr>
+    <tr><td><strong>OWE</strong></td><td>Opportunistic Wireless Encryption — encrypts open networks without a password</td></tr>
+    <tr><td><strong>PMF</strong></td><td>Protected Management Frames (802.11w) — mandatory for WPA3 and OWE</td></tr>
+    <tr><td><strong>PSC</strong></td><td>Preferred Scanning Channel — 6 GHz channels clients probe first (WiFi 6E/7)</td></tr>
+    <tr><td><strong>SAE</strong></td><td>Simultaneous Authentication of Equals — WPA3 replacement for PSK 4-way handshake</td></tr>
+    <tr><td><strong>SNR</strong></td><td>Signal-to-Noise Ratio — signal minus noise floor (dB); ≥25 dB for voice</td></tr>
+    <tr><td><strong>SPBM</strong></td><td>Shortest Path Bridging MAC — IEEE 802.1aq; data plane using MAC-in-MAC across IS-IS</td></tr>
+    <tr><td><strong>TWT</strong></td><td>Target Wake Time — WiFi 6 feature scheduling client wake windows; extends IoT battery</td></tr>
+    <tr><td><strong>UNI</strong></td><td>User-Network Interface — edge port connecting APs to Fabric (Ports 3/5)</td></tr>
+    <tr><td><strong>VOSS</strong></td><td>Virtual Office Software Suite — Extreme Networks Fabric Engine OS</td></tr>
+    <tr><td><strong>WMM</strong></td><td>WiFi Multimedia — 802.11e QoS with 4 access categories (AC_VO/VI/BE/BK)</td></tr>
+    <tr><td><strong>WPA3</strong></td><td>WiFi Protected Access 3 — SAE, OWE, mandatory PMF; current generation</td></tr>
+    <tr><td><strong>XIQ</strong></td><td>ExtremeCloud IQ — Extreme Networks cloud management platform</td></tr>
+  </table></div>
+</div>
+
+</main>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.s-link').forEach(s => s.classList.remove('active'));
+  const section = document.getElementById(id);
+  if (section) section.classList.add('active');
+  // Find and activate sidebar link
+  document.querySelectorAll('.s-link').forEach(link => {
+    if (link.getAttribute('onclick') && link.getAttribute('onclick').includes("'" + id + "'")) {
+      link.classList.add('active');
+    }
+  });
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
