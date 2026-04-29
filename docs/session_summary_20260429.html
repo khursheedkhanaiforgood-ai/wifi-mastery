@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session Summary — April 29, 2026 | WiFi Digital Twin</title>
+<style>
+  :root {
+    --bg: #0a0f1e;
+    --surface: #111827;
+    --border: #1e2d40;
+    --accent: #3b82f6;
+    --accent2: #10b981;
+    --accent3: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --code-bg: #0f1f35;
+    --nav-w: 220px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  nav {
+    width: var(--nav-w); min-width: var(--nav-w); background: var(--surface);
+    border-right: 1px solid var(--border); position: sticky; top: 0;
+    height: 100vh; overflow-y: auto; padding: 24px 0; flex-shrink: 0;
+  }
+  nav .logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); }
+  nav .logo-title { font-size: 12px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+  nav .logo-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  nav ul { list-style: none; padding: 16px 0; }
+  nav ul li a {
+    display: block; padding: 7px 20px; font-size: 13px; color: var(--muted);
+    text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s;
+  }
+  nav ul li a:hover { color: var(--text); background: rgba(59,130,246,0.08); }
+  nav ul li a.active { color: var(--accent); border-left-color: var(--accent); background: rgba(59,130,246,0.1); }
+  nav .nav-group { padding: 14px 20px 4px; font-size: 10px; font-weight: 700; color: #4a5568; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* Main */
+  main { flex: 1; padding: 40px 48px; max-width: 960px; }
+  .page-header { border-bottom: 1px solid var(--border); padding-bottom: 24px; margin-bottom: 40px; }
+  .page-header .label { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; }
+  .page-header h1 { font-size: 32px; font-weight: 700; margin-top: 8px; line-height: 1.2; }
+  .page-header .meta { color: var(--muted); font-size: 14px; margin-top: 10px; }
+
+  section { margin-bottom: 48px; scroll-margin-top: 32px; }
+  section h2 { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  section h2 .icon { font-size: 18px; }
+
+  /* Cards */
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; }
+  .card .card-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
+  .card h3 { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .card.done { border-left: 3px solid var(--accent2); }
+  .card.pending { border-left: 3px solid var(--accent3); }
+  .card.key { border-left: 3px solid var(--accent); }
+
+  /* Checklist */
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .checklist li { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; color: var(--muted); line-height: 1.5; }
+  .checklist li .badge { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .badge.done { background: rgba(16,185,129,0.2); color: var(--accent2); }
+  .badge.pending { background: rgba(245,158,11,0.2); color: var(--accent3); }
+  .checklist li strong { color: var(--text); }
+
+  /* URL table */
+  .url-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .url-table th { text-align: left; padding: 10px 14px; background: var(--surface); color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid var(--border); }
+  .url-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .url-table td:first-child { color: var(--text); font-weight: 500; white-space: nowrap; width: 180px; }
+  .url-table a { color: var(--accent); text-decoration: none; word-break: break-all; }
+  .url-table a:hover { text-decoration: underline; }
+
+  /* File list */
+  .file-list { display: flex; flex-direction: column; gap: 8px; }
+  .file-item { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
+  .file-item .fi-icon { font-size: 16px; flex-shrink: 0; }
+  .file-item .fi-path { font-size: 12px; font-family: 'Cascadia Code', 'Fira Code', monospace; color: var(--accent); word-break: break-all; }
+  .file-item .fi-desc { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+  /* Code */
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 16px; font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 12px; color: #93c5fd; overflow-x: auto; margin-top: 12px; }
+
+  /* Commit log */
+  .commit-log { display: flex; flex-direction: column; gap: 8px; }
+  .commit { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+  .commit-hash { font-family: monospace; font-size: 11px; color: var(--accent); background: rgba(59,130,246,0.1); padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
+  .commit-msg { color: var(--text); }
+  .commit-date { color: var(--muted); font-size: 11px; margin-left: auto; white-space: nowrap; }
+
+  /* Footer */
+  footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-title">WiFi Digital Twin</div>
+    <div class="logo-sub">Session · April 29, 2026</div>
+  </div>
+  <ul>
+    <div class="nav-group">Overview</div>
+    <li><a href="#accomplished" class="active">Accomplished</a></li>
+    <li><a href="#commits">Git Commits</a></li>
+
+    <div class="nav-group">Artifacts</div>
+    <li><a href="#urls">URLs</a></li>
+    <li><a href="#files">Files Changed</a></li>
+
+    <div class="nav-group">Status</div>
+    <li><a href="#pending">Pending</a></li>
+    <li><a href="#next">Next Session</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="page-header">
+    <div class="label">End-of-Day Summary</div>
+    <h1>WiFi Digital Twin — Phase 1 LLD</h1>
+    <div class="meta">April 29, 2026 &nbsp;·&nbsp; Sprint 1 Planning &nbsp;·&nbsp; 4 commits pushed to main</div>
+  </div>
+
+  <!-- Accomplished -->
+  <section id="accomplished">
+    <h2><span class="icon">✅</span> Accomplished</h2>
+    <ul class="checklist">
+      <li>
+        <div class="badge done">✓</div>
+        <div><strong>HLD v1.1 — Mixed-mode WiFi generation strategy</strong><br>
+        New Section 9 documents Phase 1 (uniform WiFi 6 or WiFi 7) vs future mixed-mode deferral. Strategy Pattern ABC defined: WiFi6LinkBudget → WiFi7LinkBudget inheritance, ComparisonEngine runs both strategies on same DPM.</div>
+      </li>
+      <li>
+        <div class="badge done">✓</div>
+        <div><strong>HLD HTML — sticky left sidebar with IntersectionObserver</strong><br>
+        Replaced horizontal nav with 220px sticky sidebar, 5 nav groups, sub-links, active-section highlighting via IntersectionObserver. Top nav simplified to logo only.</div>
+      </li>
+      <li>
+        <div class="badge done">✓</div>
+        <div><strong>LLD Phase 1 — all 9 modules + Appendix A</strong><br>
+        L1 Pydantic v2 data models · L2 Link Budget Engine · L3 Airtime Calculator · L4 AP Selection · L5 Channel Planning · L6 Intake Agent (Socratic→DPM Sections A–H) · L7 Design Agent+Orchestrator · L8 Config Agent (XIQ/EXOS/VOSS) · L9 FastAPI+WebSocket API. Appendix A: 12 mixed-mode input params deferred to future sprint.</div>
+      </li>
+      <li>
+        <div class="badge done">✓</div>
+        <div><strong>NYT-style landing page (index-nyt.html)</strong><br>
+        Libre Baskerville/Franklin fonts, #326891 NYT blue, card grid. Start Here banner → original WiFi Mastery dark site. Branch 1/2 cards → HLD#wifigen. Sprint 1 → LLD. Sprint 2/3/4 marked Planned. Bridge table + AP Fleet cards all wired to HLD anchors.</div>
+      </li>
+      <li>
+        <div class="badge done">✓</div>
+        <div><strong>Copyright footers + session memory saved</strong><br>
+        © 2026 Khursheed Khan footer added to HLD and LLD. Two memory files written: project_wifi_branch_strategy.md + project_wifi_lld_phase1.md.</div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Git Commits -->
+  <section id="commits">
+    <h2><span class="icon">📦</span> Git Commits</h2>
+    <div class="commit-log">
+      <div class="commit">
+        <span class="commit-hash">9ce78b9</span>
+        <span class="commit-msg">HLD v1.1: add WiFi gen strategy section + left sidebar nav + copyright footer</span>
+        <span class="commit-date">Apr 29</span>
+      </div>
+      <div class="commit">
+        <span class="commit-hash">9a83cfa</span>
+        <span class="commit-msg">Add LLD Phase 1: 9 modules + Appendix A mixed-mode params + copyright footer</span>
+        <span class="commit-date">Apr 29</span>
+      </div>
+      <div class="commit">
+        <span class="commit-hash">a60f796</span>
+        <span class="commit-msg">Add NYT-style landing page (index-nyt.html): card grid, bridge table, AP fleet</span>
+        <span class="commit-date">Apr 29</span>
+      </div>
+      <div class="commit">
+        <span class="commit-hash">87b0d97</span>
+        <span class="commit-msg">Fix NYT landing page: add Start Here banner + wire all cards to real destinations</span>
+        <span class="commit-date">Apr 29</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- URLs -->
+  <section id="urls">
+    <h2><span class="icon">🔗</span> Live URLs</h2>
+    <table class="url-table">
+      <thead>
+        <tr><th>Page</th><th>URL</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>WiFi Mastery (root)</td>
+          <td><a href="https://khursheedkhanaiforgood-ai.github.io/wifi-mastery/" target="_blank">khursheedkhanaiforgood-ai.github.io/wifi-mastery/</a></td>
+        </tr>
+        <tr>
+          <td>NYT Landing Page</td>
+          <td><a href="https://khursheedkhanaiforgood-ai.github.io/wifi-mastery/docs/index-nyt.html" target="_blank">.../docs/index-nyt.html</a></td>
+        </tr>
+        <tr>
+          <td>HLD v1.1</td>
+          <td><a href="https://khursheedkhanaiforgood-ai.github.io/wifi-mastery/docs/hld-wifi-digital-twin.html" target="_blank">.../docs/hld-wifi-digital-twin.html</a></td>
+        </tr>
+        <tr>
+          <td>LLD Phase 1</td>
+          <td><a href="https://khursheedkhanaiforgood-ai.github.io/wifi-mastery/docs/lld-phase1-wifi-digital-twin.html" target="_blank">.../docs/lld-phase1-wifi-digital-twin.html</a></td>
+        </tr>
+        <tr>
+          <td>GitHub Repo</td>
+          <td><a href="https://github.com/khursheedkhanaiforgood-ai/wifi-mastery" target="_blank">github.com/khursheedkhanaiforgood-ai/wifi-mastery</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Files -->
+  <section id="files">
+    <h2><span class="icon">📁</span> Files Changed</h2>
+    <div class="file-list">
+      <div class="file-item">
+        <div class="fi-icon">📄</div>
+        <div>
+          <div class="fi-path">docs/hld-wifi-digital-twin.html</div>
+          <div class="fi-desc">HLD v1.1 — added Section 9 (WiFi Gen Strategy), sticky left sidebar, copyright footer</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div class="fi-icon">📄</div>
+        <div>
+          <div class="fi-path">HLD-wifi-digital-twin.md</div>
+          <div class="fi-desc">Markdown source — Section 8 WiFi Gen Strategy, two-branch table, Sprint 4+ row</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div class="fi-icon">📄</div>
+        <div>
+          <div class="fi-path">docs/lld-phase1-wifi-digital-twin.html</div>
+          <div class="fi-desc">LLD Phase 1 v1.0 — 9 modules (L1–L9), Appendix A, copyright footer, left sidebar</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div class="fi-icon">📄</div>
+        <div>
+          <div class="fi-path">LLD-phase1-wifi-digital-twin.md</div>
+          <div class="fi-desc">Markdown LLD — full 9-module spec + Appendix A mixed-mode params</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div class="fi-icon">📄</div>
+        <div>
+          <div class="fi-path">docs/index-nyt.html</div>
+          <div class="fi-desc">NYT landing page — Start Here banner, wired card grid, Planned badges for Sprint 2–4</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div class="fi-icon">🧠</div>
+        <div>
+          <div class="fi-path">~/.claude/projects/.../memory/project_wifi_branch_strategy.md</div>
+          <div class="fi-desc">Memory: two-branch strategy pattern, mixed-mode deferral rationale, Strategy ABC code</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div class="fi-icon">🧠</div>
+        <div>
+          <div class="fi-path">~/.claude/projects/.../memory/project_wifi_lld_phase1.md</div>
+          <div class="fi-desc">Memory: LLD Phase 1 status, 9-module table, file paths</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Technical Decisions -->
+  <section id="pending">
+    <h2><span class="icon">⏳</span> Pending</h2>
+    <div class="card-grid">
+      <div class="card pending">
+        <div class="card-label">Sprint 1 — Coding</div>
+        <h3>Python implementation</h3>
+        <p>LLD is finalized. No Python code written yet. Sprint 1 = RAG corpus + Pydantic models (L1) + Link Budget Engine (L2) + Airtime Calculator (L3).</p>
+      </div>
+      <div class="card pending">
+        <div class="card-label">DPM Section H</div>
+        <h3>WiFi 7 Socratic dialogue</h3>
+        <p>WiFi7Params Pydantic model defined in LLD. Full Section H Socratic Q&A flow for Intake Agent not yet formalized.</p>
+      </div>
+      <div class="card pending">
+        <div class="card-label">Index Pages</div>
+        <h3>session_summary_20260422 dedup</h3>
+        <p>Linked twice on all 3 index pages (banner + EOD card). Consolidate to one pointer next session.</p>
+      </div>
+      <div class="card pending">
+        <div class="card-label">Future Sprint</div>
+        <h3>Mixed-mode LLD (Phase 2)</h3>
+        <p>Requires floor plan + adjacency graph. 12 input params catalogued in LLD Appendix A. Deferred until Phase 2.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Next Session -->
+  <section id="next">
+    <h2><span class="icon">🚀</span> Next Session</h2>
+    <ul class="checklist">
+      <li>
+        <div class="badge pending">1</div>
+        <div><strong>Sprint 1 — Day 1: RAG + Data Models</strong><br>
+        Set up <code>src/</code> project structure, write <code>models/dpm.py</code> (Pydantic v2, all 7 DPM sections A–H), write <code>rag/corpus.py</code> loader for WLANPros + Rev Wi-Fi reference docs.</div>
+      </li>
+      <li>
+        <div class="badge pending">2</div>
+        <div><strong>Sprint 1 — Day 1: Link Budget Engine (L2)</strong><br>
+        Implement <code>engines/link_budget.py</code>: LinkBudgetStrategy ABC, WiFi6LinkBudget (MCS 0–11), WiFi7LinkBudget (MCS 12–13 at SNR ≥36), SNR→MCS table, scale by SS + channel width.</div>
+      </li>
+      <li>
+        <div class="badge pending">3</div>
+        <div><strong>Sprint 1 — Day 1: Airtime Calculator (L3)</strong><br>
+        Implement Rev Wi-Fi formula: Airtime% = App_Kbps / Device_Kbps. SSID beacon overhead table. VoIP trap guard. OFDMA ×1.30 modifier. AP count ceiling formula.</div>
+      </li>
+    </ul>
+
+    <pre># Sprint 1 Day 1 — kick-off command
+cd /private/tmp/wifi-mastery
+mkdir -p src/{models,engines,agents,api,rag}
+touch src/__init__.py src/models/dpm.py src/engines/link_budget.py src/engines/airtime.py</pre>
+  </section>
+
+  <footer>
+    <span>© 2026 Khursheed Khan &nbsp;·&nbsp; All rights reserved &nbsp;·&nbsp; April 29, 2026 &nbsp;·&nbsp; AI-assisted with Claude Code</span>
+    <span><a href="https://khursheedkhanaiforgood-ai.github.io/wifi-mastery/docs/index-nyt.html">WiFi Digital Twin ↗</a></span>
+  </footer>
+</main>
+
+<script>
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('nav a');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
