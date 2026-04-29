@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WiFi Digital Twin — High Level Design</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --accent3: #f78166;
+    --accent4: #d2a8ff;
+    --accent5: #ffa657;
+    --accent6: #56d364;
+    --yellow: #e3b341;
+    --red: #f85149;
+    --teal: #39d353;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.6; }
+
+  /* TOP NAV — logo bar only */
+  nav {
+    position: sticky; top: 0; z-index: 200;
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    padding: 10px 24px; display: flex; align-items: center; gap: 12px;
+    height: 42px;
+  }
+  nav .logo { color: var(--accent); font-weight: bold; font-size: 14px; }
+  nav .nav-ver { color: var(--text-dim); font-size: 10px; }
+
+  /* TWO-COLUMN LAYOUT */
+  .layout { display: flex; min-height: calc(100vh - 42px); }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 220px; min-width: 220px;
+    background: var(--bg2); border-right: 1px solid var(--border);
+    position: sticky; top: 42px; height: calc(100vh - 42px);
+    overflow-y: auto; flex-shrink: 0;
+    padding: 16px 0 32px;
+    scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .sb-group { margin-bottom: 4px; }
+  .sb-label {
+    color: var(--text-dim); font-size: 9px; text-transform: uppercase;
+    letter-spacing: 0.1em; padding: 12px 16px 4px; display: block;
+    opacity: 0.6;
+  }
+  .sb-divider { border: none; border-top: 1px solid var(--border); margin: 6px 0; }
+  .sidebar a {
+    display: block; padding: 5px 16px;
+    color: var(--text-dim); text-decoration: none; font-size: 11px;
+    border-left: 2px solid transparent; transition: all 0.15s;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .sidebar a:hover { color: var(--accent); border-left-color: var(--accent); background: var(--bg3); }
+  .sidebar a.sub {
+    padding-left: 28px; font-size: 10px; color: #555f6b;
+  }
+  .sidebar a.sub:hover { color: var(--text-dim); border-left-color: var(--border); }
+  .sidebar a.active { color: var(--accent); border-left-color: var(--accent); background: var(--bg3); }
+
+  /* MAIN CONTENT */
+  .page { flex: 1; min-width: 0; max-width: 1180px; padding: 32px 32px; }
+  h1 { font-size: 28px; color: var(--accent); margin-bottom: 6px; }
+  h2 { font-size: 18px; color: var(--accent4); margin: 40px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 14px; color: var(--accent5); margin: 24px 0 12px; }
+  h4 { font-size: 12px; color: var(--accent2); margin: 16px 0 8px; }
+  p { color: var(--text-dim); margin-bottom: 12px; }
+  .subtitle { color: var(--text-dim); font-size: 13px; margin-bottom: 24px; }
+  .tag { display: inline-block; background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 2px 10px; font-size: 11px; color: var(--text-dim); margin: 2px; }
+  .tag.blue { color: var(--accent); border-color: var(--accent); }
+  .tag.green { color: var(--accent2); border-color: var(--accent2); }
+  .tag.red { color: var(--red); border-color: var(--red); }
+  .tag.yellow { color: var(--yellow); border-color: var(--yellow); }
+
+  /* CALLOUT */
+  .callout { background: var(--bg2); border-left: 3px solid var(--accent); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 16px 0; }
+  .callout.green { border-color: var(--accent2); }
+  .callout.yellow { border-color: var(--yellow); }
+  .callout.red { border-color: var(--red); }
+  .callout strong { color: var(--accent); }
+  .callout.green strong { color: var(--accent2); }
+  .callout.yellow strong { color: var(--yellow); }
+
+  /* ARCHITECTURE BOXES */
+  .arch-grid {
+    display: grid; gap: 16px; margin: 20px 0;
+  }
+  .arch-4col { grid-template-columns: repeat(4, 1fr); }
+  .arch-3col { grid-template-columns: repeat(3, 1fr); }
+  .arch-2col { grid-template-columns: repeat(2, 1fr); }
+
+  .arch-box {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .arch-box.blue { border-color: var(--accent); }
+  .arch-box.green { border-color: var(--accent2); }
+  .arch-box.purple { border-color: var(--accent4); }
+  .arch-box.orange { border-color: var(--accent5); }
+  .arch-box.red { border-color: var(--red); }
+  .arch-box.teal { border-color: var(--teal); }
+  .arch-box .box-title { font-weight: bold; font-size: 12px; margin-bottom: 8px; }
+  .arch-box.blue .box-title { color: var(--accent); }
+  .arch-box.green .box-title { color: var(--accent2); }
+  .arch-box.purple .box-title { color: var(--accent4); }
+  .arch-box.orange .box-title { color: var(--accent5); }
+  .arch-box.red .box-title { color: var(--red); }
+  .arch-box.teal .box-title { color: var(--teal); }
+  .arch-box ul { padding-left: 14px; }
+  .arch-box li { color: var(--text-dim); font-size: 11px; margin: 3px 0; }
+  .arch-box .sub { color: var(--text-dim); font-size: 10px; margin: 2px 0 2px 8px; }
+  .arch-box .sub::before { content: "├ "; color: var(--border); }
+  .arch-box .sub:last-child::before { content: "└ "; color: var(--border); }
+
+  /* FLOW DIAGRAM */
+  .flow { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin: 16px 0; overflow-x: auto; }
+  .flow pre { color: var(--text); font-size: 11px; line-height: 1.7; white-space: pre; }
+
+  /* LOOP CARDS */
+  .loop-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+  .loop-card { border-radius: 8px; padding: 20px; border: 1px solid; }
+  .loop-card.design { background: #0d1f3c; border-color: var(--accent); }
+  .loop-card.optim { background: #0d2318; border-color: var(--accent2); }
+  .loop-card.tshoot { background: #2d1f0d; border-color: var(--accent5); }
+  .loop-card .loop-title { font-size: 13px; font-weight: bold; margin-bottom: 12px; }
+  .loop-card.design .loop-title { color: var(--accent); }
+  .loop-card.optim .loop-title { color: var(--accent2); }
+  .loop-card.tshoot .loop-title { color: var(--accent5); }
+  .loop-card .loop-trigger { font-size: 10px; color: var(--text-dim); margin-bottom: 10px; }
+  .loop-card ol { padding-left: 16px; }
+  .loop-card li { font-size: 11px; color: var(--text-dim); margin: 4px 0; }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 11px; }
+  th { background: var(--bg3); color: var(--accent); text-align: left; padding: 8px 12px; border-bottom: 2px solid var(--border); }
+  td { padding: 7px 12px; border-bottom: 1px solid var(--border); color: var(--text-dim); }
+  tr:hover td { background: var(--bg2); }
+  .check { color: var(--accent2); }
+  .cross { color: var(--red); }
+  .var { color: var(--yellow); }
+  .na { color: var(--border); }
+
+  /* RRM SECTION */
+  .rrm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+  .rrm-sim { background: var(--bg3); border: 1px solid var(--teal); border-radius: 6px; padding: 12px; }
+  .rrm-sim .sim-title { color: var(--teal); font-size: 11px; font-weight: bold; margin-bottom: 6px; }
+  .rrm-sim p { font-size: 10px; color: var(--text-dim); margin: 0; }
+  .rrm-sim .sim-bridge { color: var(--accent4); font-size: 10px; margin-top: 6px; font-style: italic; }
+
+  /* COVERAGE VS CAPACITY */
+  .balance-diagram {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 20px; display: flex; gap: 20px; align-items: stretch; margin: 16px 0;
+  }
+  .balance-side { flex: 1; padding: 16px; border-radius: 6px; }
+  .balance-side.coverage { background: #0d1f3c; border: 1px solid var(--accent); }
+  .balance-side.capacity { background: #0d2318; border: 1px solid var(--accent2); }
+  .balance-middle { display: flex; align-items: center; color: var(--yellow); font-size: 20px; }
+  .balance-side .bs-title { font-size: 13px; font-weight: bold; margin-bottom: 10px; }
+  .balance-side.coverage .bs-title { color: var(--accent); }
+  .balance-side.capacity .bs-title { color: var(--accent2); }
+  .balance-side li { font-size: 11px; color: var(--text-dim); margin: 4px 0; }
+
+  /* SPRINT TIMELINE */
+  .sprint-row { display: flex; gap: 16px; margin: 16px 0; }
+  .sprint-day { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; flex: 1; }
+  .sprint-day .day-label { color: var(--accent); font-size: 12px; font-weight: bold; margin-bottom: 8px; }
+  .sprint-batch { background: var(--bg3); border-radius: 4px; padding: 8px 10px; margin: 8px 0; }
+  .sprint-batch .batch-label { color: var(--accent5); font-size: 10px; font-weight: bold; margin-bottom: 4px; }
+  .sprint-batch li { font-size: 10px; color: var(--text-dim); margin: 2px 0; list-style: none; }
+  .sprint-batch li::before { content: "◆ "; color: var(--accent4); font-size: 8px; }
+
+  /* EP1 FLOW */
+  .ep1-flow { display: grid; grid-template-columns: 200px 40px 1fr; align-items: center; gap: 8px; margin: 8px 0; }
+  .ep1-source { background: var(--bg3); border: 1px solid var(--accent5); border-radius: 4px; padding: 6px 10px; font-size: 10px; color: var(--accent5); }
+  .ep1-arrow { text-align: center; color: var(--text-dim); font-size: 16px; }
+  .ep1-target { font-size: 10px; color: var(--text-dim); }
+
+  /* BADGE */
+  .badge { display: inline-flex; align-items: center; gap: 4px; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-size: 10px; margin: 2px; }
+  .badge.blue { color: var(--accent); border-color: var(--accent); }
+  .badge.green { color: var(--accent2); border-color: var(--accent2); }
+  .badge.orange { color: var(--accent5); border-color: var(--accent5); }
+  .badge.purple { color: var(--accent4); border-color: var(--accent4); }
+
+  /* TWINS CRITERIA */
+  .twin-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 1px; background: var(--border); border-radius: 8px; overflow: hidden; margin: 16px 0; }
+  .twin-cell { background: var(--bg2); padding: 10px 14px; font-size: 11px; }
+  .twin-cell.header { background: var(--bg3); color: var(--accent); font-weight: bold; }
+  .twin-cell.check-cell { color: var(--accent2); }
+
+  footer { margin-top: 60px; padding: 20px 0; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 10px; text-align: center; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">⚡ WiFi Digital Twin Platform</span>
+  <span class="nav-ver">HLD v1.1 &nbsp;|&nbsp; April 2026 &nbsp;|&nbsp; Private</span>
+</nav>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-group">
+    <span class="sb-label">Overview</span>
+    <a href="#vision">01 &nbsp;Vision</a>
+    <a href="#loops">02 &nbsp;3 Operational Loops</a>
+    <a class="sub" href="#loops">↳ Loop 1 — Design</a>
+    <a class="sub" href="#loops">↳ Loop 2 — Optimization</a>
+    <a class="sub" href="#loops">↳ Loop 3 — Troubleshoot</a>
+  </div>
+  <hr class="sb-divider">
+  <div class="sb-group">
+    <span class="sb-label">Architecture</span>
+    <a href="#agents">03 &nbsp;Agent Topology</a>
+    <a class="sub" href="#agents">↳ Intake Agent</a>
+    <a class="sub" href="#agents">↳ Design Agent</a>
+    <a class="sub" href="#agents">↳ Config Agent</a>
+    <a class="sub" href="#agents">↳ RRM Sim Agent</a>
+    <a class="sub" href="#agents">↳ Tuning Agent</a>
+    <a class="sub" href="#agents">↳ Teaching Agent</a>
+    <a href="#rrm">04 &nbsp;RRM Dynamic Layer</a>
+    <a class="sub" href="#rrm">↳ DCS Simulator</a>
+    <a class="sub" href="#rrm">↳ TPC Simulator</a>
+    <a class="sub" href="#rrm">↳ BSS Color Sim</a>
+    <a class="sub" href="#rrm">↳ Multi-AP Coord Sim</a>
+    <a href="#balance">05 &nbsp;Coverage vs Capacity</a>
+    <a class="sub" href="#balance">↳ Coverage-Driven Count</a>
+    <a class="sub" href="#balance">↳ Capacity-Driven Count</a>
+    <a class="sub" href="#balance">↳ Tunable Levers</a>
+  </div>
+  <hr class="sb-divider">
+  <div class="sb-group">
+    <span class="sb-label">Integration</span>
+    <a href="#ep1">06 &nbsp;EP1 Integration</a>
+    <a class="sub" href="#ep1">↳ Observe flow</a>
+    <a class="sub" href="#ep1">↳ Control flow</a>
+    <a class="sub" href="#ep1">↳ Feedback loop example</a>
+    <a href="#broadcom">07 &nbsp;Broadcom + AP Models</a>
+    <a class="sub" href="#broadcom">↳ AP3000 / 4000 / 5020+</a>
+    <a class="sub" href="#broadcom">↳ XIQ-configurable params</a>
+    <a class="sub" href="#broadcom">↳ Chipset-fixed params</a>
+    <a href="#bridge">08 &nbsp;5G ↔ WiFi Bridge</a>
+  </div>
+  <hr class="sb-divider">
+  <div class="sb-group">
+    <span class="sb-label">Design Strategy</span>
+    <a href="#wifigen">09 &nbsp;WiFi Gen Strategy</a>
+    <a class="sub" href="#wifigen">↳ WiFi 6 Baseline branch</a>
+    <a class="sub" href="#wifigen">↳ WiFi 7 Complete branch</a>
+    <a class="sub" href="#wifigen">↳ Feature matrix</a>
+    <a class="sub" href="#wifigen">↳ Mixed-mode (deferred)</a>
+  </div>
+  <hr class="sb-divider">
+  <div class="sb-group">
+    <span class="sb-label">Build &amp; Validate</span>
+    <a href="#sprint">10 &nbsp;Sprint 1 — 3-Day Plan</a>
+    <a class="sub" href="#sprint">↳ Day 1 Foundation</a>
+    <a class="sub" href="#sprint">↳ Day 2 Intelligence</a>
+    <a class="sub" href="#sprint">↳ Day 3 Integration</a>
+    <a class="sub" href="#sprint">↳ Sprint 2+ Deferred</a>
+    <a href="#twin">11 &nbsp;Digital Twin Criteria</a>
+    <a href="#deploy">12 &nbsp;Deployment Architecture</a>
+  </div>
+</aside>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <h1>WiFi Digital Twin Platform</h1>
+  <div class="subtitle">High Level Design &nbsp;|&nbsp; v1.1 &nbsp;|&nbsp; April 2026 &nbsp;|&nbsp; Private</div>
+  <div>
+    <span class="badge blue">802.11be (WiFi 7)</span>
+    <span class="badge green">Extreme Networks XIQ + EP1</span>
+    <span class="badge orange">Broadcom Chipset</span>
+    <span class="badge purple">RAG Validated</span>
+    <span class="badge blue">Teaching Agent (5G↔WiFi)</span>
+    <span class="badge green">Railway Deployed</span>
+  </div>
+
+  <!-- VISION -->
+  <section id="vision">
+    <h2>1. Vision</h2>
+    <div class="callout">
+      <strong>What this is:</strong> A true WiFi Digital Twin — virtual representation of an enterprise WiFi network that predicts outcomes before hardware is touched, mirrors the live network via EP1 telemetry, runs the same RRM algorithm Broadcom chipsets run, and continuously tunes XIQ configuration based on the gap between predicted and actual behavior.
+    </div>
+    <div class="arch-grid arch-3col">
+      <div class="arch-box blue">
+        <div class="box-title">🔮 Predictive (Pre-Deploy)</div>
+        <ul>
+          <li>Capacity plan (airtime demand model)</li>
+          <li>Link budget per device type</li>
+          <li>Channel plan (CCI scoring)</li>
+          <li>AP count = max(coverage, capacity)</li>
+          <li>XIQ config + EXOS/VOSS CLI output</li>
+        </ul>
+      </div>
+      <div class="arch-box green">
+        <div class="box-title">🔄 Live Mirror (Post-Deploy)</div>
+        <ul>
+          <li>EP1 telemetry ingested every 15 min</li>
+          <li>RRM Sim mirrors Broadcom AutoRF</li>
+          <li>Predicted vs actual gap analysis</li>
+          <li>Config delta → XIQ API push</li>
+          <li>Coverage/capacity balance maintained</li>
+        </ul>
+      </div>
+      <div class="arch-box purple">
+        <div class="box-title">🎓 Teaching Throughout</div>
+        <ul>
+          <li>5G↔WiFi bridge at every step</li>
+          <li>802.11be standard citations</li>
+          <li>Socratic learning mode</li>
+          <li>WLANPros + WLPC 2026 corpus</li>
+          <li>Private RAG, never on GitHub</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 LOOPS -->
+  <section id="loops">
+    <h2>2. The Three Operational Loops</h2>
+    <div class="loop-container">
+      <div class="loop-card design">
+        <div class="loop-title">⚙️ Loop 1 — Design</div>
+        <div class="loop-trigger">Trigger: new site or major change</div>
+        <ol>
+          <li>Requirements intake (Socratic)</li>
+          <li>Capacity planning (airtime model)</li>
+          <li>Link budget (SNR→MCS→rate)</li>
+          <li>AP selection (PoE + chipset match)</li>
+          <li>Channel planning (CCI scoring)</li>
+          <li>Config generation (XIQ + EXOS + VOSS)</li>
+          <li>Deploy + qualify (WLANPros checklist)</li>
+        </ol>
+      </div>
+      <div class="loop-card optim">
+        <div class="loop-title">🔄 Loop 2 — Optimization</div>
+        <div class="loop-trigger">Trigger: continuous (every 15 min)</div>
+        <ol>
+          <li>EP1 telemetry ingested</li>
+          <li>RRM Sim runs (DCS + TPC + BSS Color)</li>
+          <li>Predicted vs actual comparison</li>
+          <li>Coverage/capacity gap detected</li>
+          <li>Broadcom param identified</li>
+          <li>Config delta generated</li>
+          <li>XIQ API push + validate</li>
+        </ol>
+      </div>
+      <div class="loop-card tshoot">
+        <div class="loop-title">🔍 Loop 3 — Troubleshoot</div>
+        <div class="loop-trigger">Trigger: EP1 alert or user symptom</div>
+        <ol>
+          <li>EP1 alert or symptom intake</li>
+          <li>30-row diagnosis (L1→L7)</li>
+          <li>Spectrum analysis (13 signatures)</li>
+          <li>Debug commands (EXOS/VOSS/XIQ)</li>
+          <li>WLANPi guided testing</li>
+          <li>Fix recommendation</li>
+          <li>Config delta + push if applicable</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- AGENT TOPOLOGY -->
+  <section id="agents">
+    <h2>3. Agent Topology</h2>
+    <div class="flow">
+<pre>
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                         ORCHESTRATOR  (Lead — state machine for all 3 loops)            │
+└───┬──────────────┬───────────────┬─────────────────┬──────────────────┬─────────────────┘
+    │              │               │                 │                  │
+    ▼              ▼               ▼                 ▼                  ▼
+┌───────┐    ┌──────────┐   ┌──────────┐   ┌────────────────┐   ┌──────────────┐
+│INTAKE │    │ DESIGN   │   │ CONFIG   │   │ RRM SIMULATION │   │TROUBLESHOOT  │
+│AGENT  │    │ AGENT    │   │ AGENT    │   │ AGENT ★        │   │AGENT         │
+│       │    │          │   │          │   │                │   │              │
+│Socrat.│    │├Capacity │   │├XIQ JSON │   │├DCS Simulator  │   │├30-Row Diag  │
+│→SiteR.│    │├LinkBudg.│   │├EXOS CLI │   │├TPC Simulator  │   │├Spectrum     │
+│JSON   │    │├APSelect.│   │├VOSS CLI │   │├BSS Color Sim  │   │├Debug Cmds   │
+│       │    │├ChPlan   │   │└Qualific.│   │└Multi-AP Coord │   │└WLANPi       │
+│       │    │└RAGValid.│   │          │   │  (WiFi 7)      │   │              │
+└───────┘    └──────────┘   └──────────┘   └────────────────┘   └──────────────┘
+                                                  ▲ ▼
+                                          EP1 INTEGRATION AGENT
+                                          (telemetry → RRM inputs)
+
+  ══════════════════════════════════════════════════════════════════════════════
+  TEACHING AGENT  —  cross-cuts ALL agents  —  5G↔WiFi bridge mode primary
+  RAG VALIDATION AGENT  —  corpus → 802.11be-2024 → web  —  standard wins
+  ══════════════════════════════════════════════════════════════════════════════
+</pre>
+    </div>
+
+    <div class="arch-grid arch-4col">
+      <div class="arch-box blue">
+        <div class="box-title">INTAKE AGENT</div>
+        <div class="sub">Socratic requirements gathering</div>
+        <div class="sub">→ SiteRequirements JSON</div>
+        <div class="sub">Teaching: client mix = UE distribution</div>
+        <div class="sub">SLA = QoS bearer requirements</div>
+      </div>
+      <div class="arch-box purple">
+        <div class="box-title">DESIGN AGENT</div>
+        <div class="sub">Capacity Planning (airtime model)</div>
+        <div class="sub">Link Budget (SNR→MCS, MCS 0-13)</div>
+        <div class="sub">AP Selection (chipset + PoE check)</div>
+        <div class="sub">Channel Planning (CCI scoring)</div>
+        <div class="sub">RAG Validation at each step</div>
+      </div>
+      <div class="arch-box orange">
+        <div class="box-title">CONFIG AGENT</div>
+        <div class="sub">XIQ Device Template JSON</div>
+        <div class="sub">Static profile + AutoRF profile</div>
+        <div class="sub">EXOS CLI script</div>
+        <div class="sub">VOSS CLI (FA I-SID mapping)</div>
+        <div class="sub">WLANPros pre/post checklist</div>
+      </div>
+      <div class="arch-box teal">
+        <div class="box-title">RRM SIM AGENT ★</div>
+        <div class="sub">DCS: Broadcom channel algo</div>
+        <div class="sub">TPC: power step-down algo</div>
+        <div class="sub">BSS Color: 802.11ax coloring</div>
+        <div class="sub">Multi-AP Coord (WiFi 7 CoMP)</div>
+        <div class="sub">Pre + post deploy — THE TWIN CORE</div>
+      </div>
+    </div>
+    <div class="arch-grid arch-4col">
+      <div class="arch-box green">
+        <div class="box-title">EP1 INTEGRATION AGENT</div>
+        <div class="sub">EP1 telemetry ingestion</div>
+        <div class="sub">Normalize to DesignSession format</div>
+        <div class="sub">Time-series store</div>
+        <div class="sub">Feeds: RRM Sim + Tuning + TSHOOT</div>
+      </div>
+      <div class="arch-box green">
+        <div class="box-title">TUNING AGENT</div>
+        <div class="sub">Predicted vs actual gap</div>
+        <div class="sub">Root cause: which Broadcom param?</div>
+        <div class="sub">Config delta generation</div>
+        <div class="sub">XIQ API push + commentary</div>
+        <div class="sub">Teaching: SON MRO equivalent</div>
+      </div>
+      <div class="arch-box red">
+        <div class="box-title">TROUBLESHOOTING AGENT</div>
+        <div class="sub">30-row WLANPros causes table</div>
+        <div class="sub">L1→L7: WIRELESS/LAN/INTERNET</div>
+        <div class="sub">13 RF interferer signatures</div>
+        <div class="sub">Debug: EXOS + VOSS + XIQ CLI</div>
+        <div class="sub">WLANPi guided testing</div>
+      </div>
+      <div class="arch-box purple">
+        <div class="box-title">TEACHING AGENT</div>
+        <div class="sub">Mode 1: Explain (learner)</div>
+        <div class="sub">Mode 2: Socratic (ask→reveal)</div>
+        <div class="sub">Mode 3: Bridge 5G↔WiFi ★ primary</div>
+        <div class="sub">Mode 4: Cite (802.11be sections)</div>
+        <div class="sub">Called after every major output</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RRM DYNAMIC LAYER -->
+  <section id="rrm">
+    <h2>4. RRM Dynamic Layer — The Twin Core</h2>
+    <div class="callout green">
+      <strong>Why this is the most important layer:</strong> In 5G, SON runs centrally with full network visibility. In WiFi, every AP runs RRM independently via CSMA/CA — emergent behavior that is hard to predict. The RRM Simulation Agent runs the same Broadcom AutoRF algorithm in software, predicting what real APs will do BEFORE they do it.
+    </div>
+
+    <div class="rrm-grid">
+      <div class="rrm-sim">
+        <div class="sim-title">DCS Simulator</div>
+        <p>Replicates Broadcom Dynamic Channel Selection algorithm.<br><br>Inputs: neighbor RSSI scan, channel utilization per channel, CCI threshold, retry rate trigger.<br><br>Output: predicted channel assignment per AP after AutoRF convergence. Detects oscillation risk.</p>
+        <div class="sim-bridge">≈ SON ANR + CCO in 5G</div>
+      </div>
+      <div class="rrm-sim">
+        <div class="sim-title">TPC Simulator</div>
+        <p>Replicates Broadcom TX Power Control step-down algorithm.<br><br>Inputs: neighbor AP signal levels, WLANPros targets (7/13/16 dBm), coverage RSSI floor.<br><br>Output: predicted TX power per radio. Detects coverage holes from over-reduction.</p>
+        <div class="sim-bridge">≈ SON CCO power component</div>
+      </div>
+      <div class="rrm-sim">
+        <div class="sim-title">BSS Color Simulator</div>
+        <p>802.11ax BSS Color assignment and conflict detection.<br><br>Inputs: neighbor AP scan, current color assignments (1-63).<br><br>Output: color conflict map + re-assignment recommendations. Reduces unnecessary deferrals between non-overlapping BSSs.</p>
+        <div class="sim-bridge">≈ ICIC in LTE/NR</div>
+      </div>
+      <div class="rrm-sim">
+        <div class="sim-title">Multi-AP Coord Sim</div>
+        <p>WiFi 7 (AP5020/5022/5060 only). Coordinated null-steering + spatial reuse scheduling.<br><br>Inputs: AP5020 neighbor topology, per-client SNR measurements.<br><br>Output: coordinated transmission schedule across multiple APs.</p>
+        <div class="sim-bridge">≈ CoMP in NR</div>
+      </div>
+    </div>
+
+    <h3>RRM Simulation — Pre vs Post Deploy</h3>
+    <div class="flow">
+<pre style="font-size:10px;">
+PRE-DEPLOY (Design Phase):
+  Designed channel/power plan ──→ RRM Sim forward simulation
+                                        │
+                                        ▼
+                              "At T+24h, AutoRF converges to
+                               channels X,Y,Z, powers A,B,C
+                               — 2 APs show oscillation risk"
+                                        │
+                                        ▼
+                              Adjust CCI threshold / lock oscillating APs
+                              → update XIQ Device Template
+
+POST-DEPLOY (Live Mirror, every 15 min):
+  EP1 telemetry ──→ RRM Sim ──→ Predicted next state
+       │                               │
+       ▼                               ▼
+  Actual state ──────────── GAP ANALYSIS ──→ GREEN / AMBER / RED
+                                        │
+                                RED: Tuning Agent
+                                     │
+                                     ▼
+                               Broadcom param identified
+                               Config delta → XIQ API push
+                               EP1 confirms improvement
+</pre>
+    </div>
+
+    <h3>AutoRF Trigger Thresholds (XIQ-configurable)</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>WLANPros Target</th><th>Digital Twin Action</th></tr>
+      <tr><td>CCI threshold</td><td>-85 dBm</td><td class="check">&gt;-85 dBm</td><td>Raise if oscillation detected</td></tr>
+      <tr><td>Retry rate trigger</td><td>&gt;20%</td><td class="var">Site-specific</td><td>Lower threshold in high-density</td></tr>
+      <tr><td>Channel util trigger</td><td>&gt;70%</td><td class="check">&lt;40% (5GHz)</td><td>Align trigger to WLANPros target</td></tr>
+      <tr><td>Background scanning</td><td>ON</td><td class="check">✅ ON</td><td>Required for neighbor data</td></tr>
+      <tr><td>Dynamic channel width</td><td>Available</td><td class="cross">❌ OFF</td><td>Lock — confuses roaming algorithms</td></tr>
+      <tr><td>Client load balancing</td><td>Available</td><td class="cross">❌ OFF</td><td>Disable in normal density</td></tr>
+    </table>
+  </section>
+
+  <!-- COVERAGE VS CAPACITY -->
+  <section id="balance">
+    <h2>5. Coverage vs Capacity — The Balance</h2>
+    <div class="callout yellow">
+      <strong>The fundamental tension:</strong> More TX power = better coverage = more CCI = less capacity. Narrower channel width = less CCI = more capacity = less per-link throughput. Every RRM parameter is a trade-off knob on this spectrum. The Digital Twin manages both constraints simultaneously.
+    </div>
+
+    <div class="balance-diagram">
+      <div class="balance-side coverage">
+        <div class="bs-title">📡 Coverage-Driven AP Count</div>
+        <ul>
+          <li>RF Coverage Design RSSI tier (−67/−75/−80 dBm)</li>
+          <li>Link Budget: SNR → MCS → min acceptable rate</li>
+          <li>Cell radius from path loss model</li>
+          <li>AP placement density from cell radius</li>
+          <li>Input: site dimensions + environment type</li>
+          <li>Tool: RF survey (Ekahau/Hamina)</li>
+          <li>Constraint: every point must reach RSSI target</li>
+        </ul>
+      </div>
+      <div class="balance-middle">= max ✦</div>
+      <div class="balance-side capacity">
+        <div class="bs-title">⚡ Capacity-Driven AP Count</div>
+        <ul>
+          <li>Airtime demand per device type</li>
+          <li>Active device count × airtime per device</li>
+          <li>Available airtime − SSID beacon overhead</li>
+          <li>AP radio count to serve total active airtime</li>
+          <li>Input: device mix + application SLAs</li>
+          <li>Tool: Revolution Wi-Fi Capacity Planner</li>
+          <li>Constraint: channel utilization &lt;20% (5GHz)</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Coverage/Capacity Tunable Levers</h3>
+    <table>
+      <tr><th>Parameter</th><th>Increase Coverage</th><th>Increase Capacity</th><th>Trade-off</th></tr>
+      <tr><td>TX Power ↑</td><td class="check">Larger cell radius</td><td class="cross">More CCI from neighbors</td><td>WLANPros: 7/13/16 dBm target</td></tr>
+      <tr><td>Channel Width wider</td><td class="check">Higher per-link rate</td><td class="cross">Fewer non-overlapping channels</td><td>Wider until CCI appears</td></tr>
+      <tr><td>MBR higher (12→24 Mbps)</td><td class="cross">Smaller cell (weak clients excluded)</td><td class="check">Less airtime per beacon</td><td>Start 12, try 24 in high-density</td></tr>
+      <tr><td>RX-SOP raise threshold</td><td class="cross">Ignores weak neighbor signals</td><td class="check">Allows more parallel transmissions</td><td>High-density only, use with caution</td></tr>
+      <tr><td>Association Limit ↓</td><td class="na">No effect</td><td class="check">Prevents airtime starvation</td><td>Use when capacity bottleneck is association</td></tr>
+      <tr><td>Add more APs</td><td class="check">Fill coverage holes</td><td class="check">More non-overlapping channels</td><td>Only if CCI budget allows</td></tr>
+    </table>
+
+    <div class="callout">
+      <strong>Iterative Loop:</strong> Design Agent runs Capacity Plan → Coverage Plan → if gap &gt;20%, adjusts channel width / TX power / MBR → re-runs both → iterates until both constraints satisfied. Post-deploy, Tuning Agent continuously re-solves this optimization using live EP1 data.
+    </div>
+  </section>
+
+  <!-- EP1 INTEGRATION -->
+  <section id="ep1">
+    <h2>6. Extreme Platform One (EP1) Integration</h2>
+    <p>EP1 is the observability and AI operations layer. For the Digital Twin, EP1 is the <strong style="color:var(--accent5)">measurement plane</strong> — the source of ground truth about what the deployed network is actually doing.</p>
+
+    <div class="arch-grid arch-2col">
+      <div class="arch-box orange">
+        <div class="box-title">EP1 → Digital Twin (Observe)</div>
+        <ul>
+          <li>Channel utilization per radio → RRM Sim</li>
+          <li>RSSI per client → Link Budget validation</li>
+          <li>SNR per client → MCS validation</li>
+          <li>Retry rate per radio → DCS trigger input</li>
+          <li>Roaming events → 802.11r/k/v validation</li>
+          <li>Client MCS distribution → capacity validation</li>
+          <li>BSS Load IE → load vs design comparison</li>
+          <li>AP health / reboots → hardware troubleshooting</li>
+          <li>BSS color conflicts → RRM sim input</li>
+          <li>OFDMA RU utilization → efficiency measurement</li>
+          <li>TWT session stats → battery/IoT validation</li>
+        </ul>
+      </div>
+      <div class="arch-box green">
+        <div class="box-title">Digital Twin → EP1/XIQ (Control)</div>
+        <ul>
+          <li>Config delta → XIQ Device Template update</li>
+          <li>Channel reassignment → XIQ AutoRF override</li>
+          <li>TX power adjustment → XIQ TPC settings</li>
+          <li>MBR change → XIQ radio profile update</li>
+          <li>RX-SOP tuning → XIQ high-density profile</li>
+          <li>SSID reduction → XIQ template edit</li>
+          <li>Troubleshoot fix → EXOS/VOSS CLI push</li>
+          <li>All changes: logged + teaching commentary</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>EP1 Feedback Loop Example</h3>
+    <div class="flow">
+<pre style="font-size:10px;">
+EP1 reports: AP-07, radio 5GHz, channel utilization 85%, retry rate 28%
+    │
+    ▼ EP1 Integration Agent normalizes + stores time-series
+    │
+    ▼ RRM Simulation Agent
+      Runs DCS algorithm: 85% util → triggers channel change
+      Predicts: AutoRF will move AP-07 from ch 36 → ch 100
+      BUT: ch 100 has 3 neighbor APs at -80dBm → will cause CCI
+      Result: oscillation risk DETECTED (RED)
+    │
+    ▼ Tuning Agent
+      Root cause: 6 SSIDs broadcasting → 22% beacon overhead
+                  Available airtime only 56% (should be 78%)
+      Fix: reduce to 4 SSIDs on this radio + increase CCI threshold to -80dBm
+    │
+    ▼ Config delta generated:
+      XIQ template: disable 2 SSIDs on AP-07 5GHz radio
+      XIQ template: update CCI threshold -85→-80 dBm
+    │
+    ▼ Teaching Agent:
+      "This mirrors PRB overhead in 5G. Your 6 SSIDs consume 22% of your
+       'radio frame'. Reducing to 4 SSIDs is equivalent to reducing PDCCH
+       + pilot overhead — more PRBs available for data. Same airtime math."
+    │
+    ▼ XIQ API push → EP1 confirms: utilization drops to 61%, retries to 8%
+</pre>
+    </div>
+  </section>
+
+  <!-- BROADCOM CHIPSET -->
+  <section id="broadcom">
+    <h2>7. Broadcom Chipset + AP Model Map</h2>
+    <table>
+      <tr><th>AP Model</th><th>WiFi Gen</th><th>Radios</th><th>Spatial Streams</th><th>PoE Required</th><th>SDR</th><th>Multi-AP Coord</th></tr>
+      <tr><td>AP3000</td><td>WiFi 6</td><td>2 (2.4+5)</td><td>2×2:2</td><td>802.3at (25.5W)</td><td class="cross">No</td><td class="cross">No</td></tr>
+      <tr><td>AP4000</td><td>WiFi 6E</td><td>3 (2.4+5+6)</td><td>3×2×2:2</td><td>802.3bt (51W)</td><td class="cross">No</td><td class="cross">No</td></tr>
+      <tr><td>AP5020</td><td>WiFi 7</td><td>3 (2.4+5+6)</td><td>3×4×4:4</td><td>802.3at or bt</td><td class="check">Yes (dual-5/dual-6)</td><td class="check">Yes</td></tr>
+      <tr><td>AP5022</td><td>WiFi 7</td><td>4 (+security)</td><td>4×4:4</td><td>802.3bt (51W)</td><td class="check">Yes</td><td class="check">Yes</td></tr>
+      <tr><td>AP5060/U/D</td><td>WiFi 7</td><td>3 outdoor</td><td>3×4×4:4</td><td>802.3bt (51W)</td><td class="check">Yes</td><td class="check">Yes</td></tr>
+    </table>
+
+    <div class="arch-grid arch-2col">
+      <div class="arch-box blue">
+        <div class="box-title">CONFIGURABLE via XIQ</div>
+        <div class="sub">TX Power (min/max dBm)</div>
+        <div class="sub">Channel (manual or DCS)</div>
+        <div class="sub">Channel Width (20/40/80/160/320 MHz)</div>
+        <div class="sub">OFDMA (UL/DL/both)</div>
+        <div class="sub">MBR (12/24 Mbps recommended)</div>
+        <div class="sub">RX-SOP (high-density only)</div>
+        <div class="sub">Association Limit per radio</div>
+        <div class="sub">802.11r Fast BSS Transition</div>
+        <div class="sub">SDR band mode (AP5020/5060)</div>
+        <div class="sub">Preamble Puncturing (802.11be)</div>
+        <div class="sub">Multi-AP Coordination (WiFi 7)</div>
+        <div class="sub">AutoRF CCI + retry thresholds</div>
+      </div>
+      <div class="arch-box red">
+        <div class="box-title">FIXED / CHIPSET-MANAGED (Broadcom)</div>
+        <div class="sub">Spatial streams count (hardware-fixed)</div>
+        <div class="sub">MCS index (auto per SNR)</div>
+        <div class="sub">4K-QAM activation (auto ≥36 dB SNR)</div>
+        <div class="sub">TWT interval scheduling (client negotiated)</div>
+        <div class="sub">OFDMA RU sizes (auto-allocated)</div>
+        <div class="sub">BSS Color value (auto 1-63)</div>
+        <div class="sub">HARQ retransmission (WiFi 7 chipset)</div>
+        <div class="sub">MLO link preference steering</div>
+        <div class="sub">Beamforming weight computation</div>
+        <div class="sub">Observable via EP1 telemetry ✓</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5G BRIDGE -->
+  <section id="bridge">
+    <h2>8. 5G↔WiFi Teaching Bridge</h2>
+    <table>
+      <tr><th>WiFi Concept</th><th>5G Equivalent</th><th>Key Difference</th></tr>
+      <tr><td>MLO (WiFi 7)</td><td>Carrier Aggregation</td><td>WiFi MLO is AP+client negotiated; CA is network-assigned</td></tr>
+      <tr><td>TX Power slider</td><td>P-Max</td><td>WiFi has no UE power control feedback loop</td></tr>
+      <tr><td>MCS 0–13 (802.11be)</td><td>NR MCS 0–28</td><td>MCS 13 = 4K-QAM, WiFi 7 only, requires SNR ≥36 dB</td></tr>
+      <tr><td>OFDMA scheduler</td><td>gNB scheduler</td><td>WiFi OFDMA layered on top of CSMA/CA — not replacing it</td></tr>
+      <tr><td>WMM AC (VO/VI/BE/BK)</td><td>DRB QoS bearer</td><td>WiFi has 4 ACs; NR has many more bearer types</td></tr>
+      <tr><td>RSSI / SNR</td><td>RSRP / RSRQ</td><td>Same physics; different measurement and reporting definitions</td></tr>
+      <tr><td>XIQ AutoRF (DCS+TPC)</td><td>SON (ANR+CCO+MLB)</td><td>SON is centralized+predictive; AutoRF is per-AP+reactive</td></tr>
+      <tr><td>802.11r Fast Transition</td><td>X2/Xn handover</td><td>WiFi FT is client-initiated; X2 is network-initiated</td></tr>
+      <tr><td>BSS Coloring</td><td>ICIC</td><td>Both reduce inter-cell interference; different mechanisms</td></tr>
+      <tr><td>Multi-AP Coordination</td><td>CoMP</td><td>Both coordinate multi-cell TX; WiFi 7 implementation is newer</td></tr>
+      <tr><td>Airtime % per radio</td><td>PRB utilization %</td><td>Same concept: shared medium utilization measurement</td></tr>
+      <tr><td>HARQ (WiFi 7)</td><td>HARQ</td><td>Both chipset-managed; WiFi HARQ is less mature</td></tr>
+      <tr><td>TWT sleep windows</td><td>eDRX cycles</td><td>TWT is per-device negotiated; eDRX is network-paged</td></tr>
+    </table>
+    <div class="callout yellow">
+      <strong>Critical insight for 5G engineers:</strong> Only 25% of WiFi frames carry user data (vs &gt;90% in 5G). 80% of all WiFi frames are &lt;256 bytes. 60% of all frames are control frames. This is why OFDMA is so impactful — and why airtime, not bandwidth, is the correct capacity metric.
+    </div>
+  </section>
+
+  <!-- WIFI GENERATION STRATEGY -->
+  <section id="wifigen">
+    <h2>9. WiFi Generation Strategy</h2>
+
+    <div class="callout green">
+      <strong>Version 1 scope:</strong> User selects AP generation — WiFi 6 (AP3000/AP4000) <em>or</em> WiFi 7 (AP5020/AP5022/AP5060) — for the entire site. The tool designs uniformly for that generation. The Comparison Engine runs both strategies on the same DPM inputs and shows the delta. Mixed-mode (WiFi 6 + WiFi 7 on the same site) is deferred to a future sprint — it requires floor plan topology which Version 1 does not collect.
+    </div>
+
+    <h3>Two Branches — Same Engine, Different Strategy</h3>
+    <div class="arch-grid arch-2col">
+      <div class="arch-box blue">
+        <div class="box-title">feature/wifi6-baseline</div>
+        <div class="sub">AP fleet: AP3000 (2×2:2) / AP4000 (tri-radio 6E)</div>
+        <div class="sub">Max MCS: 11 (1024-QAM, SNR ≥33 dB)</div>
+        <div class="sub">Max channel width: 160 MHz (5/6 GHz)</div>
+        <div class="sub">OFDMA: ✅  BSS Color: ✅  MLO: ❌</div>
+        <div class="sub">Multi-AP Coordination: ❌</div>
+        <div class="sub">MCS 12/13 (4K-QAM): ❌</div>
+        <div class="sub">Preamble Puncturing: ❌</div>
+        <div class="sub">Use case: current state, no WiFi 7 hardware</div>
+      </div>
+      <div class="arch-box teal">
+        <div class="box-title">feature/wifi7-complete</div>
+        <div class="sub">AP fleet: AP5020 / AP5022 / AP5060</div>
+        <div class="sub">Max MCS: 13 (4K-QAM, SNR ≥36-38 dB)</div>
+        <div class="sub">Max channel width: 320 MHz (6 GHz only)</div>
+        <div class="sub">OFDMA: ✅  BSS Color: ✅  MLO: ✅ (EMLSR/STR)</div>
+        <div class="sub">Multi-AP Coordination: ✅ (CoMP equivalent)</div>
+        <div class="sub">MCS 12/13: ✅ (chipset auto, SNR-gated)</div>
+        <div class="sub">Preamble Puncturing: ✅ (6 GHz, non-PSC)</div>
+        <div class="sub">Use case: greenfield WiFi 7, all gaps filled</div>
+      </div>
+    </div>
+
+    <h3>Strategy Pattern — How the Engine Implements This</h3>
+    <div class="flow">
+<pre style="font-size:10px;">
+class LinkBudgetStrategy(ABC):
+    @abstractmethod
+    def snr_to_mcs(self, protocol, channel_width, snr_db, spatial_streams) → MCSResult: ...
+    @abstractmethod
+    def max_mcs_index(self) → int: ...
+
+class WiFi6LinkBudget(LinkBudgetStrategy):
+    def max_mcs_index(self) → int: return 11        # MCS 11 = 1024-QAM 5/6
+
+class WiFi7LinkBudget(WiFi6LinkBudget):             # inherits WiFi 6 baseline
+    def snr_to_mcs(...):
+        result = super().snr_to_mcs(...)             # WiFi 6 lookup first
+        if snr_db >= 36 and self.be_capable:
+            result = self._apply_mcs_12_13(snr_db)  # upgrade to 4K-QAM
+        return result
+    def max_mcs_index(self) → int: return 13        # MCS 13 = 4K-QAM 5/6
+
+# Comparison Engine — runs BOTH strategies on the SAME DPM
+class ComparisonEngine:
+    def run(self, dpm: DesignParameterManifest) → ComparisonReport:
+        wifi6  = DesignEngine(strategy=WiFi6Strategy()).run(dpm)
+        wifi7  = DesignEngine(strategy=WiFi7Strategy()).run(dpm)
+        return ComparisonReport(wifi6=wifi6, wifi7=wifi7, delta=self._diff(wifi6, wifi7))
+</pre>
+    </div>
+
+    <h3>Feature Availability by Generation</h3>
+    <table>
+      <tr><th>Feature</th><th>WiFi 6 (AP3000/AP4000)</th><th>WiFi 7 (AP5020/AP5060)</th></tr>
+      <tr><td>OFDMA (UL + DL)</td><td class="check">✅ 802.11ax</td><td class="check">✅ 802.11be enhanced</td></tr>
+      <tr><td>BSS Coloring</td><td class="check">✅ 802.11ax</td><td class="check">✅ 802.11ax</td></tr>
+      <tr><td>MCS 10/11 (1024-QAM)</td><td class="check">✅ SNR ≥29 dB</td><td class="check">✅ SNR ≥29 dB</td></tr>
+      <tr><td>MCS 12/13 (4K-QAM)</td><td class="cross">❌ not supported</td><td class="check">✅ SNR ≥36 dB, chipset auto</td></tr>
+      <tr><td>Max channel width</td><td class="var">160 MHz (5/6 GHz)</td><td class="check">320 MHz (6 GHz only)</td></tr>
+      <tr><td>MLO (multi-link)</td><td class="cross">❌ single link only</td><td class="check">✅ EMLSR / EMLMR / STR</td></tr>
+      <tr><td>Multi-AP Coordination</td><td class="cross">❌ not supported</td><td class="check">✅ AP5020/5022/5060 only</td></tr>
+      <tr><td>Preamble Puncturing</td><td class="cross">❌ not supported</td><td class="check">✅ 802.11be, 6 GHz</td></tr>
+      <tr><td>HARQ</td><td class="cross">❌ not supported</td><td class="check">✅ chipset-managed</td></tr>
+      <tr><td>TWT (Target Wake Time)</td><td class="check">✅ 802.11ax</td><td class="check">✅ 802.11be extended</td></tr>
+      <tr><td>802.11r/k/v roaming</td><td class="check">✅</td><td class="check">✅</td></tr>
+      <tr><td>WPA3 / MFP (6 GHz)</td><td class="check">✅ AP4000 required</td><td class="check">✅ required</td></tr>
+      <tr><td>SDR (dual-5 or dual-6)</td><td class="cross">❌</td><td class="check">✅ AP5020/5022/5060</td></tr>
+    </table>
+
+    <h3>Mixed-Mode — Deferred (future sprint)</h3>
+    <div class="callout yellow">
+      <strong>Why deferred:</strong> Mixing WiFi 6 APs (AP3000/AP4000) and WiFi 7 APs (AP5020+) on the same site introduces zone-boundary problems — MLO loss on roam between generations, 320→160 MHz ACI at adjacency, Multi-AP Coord cluster limited to WiFi 7 APs only. Solving these correctly requires knowing <em>which AP is physically adjacent to which</em>. That requires floor plan input, AP placement, and an adjacency graph — none of which Version 1 collects.
+    </div>
+    <div class="arch-grid arch-3col">
+      <div class="arch-box orange">
+        <div class="box-title">What mixed-mode will need</div>
+        <div class="sub">Floor plan upload (SVG / DXF / image)</div>
+        <div class="sub">AP placement tool (drag + drop)</div>
+        <div class="sub">Adjacency graph derived from placement</div>
+        <div class="sub">Per-zone AP model assignment</div>
+        <div class="sub">Zone-boundary channel reconciliation</div>
+        <div class="sub">MLO roam capability map per zone pair</div>
+      </div>
+      <div class="arch-box red">
+        <div class="box-title">Zone-boundary problems (mixed)</div>
+        <div class="sub">MLO drops to single-link on WiFi 6 AP roam</div>
+        <div class="sub">320 MHz → 160 MHz ACI at zone edges</div>
+        <div class="sub">Multi-AP Coord cluster = WiFi 7 APs only</div>
+        <div class="sub">Config Agent must emit two template types</div>
+        <div class="sub">RRM Sim must model per-zone capability</div>
+      </div>
+      <div class="arch-box blue">
+        <div class="box-title">Future branch</div>
+        <div class="sub">feature/mixed-topology</div>
+        <div class="sub">Builds on wifi6-baseline + wifi7-complete</div>
+        <div class="sub">MixedAPStrategy = zone_map[zone] → strategy</div>
+        <div class="sub">Comparison Engine: mode 3 (mixed vs pure)</div>
+        <div class="sub">Sprint 3+ — after topology tools exist</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPRINT 1 -->
+  <section id="sprint">
+    <h2>10. Sprint 1 — 3-Day Build Plan</h2>
+    <div class="callout">
+      <strong>Sprint 1 Goal:</strong> Working E2E loop — requirements intake → capacity plan → link budget → AP count → XIQ config + EXOS/VOSS CLI — with RAG validation and Teaching Agent at every step. CLI-testable. Railway-deployed.
+    </div>
+
+    <div class="sprint-row">
+      <div class="sprint-day">
+        <div class="day-label">Day 1 — Foundation</div>
+        <div class="sprint-batch">
+          <div class="batch-label">Batch 1A (parallel)</div>
+          <li>M1: RAG ingest pipeline → ChromaDB, tier T1/T2/T3</li>
+          <li>M2: Core data models (Pydantic v2 schemas)</li>
+          <li>M3: 802.11be-2024 section indexer</li>
+        </div>
+        <div class="sprint-batch">
+          <div class="batch-label">Batch 1B (sequential)</div>
+          <li>M4: Local RAG FastAPI server (localhost:8001)</li>
+          <li>M5: Link Budget Engine (MCS 0-13, all protocols)</li>
+        </div>
+      </div>
+      <div class="sprint-day">
+        <div class="day-label">Day 2 — Intelligence</div>
+        <div class="sprint-batch">
+          <div class="batch-label">Batch 2A (parallel)</div>
+          <li>M6: Airtime Calculator (Rev Wi-Fi + OFDMA)</li>
+          <li>M7: AP Selection Engine (PoE + chipset)</li>
+          <li>M8: Channel Planning (2.4/5/6 GHz + DFS)</li>
+        </div>
+        <div class="sprint-batch">
+          <div class="batch-label">Batch 2B (sequential)</div>
+          <li>M9: Teaching Agent (4 modes, bridge primary)</li>
+          <li>M10: RAG Validation Agent (3-layer)</li>
+          <li>M11: Intake Agent (Socratic → JSON)</li>
+        </div>
+      </div>
+      <div class="sprint-day">
+        <div class="day-label">Day 3 — Integration</div>
+        <div class="sprint-batch">
+          <div class="batch-label">Batch 3A (parallel)</div>
+          <li>M12: Config Agent (XIQ + EXOS + VOSS + AutoRF)</li>
+          <li>M13: Design Agent (iterative capacity↔RF loop)</li>
+          <li>M14: FastAPI backend + WebSocket + Railway</li>
+        </div>
+        <div class="sprint-batch">
+          <div class="batch-label">Batch 3B (sequential)</div>
+          <li>M15: Orchestrator (full state machine)</li>
+          <li>M16: E2E integration test (500m², 200 devices)</li>
+          <li>M17: Railway deploy + smoke test</li>
+        </div>
+      </div>
+    </div>
+
+    <h3>Sprint 2+ Deferred</h3>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;">
+      <span class="tag">RRM Simulation (DCS/TPC/BSS/Multi-AP)</span>
+      <span class="tag">EP1 Integration + Tuning Agent</span>
+      <span class="tag">XIQ API push + Netmiko SSH</span>
+      <span class="tag">Troubleshooting Agent (30-row)</span>
+      <span class="tag">React frontend + collaborative UI</span>
+      <span class="tag">Multi-user WebSocket sessions</span>
+      <span class="tag red">Mixed-mode (WiFi 6+7 co-exist) — needs floor plan topology</span>
+      <span class="tag">EVE-NG lab integration</span>
+    </div>
+  </section>
+
+  <!-- DIGITAL TWIN CRITERIA -->
+  <section id="twin">
+    <h2>11. Why This Is a True Digital Twin</h2>
+    <table>
+      <tr><th>Digital Twin Criterion</th><th>This Platform</th></tr>
+      <tr><td>Virtual model of physical system</td><td class="check">✅ Agent-simulated WiFi: capacity, link budget, RRM, channel</td></tr>
+      <tr><td>Real-time data from physical system</td><td class="check">✅ EP1 telemetry ingested every 15 min</td></tr>
+      <tr><td>Bidirectional synchronization</td><td class="check">✅ EP1 → Twin (observe) + Twin → XIQ (control)</td></tr>
+      <tr><td>Predictive simulation</td><td class="check">✅ RRM Sim predicts AutoRF convergence before it happens</td></tr>
+      <tr><td>Optimization feedback loop</td><td class="check">✅ Gap analysis → config delta → push → EP1 validates</td></tr>
+      <tr><td>Mirroring of physical behavior</td><td class="check">✅ Broadcom AutoRF algorithm replicated: DCS + TPC + BSS Color</td></tr>
+      <tr><td>Multi-domain coverage</td><td class="check">✅ RF layer, capacity layer, config layer, wired layer</td></tr>
+    </table>
+    <div class="callout green">
+      <strong>The core insight:</strong> The physical network and the digital twin run the <em>same RRM algorithm</em> — one in Broadcom silicon, one in Python. When they diverge, the Tuning Agent finds out why and corrects it. This is what makes it a real twin, not just a design tool.
+    </div>
+  </section>
+
+  <!-- DEPLOYMENT ARCHITECTURE -->
+  <section id="deploy">
+    <h2>12. Deployment Architecture</h2>
+    <div class="flow">
+<pre style="font-size:10px;">
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  RAILWAY (shared cloud — all collaborators)                                 │
+│  FastAPI backend  │  PostgreSQL (sessions, design history)  │  Redis (presence)  │
+│  Agent orchestration services  │  EP1 Integration Agent     │                 │
+└────────────────────────────────────┬────────────────────────────────────────┘
+                                     │ queries localhost:8001
+┌────────────────────────────────────▼────────────────────────────────────────┐
+│  LOCAL (each user — private corpus never leaves here)                       │
+│  ~/.wifi-rag/corpus/        PRIVATE — never committed to GitHub             │
+│  ~/.wifi-rag/embeddings/    ChromaDB vector store                           │
+│  RAG local API (localhost:8001)  POST /validate  POST /query                │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  EXTREME NETWORKS INFRASTRUCTURE                                            │
+│  ExtremeCloud IQ (XIQ) — config push target (XIQ API)                      │
+│  Extreme Platform One (EP1) — telemetry source (EP1 API / webhook)         │
+│  APs: AP3000 / AP4000 / AP5020 / AP5022 / AP5060                           │
+│  Switches: EXOS (SwitchEngine) + VOSS (Fabric Engine)                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+  GITHUB (public): wifi-mastery/ source code only — zero corpus files
+</pre>
+    </div>
+  </section>
+
+  <footer>
+    WiFi Digital Twin Platform — HLD v1.1 | April 2026 | Private &amp; Confidential<br>
+    Agents validated against IEEE 802.11be-2024 | WLANPros WLPC 2026 | Revolution Wi-Fi Capacity Planner
+  </footer>
+
+</div><!-- /.page -->
+</div><!-- /.layout -->
+
+<script>
+  // Highlight active sidebar link based on scroll position
+  const links = document.querySelectorAll('.sidebar a:not(.sub)');
+  const sections = [...links].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = [...links].find(l => l.getAttribute('href') === '#' + e.target.id);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
