@@ -116,6 +116,11 @@
     <div class="nav-group">Status</div>
     <li><a href="#pending">Pending</a></li>
     <li><a href="#next">Next Session</a></li>
+
+    <div class="nav-group">Quick Links</div>
+    <li><a href="lld-phase1-wifi-digital-twin.html#dpm-ref" target="_blank">110-Param XIQ Ref ↗</a></li>
+    <li><a href="lld-phase1-wifi-digital-twin.html" target="_blank">LLD Phase 1 ↗</a></li>
+    <li><a href="../index.html">← Landing Page</a></li>
   </ul>
 </nav>
 
@@ -123,7 +128,7 @@
   <div class="page-header">
     <div class="label">End-of-Day Summary</div>
     <h1>WiFi Digital Twin — Phase 1 LLD</h1>
-    <div class="meta">April 29, 2026 &nbsp;·&nbsp; Sprint 1 Planning &nbsp;·&nbsp; 4 commits pushed to main</div>
+    <div class="meta">April 29, 2026 &nbsp;·&nbsp; Sprint 1 Planning (2 sessions) &nbsp;·&nbsp; 5 commits pushed to main</div>
   </div>
 
   <!-- Accomplished -->
@@ -155,6 +160,23 @@
         <div><strong>Copyright footers + session memory saved</strong><br>
         © 2026 Khursheed Khan footer added to HLD and LLD. Two memory files written: project_wifi_branch_strategy.md + project_wifi_lld_phase1.md.</div>
       </li>
+
+      <!-- Session 2 -->
+      <li style="margin-top:18px;padding-top:18px;border-top:1px solid var(--border)">
+        <div class="badge done" style="background:rgba(139,92,246,0.2);color:#a78bfa;">S2</div>
+        <div><strong>XIQ Config Reference — expanded to 110 params with Override badge</strong><br>
+        Added <code>channel_width_6g</code> as param #4 (W6+) — was missing from 109-param table. Renumbered all subsequent rows. Introduced teal <code>src-ov</code> (Override) badge for 25 params that have safe defaults users should know about and can freely adjust. Added safe operating range text in Default column for all 25 Override params (e.g. tx_power_min: 7–15 dBm, channel_width_5g: 20/40/80/160 MHz guidance). Sidebar + landing page quick-link updated to "110-Param XIQ Reference".</div>
+      </li>
+      <li>
+        <div class="badge done" style="background:rgba(139,92,246,0.2);color:#a78bfa;">S2</div>
+        <div><strong>WiFi7Params Pydantic model expanded</strong><br>
+        Two new fields added to L1 data model: <code>multi_ru_enabled: bool = True</code> (Multi-RU per client, 802.11be) and <code>restricted_twt: bool = False</code> (deterministic latency for industrial IoT). Both exposed as src-ov Override params in the XIQ config table.</div>
+      </li>
+      <li>
+        <div class="badge done" style="background:rgba(139,92,246,0.2);color:#a78bfa;">S2</div>
+        <div><strong>Convention center design scenario + 3-phase navigation UX</strong><br>
+        Walked through a real-world design problem: 3,000-user convention center (929 m², WiFi 7, Zoom 50% + VoIP 30% + Slack/YouTube 20%). Identified capacity as the dominant driver (3.2 users/m² = sports-arena tier). Mapped DPM Socratic gaps still needed (ceiling height, Zoom quality tier, device mix, country code = 4 hard blockers). Defined 3-phase navigation model: Phase 1 Intake (A–H sections with progress bar) → Phase 2 Design Engines (auto) → Phase 3 XIQ Config Override review. Convention center replaced the generic "office 500m²" as the Sprint 1 E2E integration test case.</div>
+      </li>
     </ul>
   </section>
 
@@ -180,6 +202,11 @@
       <div class="commit">
         <span class="commit-hash">87b0d97</span>
         <span class="commit-msg">Fix NYT landing page: add Start Here banner + wire all cards to real destinations</span>
+        <span class="commit-date">Apr 29</span>
+      </div>
+      <div class="commit" style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)">
+        <span class="commit-hash" style="background:rgba(139,92,246,0.15);color:#a78bfa;">b9d36d1</span>
+        <span class="commit-msg">LLD: expand XIQ config reference to 110 params + Override badge (Session 2)</span>
         <span class="commit-date">Apr 29</span>
       </div>
     </div>
@@ -270,6 +297,35 @@
           <div class="fi-desc">Memory: LLD Phase 1 status, 9-module table, file paths</div>
         </div>
       </div>
+
+      <div class="file-item" style="border-left:3px solid rgba(139,92,246,0.5)">
+        <div class="fi-icon">📄</div>
+        <div>
+          <div class="fi-path">docs/lld-phase1-wifi-digital-twin.html</div>
+          <div class="fi-desc">Session 2: 110-param XIQ config table — added channel_width_6g (#4, W6+), teal Override badge, safe ranges for 25 params, WiFi7Params expanded (multi_ru_enabled + restricted_twt), sidebar + landing page updated</div>
+        </div>
+      </div>
+      <div class="file-item" style="border-left:3px solid rgba(139,92,246,0.5)">
+        <div class="fi-icon">📄</div>
+        <div>
+          <div class="fi-path">index.html</div>
+          <div class="fi-desc">Session 2: quick-link updated to "▶ 110-Param XIQ Reference"</div>
+        </div>
+      </div>
+      <div class="file-item" style="border-left:3px solid rgba(139,92,246,0.5)">
+        <div class="fi-icon">🧠</div>
+        <div>
+          <div class="fi-path">~/.claude/projects/.../memory/project_wifi_lld_phase1.md</div>
+          <div class="fi-desc">Session 2: updated — 110 params, Override badge taxonomy, WiFi7Params fields, #dpm-ref direct link</div>
+        </div>
+      </div>
+      <div class="file-item" style="border-left:3px solid rgba(139,92,246,0.5)">
+        <div class="fi-icon">🧠</div>
+        <div>
+          <div class="fi-path">~/.claude/projects/.../memory/project_wifi_digital_twin_sprint1.md</div>
+          <div class="fi-desc">Session 2: updated — E2E test case = convention center 929m²/3K users, 3-phase navigation UX, Socratic gap list, DPM blocker params</div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -280,7 +336,7 @@
       <div class="card pending">
         <div class="card-label">Sprint 1 — Coding</div>
         <h3>Python implementation</h3>
-        <p>LLD is finalized. No Python code written yet. Sprint 1 = RAG corpus + Pydantic models (L1) + Link Budget Engine (L2) + Airtime Calculator (L3).</p>
+        <p>LLD + 110-param XIQ table finalized. No Python code written yet. Day 1 = RAG corpus + Pydantic models (L1) + Link Budget Engine (L2) + Airtime Calculator (L3). E2E test = convention center 929 m² / 3K users.</p>
       </div>
       <div class="card pending">
         <div class="card-label">DPM Section H</div>
@@ -317,14 +373,24 @@
       <li>
         <div class="badge pending">3</div>
         <div><strong>Sprint 1 — Day 1: Airtime Calculator (L3)</strong><br>
-        Implement Rev Wi-Fi formula: Airtime% = App_Kbps / Device_Kbps. SSID beacon overhead table. VoIP trap guard. OFDMA ×1.30 modifier. AP count ceiling formula.</div>
+        Implement Rev Wi-Fi formula: Airtime% = App_Kbps / Device_Kbps. SSID beacon overhead table. VoIP trap guard (G.711 = 128 Kbps, no AMPDU). OFDMA ×1.30 modifier. AP count ceiling formula. Target: handle convention center scenario (900 VoIP clients triggers trap, 1500 Zoom clients drive dominant load).</div>
+      </li>
+      <li>
+        <div class="badge pending">4</div>
+        <div><strong>Convention center — complete DPM Socratic intake</strong><br>
+        4 hard blockers still needed before engine can run: (1) ceiling height, (2) Zoom quality tier (720p=2.5 Mbps vs 1080p=4 Mbps), (3) device mix phone/tablet/laptop %, (4) country code. Also needed: SSID count, WPA2/WPA3 policy, AutoRF vs manual, DFS tolerance, YouTube resolution target.</div>
       </li>
     </ul>
 
     <pre># Sprint 1 Day 1 — kick-off command
 cd /private/tmp/wifi-mastery
 mkdir -p src/{models,engines,agents,api,rag}
-touch src/__init__.py src/models/dpm.py src/engines/link_budget.py src/engines/airtime.py</pre>
+touch src/__init__.py src/models/dpm.py src/engines/link_budget.py src/engines/airtime.py
+
+# Convention center test inputs (feed to E2E test once engines ready)
+# area_sqm=929, peak_clients=3000, wifi_gen=7
+# apps: zoom_pct=50, voip_pct=30, streaming_pct=20
+# PENDING: ceiling_height, zoom_quality_tier, device_mix, country_code</pre>
   </section>
 
   <footer>
