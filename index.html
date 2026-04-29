@@ -233,6 +233,7 @@
 
   <div class="s-section">Overview</div>
   <a class="s-link active" onclick="show('home')"><span class="s-num">⌂</span>Home</a>
+  <a class="s-link" href="docs/index-nyt.html" style="color:#3b82f6;font-weight:600"><span class="s-num" style="color:#3b82f6">⚡</span>Digital Twin Platform</a>
 
   <div class="s-section">01 · Design</div>
   <a class="s-link" onclick="show('rf')"><span class="s-num">D1</span>RF Fundamentals</a>
@@ -307,6 +308,11 @@
       <h3>04 Troubleshooting</h3>
       <p>L1→L7 client decision tree, roaming, RF interference, EXOS/VOSS debug commands, XIQ diagnostics</p>
     </div>
+    <a class="pillar" href="docs/index-nyt.html" style="text-decoration:none;border:1px solid #3b82f6;background:rgba(59,130,246,0.07)">
+      <div class="pillar-icon">⚡</div>
+      <h3 style="color:#3b82f6">Digital Twin Platform</h3>
+      <p>AI-assisted design engine — HLD v1.1, LLD Phase 1, Sprint roadmap, 5G↔WiFi bridge, AP fleet, design journey</p>
+    </a>
   </div>
 
   <h3>Key Conventions</h3>
@@ -1007,7 +1013,6 @@ function show(id) {
   document.querySelectorAll('.s-link').forEach(s => s.classList.remove('active'));
   const section = document.getElementById(id);
   if (section) section.classList.add('active');
-  // Find and activate sidebar link
   document.querySelectorAll('.s-link').forEach(link => {
     if (link.getAttribute('onclick') && link.getAttribute('onclick').includes("'" + id + "'")) {
       link.classList.add('active');
@@ -1015,6 +1020,11 @@ function show(id) {
   });
   window.scrollTo(0, 0);
 }
+// Support direct hash links e.g. index.html#rf
+window.addEventListener('DOMContentLoaded', () => {
+  const hash = location.hash.slice(1);
+  if (hash && document.getElementById(hash)) show(hash);
+});
 </script>
 </body>
 </html>

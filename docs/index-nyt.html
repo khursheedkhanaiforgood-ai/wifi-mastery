@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Khursheed Khan — WiFi Digital Twin Platform</title>
+<title>WiFi Digital Twin Platform — Khursheed Khan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Libre+Franklin:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -18,178 +18,124 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 48px 24px 72px;
   }
 
-  .container { max-width: 980px; width: 100%; }
+  .container { max-width: 980px; width: 100%; padding: 0 24px 72px; }
+
+  /* ── Sticky top nav ── */
+  .top-nav {
+    position: sticky; top: 0; z-index: 200;
+    background: #111; border-bottom: 2px solid #326891;
+    width: 100%; display: flex; align-items: stretch;
+    font-family: 'Libre Franklin', Arial, sans-serif;
+    font-size: 11px; font-weight: 600;
+  }
+  .top-nav a {
+    color: #aaa; text-decoration: none;
+    padding: 10px 14px; border-bottom: 3px solid transparent;
+    transition: all 0.12s; white-space: nowrap; display: flex; align-items: center;
+  }
+  .top-nav a:hover { color: #fff; border-bottom-color: #326891; }
+  .top-nav a.tn-home { color: #e2e8f0; font-weight: 700; padding-left: 20px; margin-right: 8px; }
+  .top-nav a.tn-doc  { color: #60a5fa; border-bottom-color: rgba(96,165,250,0.3); }
+  .top-nav a.tn-doc:hover { border-bottom-color: #60a5fa; }
+  .top-nav .tn-sep   { color: #333; padding: 10px 2px; display: flex; align-items: center; }
+  .top-nav .tn-right { margin-left: auto; display: flex; align-items: stretch; }
 
   /* ── Masthead ── */
-  .nyt-rule-top  { border: none; border-top: 3px solid #111; margin-bottom: 6px; }
+  .nyt-rule-top  { border: none; border-top: 3px solid #111; margin-bottom: 6px; margin-top: 36px; }
   .nyt-rule-thin { border: none; border-top: 1px solid #111; margin-bottom: 18px; }
   .nyt-logo {
     font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.62rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.22em;
-    color: #666;
-    text-align: center;
-    margin-bottom: 6px;
+    font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.22em; color: #666; text-align: center; margin-bottom: 6px;
   }
-
   h1 {
     font-family: 'Libre Baskerville', Georgia, serif;
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #111;
-    line-height: 1.15;
-    margin-bottom: 14px;
+    font-size: 2.5rem; font-weight: 700; color: #111; line-height: 1.15; margin-bottom: 14px;
   }
-
   .byline {
     font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.72rem;
-    color: #666;
-    margin-bottom: 14px;
-    letter-spacing: 0.02em;
+    font-size: 0.72rem; color: #666; margin-bottom: 14px; letter-spacing: 0.02em;
   }
   .byline strong { color: #111; font-weight: 700; }
-
   .subtitle {
     font-family: 'Libre Baskerville', Georgia, serif;
-    font-size: 1.0rem;
-    font-style: italic;
-    color: #444;
-    line-height: 1.8;
-    margin-bottom: 28px;
-    border-bottom: 1px solid #E2E2E2;
-    padding-bottom: 28px;
+    font-size: 1.0rem; font-style: italic; color: #444; line-height: 1.8;
+    margin-bottom: 28px; border-bottom: 1px solid #E2E2E2; padding-bottom: 28px;
   }
 
   /* ── Section labels ── */
   .section-label {
     font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.62rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: #326891;
-    margin-bottom: 16px;
-    padding-bottom: 6px;
-    border-bottom: 2px solid #326891;
-    display: block;
+    font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.18em; color: #326891; margin-bottom: 16px;
+    padding-bottom: 6px; border-bottom: 2px solid #326891; display: block;
   }
 
   /* ── Cards ── */
   .cards { display: grid; gap: 0; }
   .cards-2 { grid-template-columns: 1fr 1fr; }
   .cards-3 { grid-template-columns: 1fr 1fr 1fr; }
-  .cards-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
-  @media (max-width: 720px) { .cards-2, .cards-3, .cards-4 { grid-template-columns: 1fr; } }
+  @media (max-width: 700px) { .cards-2, .cards-3 { grid-template-columns: 1fr; } }
 
   .card {
-    background: #FFFFFF;
-    border: 1px solid #E2E2E2;
-    margin: -1px 0 0 -1px;
-    padding: 22px;
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    transition: background 0.12s;
-    color: inherit;
+    background: #FFFFFF; border: 1px solid #E2E2E2;
+    margin: -1px 0 0 -1px; padding: 22px;
+    text-decoration: none; display: flex; flex-direction: column;
+    transition: background 0.12s; color: inherit;
   }
   .card:hover { background: #F7F7F5; }
-
   .card .card-label {
     font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.58rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: #326891;
-    margin-bottom: 8px;
+    font-size: 0.58rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.15em; color: #326891; margin-bottom: 8px;
   }
   .card h2 {
     font-family: 'Libre Baskerville', Georgia, serif;
-    font-size: 1.0rem;
-    font-weight: 700;
-    color: #111;
-    margin-bottom: 8px;
-    line-height: 1.35;
+    font-size: 1.0rem; font-weight: 700; color: #111; margin-bottom: 8px; line-height: 1.35;
   }
   .card p {
     font-family: 'Libre Franklin', Arial, sans-serif;
-    color: #555;
-    font-size: 0.82rem;
-    line-height: 1.65;
-    flex: 1;
+    color: #555; font-size: 0.82rem; line-height: 1.65; flex: 1;
   }
   .card .cta {
-    margin-top: 14px;
-    font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #326891;
+    margin-top: 14px; font-family: 'Libre Franklin', Arial, sans-serif;
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: #326891;
   }
 
-  /* ── Feature highlight card ── */
+  /* ── Feature card ── */
   .feature-card {
-    border: 1px solid #E2E2E2;
-    padding: 22px 26px;
-    margin-bottom: 0;
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    text-decoration: none;
-    transition: background 0.12s;
-    color: inherit;
+    border: 1px solid #E2E2E2; padding: 22px 26px; margin-bottom: 0;
+    display: flex; gap: 20px; align-items: flex-start;
+    text-decoration: none; transition: background 0.12s; color: inherit;
   }
   .feature-card:hover { background: #F7F7F5; }
   .feature-card .fc-icon {
     font-family: 'Libre Baskerville', Georgia, serif;
-    font-size: 2.4rem;
-    color: #326891;
-    line-height: 1;
-    flex-shrink: 0;
+    font-size: 2.4rem; color: #326891; line-height: 1; flex-shrink: 0;
   }
   .feature-card h2 {
     font-family: 'Libre Baskerville', Georgia, serif;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #111;
-    margin-bottom: 6px;
+    font-size: 1.15rem; font-weight: 700; color: #111; margin-bottom: 6px;
   }
   .feature-card p {
     font-family: 'Libre Franklin', Arial, sans-serif;
-    color: #555;
-    font-size: 0.84rem;
-    line-height: 1.65;
+    color: #555; font-size: 0.84rem; line-height: 1.65;
   }
   .feature-card .fc-cta {
-    margin-top: 10px;
-    font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #326891;
+    margin-top: 10px; font-family: 'Libre Franklin', Arial, sans-serif;
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: #326891;
   }
 
   /* ── Tags ── */
   .tag {
     font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.55rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    padding: 2px 7px;
-    white-space: nowrap;
-    border: 1px solid;
-    margin-right: 5px;
-    margin-bottom: 4px;
-    display: inline-block;
+    font-size: 0.55rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; padding: 2px 7px; white-space: nowrap;
+    border: 1px solid; margin-right: 5px; margin-bottom: 4px; display: inline-block;
   }
   .tag-blue   { color: #1a3a6b; border-color: #93C5FD; background: #EFF6FF; }
   .tag-green  { color: #1a5c2a; border-color: #A7D7B0; background: #F3FBF5; }
@@ -206,106 +152,61 @@
   /* ── Sprint timeline ── */
   .sprint-row { display: flex; gap: 0; margin-bottom: 8px; }
   .sprint-item {
-    flex: 1;
-    border: 1px solid #E2E2E2;
-    margin-left: -1px;
-    padding: 18px 20px;
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    transition: background 0.12s;
+    flex: 1; border: 1px solid #E2E2E2; margin-left: -1px; padding: 18px 20px;
+    text-decoration: none; color: inherit; display: block; transition: background 0.12s;
   }
   a.sprint-item:hover { background: #F7F7F5; }
   .sprint-num {
     font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #326891;
-    margin-bottom: 6px;
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: #326891; margin-bottom: 6px;
   }
   .sprint-item h3 {
     font-family: 'Libre Baskerville', Georgia, serif;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #111;
-    margin-bottom: 6px;
+    font-size: 0.9rem; font-weight: 700; color: #111; margin-bottom: 6px;
   }
   .sprint-item p {
     font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.76rem;
-    color: #666;
-    line-height: 1.6;
+    font-size: 0.76rem; color: #666; line-height: 1.6;
   }
   .sprint-item .sprint-cta {
-    margin-top: 10px;
-    font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #326891;
+    margin-top: 10px; font-family: 'Libre Franklin', Arial, sans-serif;
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: #326891;
   }
   .sprint-item.active { background: #F7FBFF; border-color: #326891; }
-  .sprint-item.active .sprint-num { color: #326891; }
   .sprint-item.planned { background: #FAFAFA; }
   .sprint-item.planned h3 { color: #9CA3AF; }
   .sprint-item.planned p  { color: #C0C0C0; }
   .sprint-item.planned .sprint-cta { color: #9CA3AF; }
-
-  /* ── Planned badge ── */
   .planned-badge {
-    display: inline-block;
-    font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.55rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    padding: 2px 7px;
-    border: 1px solid #D1D5DB;
-    color: #9CA3AF;
-    background: #F9FAFB;
-    margin-bottom: 8px;
+    display: inline-block; font-family: 'Libre Franklin', Arial, sans-serif;
+    font-size: 0.55rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.12em; padding: 2px 7px; border: 1px solid #D1D5DB;
+    color: #9CA3AF; background: #F9FAFB; margin-bottom: 8px;
   }
 
-  /* ── 5G Bridge table ── */
+  /* ── Bridge table ── */
   .bridge-table { width: 100%; border-collapse: collapse; margin: 0 0 36px; font-size: 0.8rem; }
   .bridge-table th {
-    font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.62rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #326891;
-    padding: 8px 12px;
-    border-bottom: 2px solid #326891;
-    text-align: left;
+    font-family: 'Libre Franklin', Arial, sans-serif; font-size: 0.62rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; color: #326891;
+    padding: 8px 12px; border-bottom: 2px solid #326891; text-align: left;
   }
   .bridge-table td {
     font-family: 'Libre Franklin', Arial, sans-serif;
-    padding: 8px 12px;
-    border-bottom: 1px solid #E8E8E8;
-    color: #444;
-    vertical-align: top;
+    padding: 8px 12px; border-bottom: 1px solid #E8E8E8; color: #444; vertical-align: top;
   }
   .bridge-table tr:hover td { background: #F7F7F5; }
   .bridge-table td:first-child { font-weight: 600; color: #111; }
   .bridge-table a { color: inherit; text-decoration: none; border-bottom: 1px dotted #326891; }
-  .bridge-table a:hover { border-bottom-style: solid; color: #326891; }
+  .bridge-table a:hover { color: #326891; border-bottom-style: solid; }
 
   /* ── Start Here banner ── */
   .start-here {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    background: #0a0f1e;
-    color: #e2e8f0;
-    border: 2px solid #3b82f6;
-    padding: 22px 26px;
-    margin-bottom: 36px;
-    text-decoration: none;
-    transition: background 0.15s;
+    display: flex; align-items: center; gap: 20px;
+    background: #0a0f1e; color: #e2e8f0; border: 2px solid #3b82f6;
+    padding: 22px 26px; margin-bottom: 36px; text-decoration: none; transition: background 0.15s;
   }
   .start-here:hover { background: #111827; }
   .start-here .sh-arrow { font-size: 2rem; color: #3b82f6; flex-shrink: 0; line-height: 1; }
@@ -320,46 +221,70 @@
   }
   .start-here p { font-family: 'Libre Franklin', Arial, sans-serif; font-size: 0.8rem; color: #94a3b8; line-height: 1.6; }
   .start-here .sh-cta {
-    font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.1em; color: #3b82f6; margin-top: 8px;
+    font-family: 'Libre Franklin', Arial, sans-serif; font-size: 0.68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; color: #3b82f6; margin-top: 8px;
   }
+
+  /* ── Knowledge Base pillar grid ── */
+  .kb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-bottom: 36px; }
+  .kb-pillar {
+    border: 1px solid #E2E2E2; margin: -1px 0 0 -1px; padding: 22px;
+    background: #fff; display: flex; flex-direction: column;
+  }
+  .kb-pillar-head {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+    padding-bottom: 10px; border-bottom: 1px solid #E2E2E2;
+  }
+  .kb-pillar-icon { font-size: 1.3rem; }
+  .kb-pillar-label {
+    font-family: 'Libre Franklin', Arial, sans-serif;
+    font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.14em; color: #326891;
+  }
+  .kb-pillar-title {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 1.0rem; font-weight: 700; color: #111;
+  }
+  .kb-section-list { list-style: none; flex: 1; }
+  .kb-section-list li { margin-bottom: 2px; }
+  .kb-section-list a {
+    font-family: 'Libre Franklin', Arial, sans-serif;
+    font-size: 0.78rem; color: #444; text-decoration: none;
+    display: flex; align-items: baseline; gap: 8px; padding: 5px 8px;
+    border-left: 2px solid transparent; transition: all 0.12s;
+  }
+  .kb-section-list a:hover { color: #326891; border-left-color: #326891; background: #F7FBFF; }
+  .kb-num {
+    font-family: 'Libre Franklin', Arial, sans-serif;
+    font-size: 0.58rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: #326891; flex-shrink: 0; min-width: 26px;
+  }
+  .kb-ref-row { border: 1px solid #E2E2E2; margin-top: -1px; padding: 18px 22px; }
+  .kb-ref-row .kb-ref-links { display: flex; flex-wrap: wrap; gap: 0; margin-top: 12px; }
+  .kb-ref-links a {
+    font-family: 'Libre Franklin', Arial, sans-serif;
+    font-size: 0.78rem; color: #444; text-decoration: none;
+    display: flex; align-items: center; gap: 8px; padding: 5px 12px;
+    border: 1px solid #E2E2E2; margin: 0 -1px -1px 0; transition: all 0.12s;
+  }
+  .kb-ref-links a:hover { color: #326891; background: #F7FBFF; }
 
   /* ── Design Journey timeline ── */
   .journey-wrap { position: relative; margin-bottom: 36px; }
   .journey-wrap::before {
-    content: '';
-    position: absolute;
-    left: 18px; top: 0; bottom: 0;
-    width: 2px;
-    background: linear-gradient(to bottom, #326891 0%, #E2E2E2 100%);
+    content: ''; position: absolute; left: 18px; top: 0; bottom: 0;
+    width: 2px; background: linear-gradient(to bottom, #326891 0%, #E2E2E2 100%);
   }
-  .journey-item {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 0;
-    position: relative;
-  }
+  .journey-item { display: flex; gap: 20px; position: relative; }
   .journey-dot {
-    flex-shrink: 0;
-    width: 38px; height: 38px;
-    border-radius: 50%;
-    border: 2px solid #326891;
-    background: #fff;
+    flex-shrink: 0; width: 38px; height: 38px; border-radius: 50%;
+    border: 2px solid #326891; background: #fff;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1rem;
-    z-index: 1;
-    margin-top: 18px;
+    font-size: 1rem; z-index: 1; margin-top: 18px;
   }
   .journey-card {
-    flex: 1;
-    border: 1px solid #E2E2E2;
-    padding: 18px 22px;
-    margin-bottom: 12px;
-    text-decoration: none;
-    display: block;
-    color: inherit;
-    transition: background 0.12s;
+    flex: 1; border: 1px solid #E2E2E2; padding: 18px 22px; margin-bottom: 12px;
+    text-decoration: none; display: block; color: inherit; transition: background 0.12s;
   }
   .journey-card:hover { background: #F7F7F5; }
   .journey-card .jc-theme {
@@ -376,29 +301,22 @@
     font-size: 0.8rem; color: #555; line-height: 1.65;
   }
   .journey-card .jc-cta {
-    font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.1em; color: #326891; margin-top: 10px; display: block;
+    font-family: 'Libre Franklin', Arial, sans-serif; font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; color: #326891; margin-top: 10px; display: block;
   }
   .journey-card .jc-tags { margin-top: 10px; }
 
-  /* ── Session Log list ── */
+  /* ── Session log ── */
   .session-list { display: flex; flex-direction: column; gap: 0; margin-bottom: 36px; }
   .session-entry {
-    display: flex;
-    align-items: stretch;
-    border: 1px solid #E2E2E2;
-    margin-top: -1px;
-    text-decoration: none;
-    color: inherit;
-    transition: background 0.12s;
+    display: flex; align-items: stretch;
+    border: 1px solid #E2E2E2; margin-top: -1px;
+    text-decoration: none; color: inherit; transition: background 0.12s;
   }
   .session-entry:hover { background: #F7F7F5; }
   .session-entry .se-date {
-    flex-shrink: 0; width: 120px;
-    background: #F7FBFF;
-    border-right: 1px solid #E2E2E2;
-    padding: 14px 16px;
+    flex-shrink: 0; width: 110px; background: #F7FBFF;
+    border-right: 1px solid #E2E2E2; padding: 14px 16px;
     display: flex; flex-direction: column; justify-content: center;
   }
   .se-date .se-d {
@@ -415,29 +333,40 @@
     font-family: 'Libre Baskerville', Georgia, serif;
     font-size: 0.95rem; font-weight: 700; color: #111; margin-bottom: 5px;
   }
-  .se-body p {
-    font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.78rem; color: #666; line-height: 1.55;
-  }
+  .se-body p { font-family: 'Libre Franklin', Arial, sans-serif; font-size: 0.78rem; color: #666; line-height: 1.55; }
   .se-body .se-cta {
-    font-family: 'Libre Franklin', Arial, sans-serif;
-    font-size: 0.64rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.1em; color: #326891; margin-top: 6px; display: block;
-  }
-
-  /* ── footer ── */
-  footer {
-    text-align: center;
-    padding: 36px 24px 16px;
-    border-top: 1px solid #E2E2E2;
-    margin-top: 48px;
+    font-family: 'Libre Franklin', Arial, sans-serif; font-size: 0.64rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; color: #326891; margin-top: 6px; display: block;
   }
 
   .link { color: #326891; text-decoration: none; font-weight: 600; }
   .link:hover { text-decoration: underline; }
+
+  footer {
+    text-align: center; padding: 36px 24px 16px;
+    border-top: 1px solid #E2E2E2; margin-top: 48px;
+  }
 </style>
 </head>
 <body>
+
+<!-- ══ STICKY TOP NAV ══ -->
+<nav class="top-nav">
+  <a class="tn-home" href="../index.html">&#8592; WiFi Mastery</a>
+  <span class="tn-sep">|</span>
+  <a href="#knowledge-base">Knowledge Base</a>
+  <a href="#architecture">Architecture Docs</a>
+  <a href="#design-strategy">Design Strategy</a>
+  <a href="#sprint-roadmap">Sprint Roadmap</a>
+  <a href="#design-journey">Design Journey</a>
+  <a href="#session-log">Session Log</a>
+  <div class="tn-right">
+    <a class="tn-doc" href="hld-wifi-digital-twin.html">HLD v1.1</a>
+    <a class="tn-doc" href="lld-phase1-wifi-digital-twin.html">LLD Phase 1</a>
+    <a class="tn-doc" href="session_summary_20260429.html">EOD Apr 29</a>
+  </div>
+</nav>
+
 <div class="container">
 
   <!-- Masthead -->
@@ -460,83 +389,184 @@
   </p>
 
   <!-- ▶ START HERE -->
-  <span class="section-label">&#9654; Start Here</span>
   <a class="start-here" href="../index.html">
     <div class="sh-arrow">&#9654;</div>
     <div>
       <div class="sh-label">Begin your journey &mdash; open the knowledge base</div>
       <h2>WiFi Mastery &mdash; Design &middot; Configure &middot; Deploy &middot; Troubleshoot</h2>
       <p>The full WiFi Mastery knowledge base: 4 pillars, 22 sections, WiFi 6 &amp; 7, Extreme Networks
-         XIQ + EP1, EXOS + VOSS CLI, link budget, capacity planning, channel planning, and
-         troubleshooting. Start here before diving into the architecture documents below.</p>
+         XIQ + EP1, EXOS + VOSS CLI. All section links below go there directly.</p>
       <div class="sh-cta">Open WiFi Mastery &rarr;</div>
     </div>
   </a>
 
-  <!-- Architecture Documents -->
-  <span class="section-label">Architecture Documents</span>
+  <!-- ══════════════════ KNOWLEDGE BASE ══════════════════ -->
+  <span id="knowledge-base" class="section-label" style="scroll-margin-top:48px">Knowledge Base &mdash; WiFi Mastery (22 sections, 4 pillars + reference)</span>
+
+  <div class="kb-grid">
+
+    <!-- 01 Design -->
+    <div class="kb-pillar">
+      <div class="kb-pillar-head">
+        <div class="kb-pillar-icon">&#128208;</div>
+        <div>
+          <div class="kb-pillar-label">Pillar 01</div>
+          <div class="kb-pillar-title">Design</div>
+        </div>
+      </div>
+      <ul class="kb-section-list">
+        <li><a href="../index.html#rf"><span class="kb-num">D1</span>RF Fundamentals</a></li>
+        <li><a href="../index.html#ssid"><span class="kb-num">D2</span>SSID Architecture</a></li>
+        <li><a href="../index.html#channel"><span class="kb-num">D3</span>Channel Planning</a></li>
+        <li><a href="../index.html#security"><span class="kb-num">D4</span>Security Design (WPA3/OWE)</a></li>
+        <li><a href="../index.html#qos"><span class="kb-num">D5</span>QoS Design</a></li>
+        <li><a href="../index.html#vlan"><span class="kb-num">D6</span>VLAN &amp; I-SID Mapping</a></li>
+      </ul>
+    </div>
+
+    <!-- 02 Configuration -->
+    <div class="kb-pillar">
+      <div class="kb-pillar-head">
+        <div class="kb-pillar-icon">&#9881;</div>
+        <div>
+          <div class="kb-pillar-label">Pillar 02</div>
+          <div class="kb-pillar-title">Configuration</div>
+        </div>
+      </div>
+      <ul class="kb-section-list">
+        <li><a href="../index.html#xiq-policy"><span class="kb-num">C1</span>XIQ Network Policy</a></li>
+        <li><a href="../index.html#ssid-profiles"><span class="kb-num">C2</span>SSID Profiles</a></li>
+        <li><a href="../index.html#user-profiles"><span class="kb-num">C3</span>User Profiles &amp; QoS</a></li>
+        <li><a href="../index.html#guest"><span class="kb-num">C4</span>Guest Isolation</a></li>
+        <li><a href="../index.html#fa"><span class="kb-num">C5</span>Fabric Attach</a></li>
+      </ul>
+    </div>
+
+    <!-- 03 Deployment -->
+    <div class="kb-pillar">
+      <div class="kb-pillar-head">
+        <div class="kb-pillar-icon">&#127959;</div>
+        <div>
+          <div class="kb-pillar-label">Pillar 03</div>
+          <div class="kb-pillar-title">Deployment</div>
+        </div>
+      </div>
+      <ul class="kb-section-list">
+        <li><a href="../index.html#placement"><span class="kb-num">P1</span>AP Placement</a></li>
+        <li><a href="../index.html#poe"><span class="kb-num">P2</span>PoE Requirements</a></li>
+        <li><a href="../index.html#onboarding"><span class="kb-num">P3</span>XIQ Onboarding</a></li>
+        <li><a href="../index.html#checklist"><span class="kb-num">P4</span>Deployment Checklist (8-phase)</a></li>
+      </ul>
+    </div>
+
+    <!-- 04 Troubleshooting -->
+    <div class="kb-pillar">
+      <div class="kb-pillar-head">
+        <div class="kb-pillar-icon">&#128269;</div>
+        <div>
+          <div class="kb-pillar-label">Pillar 04</div>
+          <div class="kb-pillar-title">Troubleshooting</div>
+        </div>
+      </div>
+      <ul class="kb-section-list">
+        <li><a href="../index.html#client"><span class="kb-num">T1</span>Client Connectivity (L1&rarr;L7)</a></li>
+        <li><a href="../index.html#roaming"><span class="kb-num">T2</span>Roaming Issues</a></li>
+        <li><a href="../index.html#rf-int"><span class="kb-num">T3</span>RF Interference</a></li>
+        <li><a href="../index.html#debug"><span class="kb-num">T4</span>Debug Commands (EXOS/VOSS)</a></li>
+        <li><a href="../index.html#xiq-diag"><span class="kb-num">T5</span>XIQ Diagnostics</a></li>
+      </ul>
+    </div>
+
+  </div><!-- /kb-grid -->
+
+  <!-- 05 Reference row -->
+  <div class="kb-ref-row" style="margin-bottom:36px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:2px">
+      <span style="font-size:1.2rem">&#128218;</span>
+      <div>
+        <div style="font-family:'Libre Franklin',Arial,sans-serif;font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:#326891">Pillar 05</div>
+        <div style="font-family:'Libre Baskerville',Georgia,serif;font-size:1.0rem;font-weight:700;color:#111">Reference</div>
+      </div>
+    </div>
+    <div class="kb-ref-links">
+      <a href="../index.html#standards"><span class="kb-num">R1</span>802.11 Standards</a>
+      <a href="../index.html#ap3000"><span class="kb-num">R2</span>AP3000 Notes</a>
+      <a href="../index.html#glossary"><span class="kb-num">R3</span>Glossary (50+ terms)</a>
+    </div>
+  </div>
+
+  <!-- ══════════════════ ARCHITECTURE DOCS ══════════════════ -->
+  <span id="architecture" class="section-label" style="scroll-margin-top:48px">Architecture Documents &mdash; Digital Twin Platform</span>
   <a class="feature-card" href="hld-wifi-digital-twin.html" style="border-bottom:none">
     <div class="fc-icon">&#8963;</div>
     <div>
       <h2>High Level Design &mdash; v1.1</h2>
       <p>12-section end-to-end architecture: 3 operational loops (Design / Optimization / Troubleshooting),
          full agent topology, RRM simulation mirroring Broadcom AutoRF, EP1 telemetry integration,
-         coverage vs capacity tradeoff, WiFi generation strategy (WiFi 6 vs WiFi 7 uniform deployment),
-         Sprint roadmap, 5G&harr;WiFi teaching bridge, and Broadcom chipset parameter map.
+         coverage vs capacity tradeoff, WiFi generation strategy (uniform WiFi 6 vs WiFi 7),
+         5G&harr;WiFi teaching bridge, Broadcom chipset parameter map, Sprint roadmap.
          Sticky left sidebar with active-section tracking.</p>
-      <div class="fc-cta">Open HLD &rarr;</div>
+      <div class="fc-cta">Open HLD v1.1 &rarr;</div>
     </div>
   </a>
-  <a class="feature-card" href="lld-phase1-wifi-digital-twin.html" style="margin-bottom:36px;border-top:none">
+  <a class="feature-card" href="lld-phase1-wifi-digital-twin.html" style="margin-bottom:12px;border-top:none">
     <div class="fc-icon">&#9881;</div>
     <div>
       <h2>Low Level Design &mdash; Phase 1 &mdash; v1.0</h2>
-      <p>9 modules with full Pydantic v2 schemas, MCS 0&ndash;13 reference table, WiFi 6 / WiFi 7
-         Strategy Pattern (ABC &rarr; WiFi6LinkBudget &rarr; WiFi7LinkBudget + ComparisonEngine),
-         Rev Wi-Fi airtime formula, SSID beacon overhead table, AP model library + PoE budget,
-         CCI scoring algorithm, Socratic DPM intake flow (Sections A&ndash;H),
-         Design Agent iterative capacity&harr;RF loop, Config Agent XIQ/EXOS/VOSS templates,
-         FastAPI + WebSocket API spec.
-         Appendix A: 12 mixed-mode input parameters for Sprint 4+.</p>
+      <p>9 modules: Pydantic v2 schemas (L1), Link Budget + MCS 0&ndash;13 table (L2),
+         Rev Wi-Fi airtime formula + OFDMA modifier (L3), AP model library + PoE budget (L4),
+         CCI scoring + DFS/PSC channel planning (L5), Socratic DPM intake Sections A&ndash;H (L6),
+         Design Agent iterative capacity&harr;RF loop (L7), Config Agent XIQ/EXOS/VOSS (L8),
+         FastAPI + WebSocket API (L9). Appendix A: 12 mixed-mode params for Sprint 4+.</p>
       <div class="fc-cta">Open LLD Phase 1 &rarr;</div>
     </div>
   </a>
+  <a class="feature-card" href="session_summary_20260429.html" style="margin-bottom:36px">
+    <div class="fc-icon">&#128196;</div>
+    <div>
+      <h2>EOD Session Summary &mdash; April 29, 2026</h2>
+      <p>What was built today: HLD v1.1 (WiFi gen strategy + left sidebar), LLD Phase 1 (all 9 modules),
+         NYT landing page (full redesign), 4 commits to main.
+         Includes live URLs, git commit log, pending items, and Sprint 1 Day 1 kick-off commands.</p>
+      <div class="fc-cta">Open EOD Summary &rarr;</div>
+    </div>
+  </a>
 
-  <!-- Design Strategy -->
-  <span class="section-label">Design Strategy &mdash; WiFi Generation (HLD Section 9)</span>
+  <!-- ══════════════════ DESIGN STRATEGY ══════════════════ -->
+  <span id="design-strategy" class="section-label" style="scroll-margin-top:48px">Design Strategy &mdash; WiFi Generation (HLD Section 9)</span>
   <div class="cards cards-2" style="margin-bottom:36px">
     <a class="card" href="hld-wifi-digital-twin.html#wifigen">
       <div class="card-label">Branch 1 &mdash; Baseline &mdash; Sprint 1</div>
       <h2>feature/wifi6-baseline</h2>
       <p>AP3000 / AP4000 fleet. MCS ceiling: 11 (1024-QAM 5/6). OFDMA, BSS Color, TWT.
-         No MLO, no 320&nbsp;MHz, no MCS&nbsp;12/13. Current-state benchmark for clients
-         already on WiFi&nbsp;6 hardware. All engines in LLD Phase 1.</p>
+         No MLO, no 320&nbsp;MHz, no MCS&nbsp;12/13. Benchmark for sites already on WiFi&nbsp;6 hardware.
+         WiFi6LinkBudget strategy in LLD L2.</p>
       <div style="margin-top:12px">
         <span class="tag tag-blue">MCS 0–11</span>
         <span class="tag tag-teal">OFDMA</span>
         <span class="tag tag-green">BSS Color</span>
         <span class="tag tag-amber">802.3at PoE</span>
       </div>
-      <div class="cta">See WiFi Gen Strategy &rarr;</div>
+      <div class="cta">WiFi Gen Strategy &rarr;</div>
     </a>
     <a class="card" href="hld-wifi-digital-twin.html#wifigen">
       <div class="card-label">Branch 2 &mdash; Complete &mdash; Sprint 1</div>
       <h2>feature/wifi7-complete</h2>
       <p>AP5020 / AP5022 / AP5060 fleet. MCS ceiling: 13 (4096-QAM 5/6, SNR&nbsp;&ge;&nbsp;38&nbsp;dB).
-         MLO (EMLSR / STR), 320&nbsp;MHz channel (6&nbsp;GHz), Multi-AP Coordination,
-         Preamble Puncturing, HARQ. WiFi7LinkBudget inherits WiFi6 and upgrades at SNR&nbsp;&ge;&nbsp;36&nbsp;dB.</p>
+         MLO (EMLSR/STR), 320&nbsp;MHz (6&nbsp;GHz), Multi-AP Coordination, Preamble Puncturing, HARQ.
+         WiFi7LinkBudget inherits WiFi 6 and upgrades at SNR&nbsp;&ge;&nbsp;36&nbsp;dB.</p>
       <div style="margin-top:12px">
         <span class="tag tag-purple">MCS 0–13</span>
         <span class="tag tag-amber">MLO</span>
         <span class="tag tag-orange">320 MHz</span>
         <span class="tag tag-teal">Multi-AP Coord</span>
       </div>
-      <div class="cta">See WiFi Gen Strategy &rarr;</div>
+      <div class="cta">WiFi Gen Strategy &rarr;</div>
     </a>
   </div>
 
-  <!-- Sprint Roadmap -->
-  <span class="section-label">Sprint Roadmap (HLD Section 10)</span>
+  <!-- ══════════════════ SPRINT ROADMAP ══════════════════ -->
+  <span id="sprint-roadmap" class="section-label" style="scroll-margin-top:48px">Sprint Roadmap (HLD Section 10)</span>
   <div class="sprint-row" style="margin-bottom:8px">
     <a class="sprint-item active" href="lld-phase1-wifi-digital-twin.html">
       <div class="sprint-num">Sprint 1 &mdash; 3 days &mdash; &#9679; Active Now</div>
@@ -553,13 +583,13 @@
     <a class="sprint-item planned" href="hld-wifi-digital-twin.html#sprint">
       <div class="planned-badge">Planned &mdash; Sprint 3</div>
       <h3>Troubleshooting Loop</h3>
-      <p>30-row event-driven agent, Spectrum Analysis sub-agent, WLANPi integration, React frontend, multi-user collab sessions.</p>
+      <p>30-row event-driven agent, Spectrum Analysis sub-agent, WLANPi integration, React frontend, multi-user collab.</p>
       <div class="sprint-cta">View in HLD &rarr;</div>
     </a>
     <a class="sprint-item planned" href="hld-wifi-digital-twin.html#sprint">
       <div class="planned-badge">Planned &mdash; Sprint 4+</div>
       <h3>Mixed-Mode Topology</h3>
-      <p>Floor plan ingestion + AP placement + adjacency graph. WiFi 6 + WiFi 7 co-existing zones. 12 new DPM params (Appendix A).</p>
+      <p>Floor plan ingestion + AP adjacency graph. WiFi 6 + WiFi 7 co-existing zones. 12 new DPM params (LLD Appendix A).</p>
       <div class="sprint-cta">View in HLD &rarr;</div>
     </a>
   </div>
@@ -567,24 +597,24 @@
     Full sprint breakdown &rarr; <a class="link" href="hld-wifi-digital-twin.html#sprint">HLD Section 10</a>
   </p>
 
-  <!-- 5G↔WiFi Bridge -->
+  <!-- ══════════════════ BRIDGE TABLE ══════════════════ -->
   <span class="section-label">5G &harr; WiFi Teaching Bridge &mdash; Selected Mappings (HLD Section 8)</span>
   <table class="bridge-table">
     <tr><th>WiFi Concept</th><th>5G Equivalent</th><th>Key Difference</th></tr>
     <tr><td><a href="hld-wifi-digital-twin.html#wifigen">MLO (WiFi 7)</a></td><td>Carrier Aggregation</td><td>MLO is AP+client negotiated; CA is network-assigned. Both aggregate bands simultaneously.</td></tr>
-    <tr><td><a href="hld-wifi-digital-twin.html#bridge">MCS 0&ndash;13 (802.11be)</a></td><td>NR MCS 0&ndash;28</td><td>MCS 13 = 4096-QAM, WiFi 7 only; requires SNR &ge; 38 dB. WiFi ceiling is lower than NR.</td></tr>
-    <tr><td><a href="hld-wifi-digital-twin.html#bridge">OFDMA scheduler</a></td><td>gNB scheduler</td><td>WiFi OFDMA layered on top of CSMA/CA &mdash; not replacing it. Contention still exists.</td></tr>
-    <tr><td><a href="hld-wifi-digital-twin.html#rrm">XIQ AutoRF (DCS+TPC)</a></td><td>SON (ANR+CCO+MLB)</td><td>SON is centralized+predictive; AutoRF is per-AP+reactive. AutoRF 30-min cycle.</td></tr>
+    <tr><td><a href="hld-wifi-digital-twin.html#bridge">MCS 0&ndash;13 (802.11be)</a></td><td>NR MCS 0&ndash;28</td><td>MCS 13 = 4096-QAM, WiFi 7 only; SNR &ge; 38 dB. WiFi ceiling is lower than NR.</td></tr>
+    <tr><td><a href="hld-wifi-digital-twin.html#bridge">OFDMA scheduler</a></td><td>gNB scheduler</td><td>WiFi OFDMA layered on CSMA/CA &mdash; contention still exists.</td></tr>
+    <tr><td><a href="hld-wifi-digital-twin.html#rrm">XIQ AutoRF (DCS+TPC)</a></td><td>SON (ANR+CCO+MLB)</td><td>SON is centralized+predictive; AutoRF is per-AP+reactive. 30-min cycle.</td></tr>
     <tr><td><a href="hld-wifi-digital-twin.html#rrm">BSS Coloring</a></td><td>ICIC / eICIC</td><td>Both reduce inter-cell interference. BSS Color is per-frame header; ICIC is scheduling.</td></tr>
-    <tr><td><a href="hld-wifi-digital-twin.html#broadcom">Multi-AP Coordination</a></td><td>CoMP / JT-CoMP</td><td>Both coordinate multi-cell TX. WiFi 7 Multi-AP Coord is still ratifying (TGbe).</td></tr>
-    <tr><td><a href="hld-wifi-digital-twin.html#balance">Airtime % per radio</a></td><td>PRB utilization %</td><td>Same concept: shared medium utilization. Rev Wi-Fi formula: Airtime = App_Kbps / Device_Kbps.</td></tr>
-    <tr><td><a href="hld-wifi-digital-twin.html#bridge">DFS channels (5 GHz)</a></td><td>Licensed spectrum</td><td>DFS is detect-and-vacate; 5G has licensed priority. DFS adds 60-s CAC delay at boot.</td></tr>
+    <tr><td><a href="hld-wifi-digital-twin.html#broadcom">Multi-AP Coordination</a></td><td>CoMP / JT-CoMP</td><td>Both coordinate multi-cell TX. WiFi 7 Multi-AP Coord still ratifying (TGbe).</td></tr>
+    <tr><td><a href="hld-wifi-digital-twin.html#balance">Airtime % per radio</a></td><td>PRB utilization %</td><td>Same concept: shared medium utilization. Rev Wi-Fi: Airtime = App_Kbps / Device_Kbps.</td></tr>
+    <tr><td><a href="hld-wifi-digital-twin.html#bridge">DFS channels (5 GHz)</a></td><td>Licensed spectrum</td><td>DFS is detect-and-vacate; 5G has licensed priority. DFS adds 60-s CAC delay.</td></tr>
   </table>
   <p style="font-family:'Libre Franklin',Arial,sans-serif;font-size:0.72rem;color:#888;margin-bottom:36px">
     Full 13-row bridge table &rarr; <a class="link" href="hld-wifi-digital-twin.html#bridge">HLD Section 8</a>
   </p>
 
-  <!-- AP Fleet -->
+  <!-- ══════════════════ AP FLEET ══════════════════ -->
   <span class="section-label">Extreme Networks AP Fleet &mdash; Broadcom Chipsets (HLD Section 7)</span>
   <div class="cards cards-3" style="margin-bottom:36px">
     <a class="card" href="hld-wifi-digital-twin.html#broadcom">
@@ -607,8 +637,7 @@
       <div class="card-label">WiFi 7 &mdash; AP5020 / 5022 / 5060</div>
       <h2>AP5020 Series</h2>
       <p>4&times;4:4, 2.4+5+6&nbsp;GHz. SDR: dual-5 or dual-6&nbsp;GHz mode. MCS 0&ndash;13.
-         MLO, 320&nbsp;MHz, Multi-AP Coord, Preamble Puncturing. AP5022 adds security radio.
-         AP5060 is outdoor-rated.</p>
+         MLO, 320&nbsp;MHz, Multi-AP Coord, Puncturing. AP5022 adds security radio. AP5060 outdoor.</p>
       <div style="margin-top:10px"><span class="tag tag-purple">WiFi 7</span><span class="tag tag-amber">MLO</span><span class="tag tag-orange">SDR</span><span class="tag tag-teal">320 MHz</span></div>
       <div class="cta">AP + chipset detail &rarr;</div>
     </a>
@@ -616,11 +645,11 @@
 
   <hr class="divider">
 
-  <!-- ── DESIGN JOURNEY ── -->
-  <span class="section-label">Design Journey &mdash; How We Designed This Architecture</span>
+  <!-- ══════════════════ DESIGN JOURNEY ══════════════════ -->
+  <span id="design-journey" class="section-label" style="scroll-margin-top:48px">Design Journey &mdash; How We Designed This Architecture (April 29, 2026)</span>
   <p style="font-family:'Libre Baskerville',Georgia,serif;font-size:0.88rem;font-style:italic;color:#555;line-height:1.8;margin-bottom:28px">
     A chronological account of the architectural decisions made on April 29, 2026 &mdash; from first principles
-    to a fully-specified two-branch platform. Each step links to the document where that decision lives.
+    to a fully-specified two-branch platform. Each step links to the exact document and section where that decision lives.
   </p>
 
   <div class="journey-wrap">
@@ -630,13 +659,10 @@
       <a class="journey-card" href="hld-wifi-digital-twin.html#overview">
         <div class="jc-theme">Theme 1 &mdash; Problem Framing</div>
         <h3>Why a Digital Twin? The 3 Operational Loops</h3>
-        <p>Enterprise WiFi failures are hard to predict because RRM (AutoRF), client behaviour, and
-           application load interact non-linearly. A reactive approach means catching problems after
-           users complain. We framed the solution as three closed loops:
-           <strong>Design Loop</strong> (pre-deploy prediction),
-           <strong>Optimization Loop</strong> (live EP1 telemetry &harr; RRM simulation), and
-           <strong>Troubleshooting Loop</strong> (event-driven 30-row agent). Each loop has its own
-           agent, its own data sources, and its own feedback path back into XIQ configuration.</p>
+        <p>Enterprise WiFi failures are hard to predict because RRM (AutoRF), client behaviour, and application load interact non-linearly. We framed the solution as three closed loops:
+           <strong>Design Loop</strong> (pre-deploy prediction via link budget + airtime),
+           <strong>Optimization Loop</strong> (live EP1 telemetry &harr; RRM simulation agent), and
+           <strong>Troubleshooting Loop</strong> (event-driven 30-row agent). Each loop has its own agent, data sources, and feedback path into XIQ configuration.</p>
         <div class="jc-tags">
           <span class="tag tag-blue">3 Operational Loops</span>
           <span class="tag tag-teal">EP1 Telemetry</span>
@@ -651,14 +677,11 @@
       <a class="journey-card" href="hld-wifi-digital-twin.html#wifigen">
         <div class="jc-theme">Theme 2 &mdash; Scope Decision</div>
         <h3>Mixed-Mode Deferral: Why Phase 1 Is Uniform WiFi 6 or WiFi 7</h3>
-        <p>The user asked: can the tool handle a site with both WiFi 6 and WiFi 7 APs? The answer
-           is technically yes, but only if we know the floor plan &mdash; because mixed-mode creates
-           zone-boundary problems: MLO drops on inter-generation roam, 320&nbsp;MHz&rarr;160&nbsp;MHz
-           ACI at borders, and Multi-AP Coordination clusters that only WiFi 7 APs can join.
-           Without an adjacency graph, we cannot resolve those conflicts.
-           <strong>Decision: Phase 1 = uniform AP generation per site. User chooses WiFi 6 OR WiFi 7.
-           Mixed-mode is Sprint 4+ when floor plan ingestion is available.</strong>
-           The 12 additional input parameters needed for mixed-mode are catalogued in LLD Appendix A.</p>
+        <p>The question: can the tool handle a site with both WiFi 6 and WiFi 7 APs? Yes, but only with a floor plan — because zone-boundary problems arise: MLO drops on inter-generation roam, 320&nbsp;MHz&rarr;160&nbsp;MHz ACI at borders, Multi-AP Coord clusters that only WiFi 7 APs join.
+           Without an adjacency graph, these cannot be resolved.
+           <strong>Decision: Phase 1 = one AP generation per site. User chooses WiFi 6 OR WiFi 7.
+           Mixed-mode = Sprint 4+ with floor plan ingestion.</strong>
+           The 12 additional DPM inputs needed are catalogued in LLD Appendix A.</p>
         <div class="jc-tags">
           <span class="tag tag-red">Mixed-Mode Deferred</span>
           <span class="tag tag-amber">Adjacency Graph Required</span>
@@ -673,13 +696,10 @@
       <a class="journey-card" href="lld-phase1-wifi-digital-twin.html#l2">
         <div class="jc-theme">Theme 3 &mdash; Code Architecture</div>
         <h3>Strategy Pattern: One Engine, Two Protocols</h3>
-        <p>Rather than writing separate engines for WiFi 6 and WiFi 7, we applied the Gang-of-Four
-           Strategy Pattern. <code>LinkBudgetStrategy</code> is an abstract base class.
-           <code>WiFi6LinkBudget</code> caps MCS at 11. <code>WiFi7LinkBudget</code> inherits WiFi 6
-           and upgrades to MCS 12/13 only when SNR &ge; 36&nbsp;dB and protocol == 802.11be.
-           A <code>ComparisonEngine</code> runs both strategies on the same DPM and returns a delta report.
-           This means a single site survey can instantly show: <em>&ldquo;WiFi 7 saves you 2 APs here
-           because the open-plan office SNR consistently clears 36&nbsp;dB.&rdquo;</em></p>
+        <p>Rather than separate engines, we applied the Strategy Pattern.
+           <code>LinkBudgetStrategy</code> ABC. <code>WiFi6LinkBudget</code> caps MCS at 11.
+           <code>WiFi7LinkBudget</code> inherits WiFi 6 and upgrades to MCS 12/13 when SNR &ge; 36&nbsp;dB + protocol == 802.11be.
+           <code>ComparisonEngine</code> runs both on the same DPM and returns a delta report — so a single site survey instantly shows &ldquo;WiFi 7 saves you 2 APs here.&rdquo;</p>
         <div class="jc-tags">
           <span class="tag tag-purple">Strategy Pattern</span>
           <span class="tag tag-blue">MCS 0–13</span>
@@ -693,16 +713,8 @@
       <div class="journey-dot">&#128203;</div>
       <a class="journey-card" href="lld-phase1-wifi-digital-twin.html#l1">
         <div class="jc-theme">Theme 4 &mdash; Data Model</div>
-        <h3>Design Parameter Manifest: 7 Sections, Socratic Intake, Source Flags</h3>
-        <p>Every design decision is anchored to the DPM &mdash; a ~60-parameter manifest in 7 sections:
-           <strong>A</strong> (Site), <strong>B</strong> (Clients), <strong>C</strong> (Applications),
-           <strong>D</strong> (Network), <strong>E</strong> (Channel), <strong>F</strong> (Security),
-           <strong>G</strong> (RRM), plus <strong>H</strong> (WiFi 7 extras: MLO bands, 320&nbsp;MHz,
-           Multi-AP Coord toggle). Each field carries a source flag: <em>[User provided]</em>,
-           <em>[Derived from X]</em>, or <em>[Default &mdash; confirm?]</em>.
-           The Intake Agent uses a Socratic dialogue to populate A&ndash;H before any engine runs.
-           Pydantic v2 model validators enforce business rules (e.g. concurrent_active &le; concurrent_assoc).
-           RRMParams hard-codes <code>dynamic_channel_width=False</code> per WLANPros WLPC 2026 guidance.</p>
+        <h3>Design Parameter Manifest: 7 Sections + Socratic Intake + Source Flags</h3>
+        <p>Every engine anchors to the DPM: ~60 parameters in 7 sections (A Site, B Clients, C Apps, D Network, E Channel, F Security, G RRM) plus H (WiFi 7 extras: MLO bands, 320&nbsp;MHz toggle, Multi-AP Coord). Each field carries [User provided] / [Derived from X] / [Default &mdash; confirm?]. Pydantic v2 validators enforce business rules. RRMParams hard-codes <code>dynamic_channel_width=False</code> per WLANPros WLPC 2026.</p>
         <div class="jc-tags">
           <span class="tag tag-blue">Pydantic v2</span>
           <span class="tag tag-green">7 DPM Sections</span>
@@ -718,14 +730,11 @@
       <a class="journey-card" href="lld-phase1-wifi-digital-twin.html#l3">
         <div class="jc-theme">Theme 5 &mdash; Engine Calibration</div>
         <h3>Rev Wi-Fi Airtime Formula, CCI Scoring, and the VoIP Trap</h3>
-        <p>The capacity engine is built on the Revolution Wi-Fi Capacity Planner methodology.
-           Core formula: <strong>Airtime% = App_Kbps / Device_Kbps</strong> per active client.
-           Available airtime = RF_Environment% &minus; SSID Beacon Overhead% (1 SSID = 2.5% on 2.4/5&nbsp;GHz,
-           1.5% on 6&nbsp;GHz; 6 SSIDs = 15.0%). AP count = &lceil;&Sigma;(Active &times; Airtime) / Available&rceil;.
-           OFDMA modifier: &times;1.30 when &gt;50% frames &lt;256&nbsp;bytes.
-           <strong>VoIP trap:</strong> G.711 is not 64&nbsp;Kbps &mdash; it is 128&nbsp;Kbps per stream
-           (160-byte frames, no AMPDU), so airtime is 2.5&times; higher than engineers from 5G expect.
-           CCI scoring: reuse ratio = ap_count / available_channels; LOW &lt; 1.5, MEDIUM &lt; 3.0, HIGH &ge; 3.0.</p>
+        <p>Core formula: <strong>Airtime% = App_Kbps / Device_Kbps</strong> per active client.
+           Available = RF_Environment% &minus; SSID Beacon Overhead% (1 SSID = 2.5% on 5&nbsp;GHz, 1.5% on 6&nbsp;GHz; 6 SSIDs = 15%). AP count = &lceil;&Sigma;(Active &times; Airtime) / Available&rceil;.
+           OFDMA modifier &times;1.30 when &gt;50% frames &lt;256&nbsp;bytes.
+           <strong>VoIP trap:</strong> G.711 is 128&nbsp;Kbps (not 64&nbsp;Kbps) due to 160-byte frames, no AMPDU &mdash; airtime is 2.5&times; higher than 5G engineers expect.
+           CCI: reuse = ap_count / channels; LOW &lt; 1.5, MEDIUM &lt; 3.0, HIGH &ge; 3.0.</p>
         <div class="jc-tags">
           <span class="tag tag-orange">Rev Wi-Fi Formula</span>
           <span class="tag tag-red">VoIP Trap</span>
@@ -741,15 +750,10 @@
       <a class="journey-card" href="lld-phase1-wifi-digital-twin.html#l7">
         <div class="jc-theme">Theme 6 &mdash; Agent Architecture</div>
         <h3>Intake &rarr; Design &rarr; Config: The Orchestrator State Machine</h3>
-        <p>Four agents form the Phase 1 pipeline.
-           <strong>Intake Agent (L6)</strong> conducts the Socratic DPM dialogue and validates all 7 sections.
-           <strong>Design Agent (L7)</strong> runs the iterative loop: link budget &rarr; airtime &rarr; AP count
-           &rarr; channel plan &rarr; CCI check. If CCI = HIGH, it back-propagates by reducing SSIDs or
-           increasing channel width and re-runs. The loop exits when CCI &lt; 3.0 or max iterations reached.
-           <strong>Config Agent (L8)</strong> emits XIQ template YAML, EXOS CLI commands, and VOSS CLI commands.
-           <strong>Orchestrator</strong> is a 12-state FSM (IDLE &rarr; INTAKE &rarr; DESIGN &rarr; CONFIG &rarr; DONE)
-           with error states, retry logic, and a WebSocket event bus so the React frontend
-           can show live state transitions.</p>
+        <p><strong>Intake Agent (L6)</strong>: Socratic DPM dialogue, validates A&ndash;H.
+           <strong>Design Agent (L7)</strong>: iterative loop — link budget &rarr; airtime &rarr; AP count &rarr; channel plan &rarr; CCI check. If CCI = HIGH, back-propagates (reduce SSIDs or widen channel) and re-runs. Exits when CCI &lt; 3.0 or max iterations.
+           <strong>Config Agent (L8)</strong>: emits XIQ YAML, EXOS CLI, VOSS CLI.
+           <strong>Orchestrator</strong>: 12-state FSM (IDLE &rarr; INTAKE &rarr; DESIGN &rarr; CONFIG &rarr; DONE) with retry logic + WebSocket event bus for live React state.</p>
         <div class="jc-tags">
           <span class="tag tag-blue">4 Agents</span>
           <span class="tag tag-green">12-State FSM</span>
@@ -765,15 +769,10 @@
       <a class="journey-card" href="hld-wifi-digital-twin.html#bridge">
         <div class="jc-theme">Theme 7 &mdash; Standards Basis</div>
         <h3>Three Authoritative Sources: IEEE 802.11be, WLANPros WLPC 2026, Rev Wi-Fi</h3>
-        <p>Every parameter in the LLD is traceable to one of three sources.
-           <strong>IEEE 802.11be-2024</strong> (WiFi 7 spec): MCS table, MLO frame formats, EHT PPDU,
-           320&nbsp;MHz channel bonding, Multi-AP Coordination TGbe draft.
-           <strong>WLANPros WLPC 2026</strong>: 30-row troubleshooting cause table, 6-process framework
-           (MANAGE / INVESTIGATE / MEASURE / VALIDATE / ANALYZE / INTERROGATE), and the definitive
-           &ldquo;never use dynamic channel width&rdquo; guideline that is hard-coded into RRMParams.
-           <strong>Revolution Wi-Fi Capacity Planner</strong>: the complete airtime formula derivation,
-           SSID overhead calculator, Network Design input taxonomy, and RSSI tier definitions.
-           The Teaching Agent bridges all three to 5G cellular equivalents throughout the HLD.</p>
+        <p><strong>IEEE 802.11be-2024</strong>: MCS table, MLO frame formats, EHT PPDU, 320&nbsp;MHz bonding, Multi-AP Coord TGbe draft.
+           <strong>WLANPros WLPC 2026</strong>: 30-row cause table, 6-process framework, &ldquo;never use dynamic channel width&rdquo; &mdash; hard-coded into RRMParams.
+           <strong>Revolution Wi-Fi Capacity Planner</strong>: airtime formula derivation, SSID overhead calculator, Network Design input taxonomy, RSSI tier definitions.
+           Teaching Agent bridges all three to 5G/cellular equivalents.</p>
         <div class="jc-tags">
           <span class="tag tag-blue">IEEE 802.11be-2024</span>
           <span class="tag tag-green">WLANPros WLPC 2026</span>
@@ -787,8 +786,8 @@
 
   <hr class="divider">
 
-  <!-- Session Logs -->
-  <span class="section-label">Session Logs &mdash; April 2026</span>
+  <!-- ══════════════════ SESSION LOG ══════════════════ -->
+  <span id="session-log" class="section-label" style="scroll-margin-top:48px">Session Logs &mdash; April 2026</span>
   <div class="session-list">
     <a class="session-entry" href="session_summary_20260429.html">
       <div class="se-date">
@@ -797,14 +796,11 @@
       </div>
       <div class="se-body">
         <h3>HLD v1.1 + LLD Phase 1 + NYT Landing Page</h3>
-        <p>Added WiFi Generation Strategy (Section 9) to HLD. Wrote full Phase 1 LLD: 9 modules, Pydantic v2 schemas, Strategy Pattern, Airtime formula, 12 mixed-mode params in Appendix A. Built NYT-style landing page. 4 commits pushed.</p>
+        <p>HLD WiFi gen strategy (Section 9), sticky left sidebar. LLD Phase 1: 9 modules, Pydantic v2, Strategy Pattern, Rev Wi-Fi formula, Appendix A. NYT landing page full build. 4 commits to main.</p>
         <span class="se-cta">Open EOD Summary &rarr;</span>
       </div>
     </a>
   </div>
-
-  <!-- Divider -->
-  <hr class="divider">
 
   <!-- About -->
   <p style="font-family:'Libre Baskerville',Georgia,serif;font-size:0.9rem;color:#666;font-style:italic;line-height:1.8;text-align:center;max-width:680px;margin:0 auto 36px">
@@ -813,7 +809,6 @@
     Teaching Agent bridges WiFi concepts to 5G/cellular equivalents throughout.
   </p>
 
-  <!-- Footer -->
   <footer>
     <p style="font-family:'Libre Franklin',Arial,sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#111;margin-bottom:4px">&copy; 2026 Khursheed Khan</p>
     <p style="font-family:'Libre Franklin',Arial,sans-serif;font-size:0.72rem;color:#666">All rights reserved &nbsp;&middot;&nbsp; April 2026 &nbsp;&middot;&nbsp; AI-assisted with Claude Code</p>
