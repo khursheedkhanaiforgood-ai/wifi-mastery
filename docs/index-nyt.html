@@ -254,6 +254,76 @@
   .bridge-table tr:hover td { background: #F7F7F5; }
   .bridge-table td:first-child { font-weight: 600; color: #111; }
 
+  /* ── Start Here banner ── */
+  .start-here {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: #0a0f1e;
+    color: #e2e8f0;
+    border: 2px solid #3b82f6;
+    padding: 22px 26px;
+    margin-bottom: 36px;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .start-here:hover { background: #111827; }
+  .start-here .sh-arrow {
+    font-size: 2rem;
+    color: #3b82f6;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .start-here .sh-label {
+    font-family: 'Libre Franklin', Arial, sans-serif;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #3b82f6;
+    margin-bottom: 5px;
+  }
+  .start-here h2 {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 5px;
+  }
+  .start-here p {
+    font-family: 'Libre Franklin', Arial, sans-serif;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+  .start-here .sh-cta {
+    font-family: 'Libre Franklin', Arial, sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #3b82f6;
+    margin-top: 8px;
+  }
+
+  /* ── Planned badge ── */
+  .planned-badge {
+    display: inline-block;
+    font-family: 'Libre Franklin', Arial, sans-serif;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 2px 7px;
+    border: 1px solid #D1D5DB;
+    color: #9CA3AF;
+    background: #F9FAFB;
+    margin-bottom: 8px;
+  }
+  .sprint-item.planned { background: #FAFAFA; }
+  .sprint-item.planned h3 { color: #9CA3AF; }
+  .sprint-item.planned p  { color: #C0C0C0; }
+
   /* ── footer ── */
   footer {
     text-align: center;
@@ -285,6 +355,20 @@
     predicted and actual behavior. Designed for 5G engineers crossing into the WiFi domain.
   </p>
 
+  <!-- ▶ START HERE -->
+  <span class="section-label">&#9654; Start Here</span>
+  <a class="start-here" href="../index.html">
+    <div class="sh-arrow">&#9654;</div>
+    <div>
+      <div class="sh-label">Begin your journey &mdash; open the knowledge base</div>
+      <h2>WiFi Mastery &mdash; Design &middot; Configure &middot; Deploy &middot; Troubleshoot</h2>
+      <p>The full WiFi Mastery knowledge base: 4 pillars, 22 sections, WiFi 6 &amp; 7, Extreme Networks
+         XIQ + EP1, EXOS + VOSS CLI, link budget, capacity planning, channel planning, and
+         troubleshooting. Start here before diving into the architecture documents below.</p>
+      <div class="sh-cta">Open WiFi Mastery &rarr;</div>
+    </div>
+  </a>
+
   <!-- Architecture Documents -->
   <span class="section-label">Architecture Documents</span>
   <a class="feature-card" href="hld-wifi-digital-twin.html" style="margin-bottom:0;border-bottom:none">
@@ -302,7 +386,7 @@
     <div class="fc-icon">⚙</div>
     <div>
       <h2>Low Level Design &mdash; Phase 1 &mdash; v1.0</h2>
-      <p>9 modules with full Pydantic v2 schemas, MCS 0&ndash;13 reference table, WiFi6 / WiFi7
+      <p>9 modules with full Pydantic v2 schemas, MCS 0&ndash;13 reference table, WiFi 6 / WiFi 7
          strategy pattern, Rev Wi-Fi airtime formula, SSID beacon overhead lookup, AP model library,
          CCI scoring, Socratic intake flow, Design Agent iterative loop, Config Agent XIQ templates,
          EXOS + VOSS CLI scripts, FastAPI + WebSocket API spec.
@@ -312,100 +396,109 @@
   </a>
 
   <!-- Design Strategy -->
-  <span class="section-label">Design Strategy &mdash; WiFi Generation</span>
+  <span class="section-label">Design Strategy &mdash; WiFi Generation (see HLD Section 9)</span>
   <div class="cards cards-2" style="margin-bottom:36px">
-    <div class="card" style="cursor:default">
-      <div class="card-label">Branch 1 &mdash; Baseline</div>
+    <a class="card" href="hld-wifi-digital-twin.html#wifigen">
+      <div class="card-label">Branch 1 &mdash; Baseline &mdash; Sprint 1</div>
       <h2>feature/wifi6-baseline</h2>
       <p>AP3000 / AP4000 fleet. MCS ceiling: 11 (1024-QAM). OFDMA, BSS Color, TWT.
          No MLO, no 320&nbsp;MHz, no MCS&nbsp;12/13. Current-state benchmark for clients
-         already on WiFi&nbsp;6 hardware.</p>
+         already on WiFi&nbsp;6 hardware. Full engine spec in LLD Phase 1.</p>
       <div style="margin-top:12px">
         <span class="tag tag-blue">MCS 0–11</span>
         <span class="tag tag-teal">OFDMA</span>
         <span class="tag tag-green">BSS Color</span>
       </div>
-    </div>
-    <div class="card" style="cursor:default">
-      <div class="card-label">Branch 2 &mdash; Complete</div>
+      <div class="cta">WiFi Gen Strategy &rarr;</div>
+    </a>
+    <a class="card" href="hld-wifi-digital-twin.html#wifigen">
+      <div class="card-label">Branch 2 &mdash; Complete &mdash; Sprint 1</div>
       <h2>feature/wifi7-complete</h2>
       <p>AP5020 / AP5022 / AP5060 fleet. MCS ceiling: 13 (4096-QAM, SNR&nbsp;&ge;&nbsp;36&nbsp;dB).
          MLO (EMLSR/STR), 320&nbsp;MHz (6&nbsp;GHz), Multi-AP Coordination, Preamble
-         Puncturing, HARQ. Full WiFi&nbsp;7 capability.</p>
+         Puncturing, HARQ. Full WiFi&nbsp;7 gap closure. Engine spec in LLD Phase 1.</p>
       <div style="margin-top:12px">
         <span class="tag tag-purple">MCS 0–13</span>
         <span class="tag tag-amber">MLO</span>
         <span class="tag tag-orange">320 MHz</span>
         <span class="tag tag-teal">Multi-AP Coord</span>
       </div>
-    </div>
+      <div class="cta">WiFi Gen Strategy &rarr;</div>
+    </a>
   </div>
 
   <!-- Sprint Roadmap -->
   <span class="section-label">Sprint Roadmap</span>
-  <div class="sprint-row">
-    <div class="sprint-item active">
-      <div class="sprint-num">Sprint 1 &mdash; 3 days &mdash; Active</div>
+  <div class="sprint-row" style="margin-bottom:8px">
+    <a class="sprint-item active" href="lld-phase1-wifi-digital-twin.html" style="text-decoration:none;color:inherit">
+      <div class="sprint-num">Sprint 1 &mdash; 3 days &mdash; &#9679; Active</div>
       <h3>Design Loop</h3>
-      <p>RAG + 9 LLD modules. CLI-testable. Railway-deployed. WiFi 6 + WiFi 7 strategies.</p>
-    </div>
-    <div class="sprint-item">
-      <div class="sprint-num">Sprint 2 &mdash; 1 week</div>
+      <p>RAG + 9 LLD modules. CLI-testable. Railway-deployed. WiFi 6 + WiFi 7 strategies. Full spec in LLD Phase 1.</p>
+      <div style="margin-top:10px;font-family:'Libre Franklin',Arial,sans-serif;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#326891">Open LLD &rarr;</div>
+    </a>
+    <div class="sprint-item planned">
+      <div class="planned-badge">Planned &mdash; Sprint 2</div>
       <h3>Optimization Loop</h3>
-      <p>RRM Simulation (DCS / TPC / BSS Color / Multi-AP). EP1 integration. Tuning Agent. XIQ push.</p>
+      <p>RRM Simulation (DCS / TPC / BSS Color / Multi-AP). EP1 integration. Tuning Agent. XIQ API push.</p>
     </div>
-    <div class="sprint-item">
-      <div class="sprint-num">Sprint 3 &mdash; 1 week</div>
+    <div class="sprint-item planned">
+      <div class="planned-badge">Planned &mdash; Sprint 3</div>
       <h3>Troubleshooting Loop</h3>
       <p>30-row agent, Spectrum Analysis, WLANPi sub-agent, React frontend, multi-user collab.</p>
     </div>
-    <div class="sprint-item">
-      <div class="sprint-num">Sprint 4+ &mdash; TBD</div>
+    <div class="sprint-item planned">
+      <div class="planned-badge">Planned &mdash; Sprint 4+</div>
       <h3>Mixed-Mode Topology</h3>
       <p>Floor plan + AP placement + adjacency graph. WiFi 6 + WiFi 7 co-existing zones.</p>
     </div>
   </div>
+  <p style="font-family:'Libre Franklin',Arial,sans-serif;font-size:0.7rem;color:#999;margin-bottom:36px">
+    Full sprint breakdown in <a href="hld-wifi-digital-twin.html#sprint" style="color:#326891;font-weight:600;text-decoration:none">HLD Section 10 &rarr;</a>
+  </p>
 
   <!-- 5G↔WiFi Bridge -->
   <span class="section-label">5G &harr; WiFi Teaching Bridge &mdash; Selected Mappings</span>
   <table class="bridge-table">
     <tr><th>WiFi Concept</th><th>5G Equivalent</th><th>Key Difference</th></tr>
-    <tr><td>MLO (WiFi 7)</td><td>Carrier Aggregation</td><td>MLO is AP+client negotiated; CA is network-assigned</td></tr>
-    <tr><td>MCS 0&ndash;13 (802.11be)</td><td>NR MCS 0&ndash;28</td><td>MCS 13 = 4K-QAM, WiFi 7 only, requires SNR &ge; 36 dB</td></tr>
-    <tr><td>OFDMA scheduler</td><td>gNB scheduler</td><td>WiFi OFDMA layered on top of CSMA/CA &mdash; not replacing it</td></tr>
-    <tr><td>XIQ AutoRF (DCS+TPC)</td><td>SON (ANR+CCO+MLB)</td><td>SON is centralized+predictive; AutoRF is per-AP+reactive</td></tr>
-    <tr><td>BSS Coloring</td><td>ICIC</td><td>Both reduce inter-cell interference; different mechanisms</td></tr>
-    <tr><td>Multi-AP Coordination</td><td>CoMP</td><td>Both coordinate multi-cell TX; WiFi 7 implementation newer</td></tr>
-    <tr><td>Airtime % per radio</td><td>PRB utilization %</td><td>Same concept: shared medium utilization measurement</td></tr>
+    <tr><td><a href="hld-wifi-digital-twin.html#bridge" style="color:#111;text-decoration:none;border-bottom:1px solid #326891">MLO (WiFi 7)</a></td><td>Carrier Aggregation</td><td>MLO is AP+client negotiated; CA is network-assigned</td></tr>
+    <tr><td><a href="hld-wifi-digital-twin.html#bridge" style="color:#111;text-decoration:none;border-bottom:1px solid #326891">MCS 0&ndash;13 (802.11be)</a></td><td>NR MCS 0&ndash;28</td><td>MCS 13 = 4K-QAM, WiFi 7 only, requires SNR &ge; 36 dB</td></tr>
+    <tr><td><a href="hld-wifi-digital-twin.html#bridge" style="color:#111;text-decoration:none;border-bottom:1px solid #326891">OFDMA scheduler</a></td><td>gNB scheduler</td><td>WiFi OFDMA layered on top of CSMA/CA &mdash; not replacing it</td></tr>
+    <tr><td><a href="hld-wifi-digital-twin.html#rrm" style="color:#111;text-decoration:none;border-bottom:1px solid #326891">XIQ AutoRF (DCS+TPC)</a></td><td>SON (ANR+CCO+MLB)</td><td>SON is centralized+predictive; AutoRF is per-AP+reactive</td></tr>
+    <tr><td><a href="hld-wifi-digital-twin.html#rrm" style="color:#111;text-decoration:none;border-bottom:1px solid #326891">BSS Coloring</a></td><td>ICIC</td><td>Both reduce inter-cell interference; different mechanisms</td></tr>
+    <tr><td><a href="hld-wifi-digital-twin.html#broadcom" style="color:#111;text-decoration:none;border-bottom:1px solid #326891">Multi-AP Coordination</a></td><td>CoMP</td><td>Both coordinate multi-cell TX; WiFi 7 implementation newer</td></tr>
+    <tr><td><a href="hld-wifi-digital-twin.html#balance" style="color:#111;text-decoration:none;border-bottom:1px solid #326891">Airtime % per radio</a></td><td>PRB utilization %</td><td>Same concept: shared medium utilization measurement</td></tr>
   </table>
   <p style="font-family:'Libre Franklin',Arial,sans-serif;font-size:0.72rem;color:#888;margin-bottom:36px">
-    Full bridge table in <a href="hld-wifi-digital-twin.html#bridge" style="color:#326891;text-decoration:none;font-weight:600">HLD Section 8 &rarr;</a>
+    Full 13-row bridge table &rarr; <a href="hld-wifi-digital-twin.html#bridge" style="color:#326891;text-decoration:none;font-weight:600">HLD Section 8 &rarr;</a>
   </p>
 
   <!-- AP Fleet -->
-  <span class="section-label">Extreme Networks AP Fleet &mdash; Broadcom Chipsets</span>
+  <span class="section-label">Extreme Networks AP Fleet &mdash; Broadcom Chipsets (see HLD Section 7)</span>
   <div class="cards cards-3" style="margin-bottom:36px">
-    <div class="card" style="cursor:default">
+    <a class="card" href="hld-wifi-digital-twin.html#broadcom">
       <div class="card-label">WiFi 6 &mdash; AP3000</div>
       <h2>AP3000</h2>
       <p>2×2:2, 2.4+5 GHz. 802.3at (25.5W PoE). MCS 0&ndash;11.
-         OFDMA, BSS Color. No 6 GHz. Entry-level WiFi 6 deployment.</p>
+         OFDMA, BSS Color. No 6 GHz. Branch 1 baseline AP.</p>
       <div style="margin-top:10px"><span class="tag tag-blue">WiFi 6</span><span class="tag tag-teal">OFDMA</span></div>
-    </div>
-    <div class="card" style="cursor:default">
+      <div class="cta">AP + chipset detail &rarr;</div>
+    </a>
+    <a class="card" href="hld-wifi-digital-twin.html#broadcom">
       <div class="card-label">WiFi 6E &mdash; AP4000</div>
       <h2>AP4000</h2>
       <p>3×2×2:2 tri-radio, 2.4+5+6 GHz. 802.3bt (51W PoE). MCS 0&ndash;11.
          6 GHz ready, WPA3 mandatory. Max 160 MHz channel width.</p>
       <div style="margin-top:10px"><span class="tag tag-blue">WiFi 6E</span><span class="tag tag-green">6 GHz</span></div>
-    </div>
-    <div class="card" style="cursor:default">
+      <div class="cta">AP + chipset detail &rarr;</div>
+    </a>
+    <a class="card" href="hld-wifi-digital-twin.html#broadcom">
       <div class="card-label">WiFi 7 &mdash; AP5020 / 5022 / 5060</div>
       <h2>AP5020 Series</h2>
       <p>4×4:4, 2.4+5+6 GHz. SDR: dual-5 or dual-6 GHz. MCS 0&ndash;13.
-         MLO, 320&nbsp;MHz, Multi-AP Coord, Puncturing. AP5022 adds security radio.</p>
+         MLO, 320&nbsp;MHz, Multi-AP Coord, Puncturing. Branch 2 AP.</p>
       <div style="margin-top:10px"><span class="tag tag-purple">WiFi 7</span><span class="tag tag-amber">MLO</span><span class="tag tag-orange">SDR</span></div>
-    </div>
+      <div class="cta">AP + chipset detail &rarr;</div>
+    </a>
   </div>
 
   <!-- Divider -->
