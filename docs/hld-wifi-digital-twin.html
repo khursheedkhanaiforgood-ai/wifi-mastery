@@ -148,6 +148,7 @@
   tr:hover td { background: var(--bg2); }
   .check { color: var(--accent2); }
   .cross { color: var(--red); }
+  tr:target { background: rgba(59,130,246,0.18); outline: 2px solid var(--accent); }
   .var { color: var(--yellow); }
   .na { color: var(--border); }
 
@@ -673,11 +674,11 @@ EP1 reports: AP-07, radio 5GHz, channel utilization 85%, retry rate 28%
     <h2>7. Broadcom Chipset + AP Model Map</h2>
     <table>
       <tr><th>AP Model</th><th>WiFi Gen</th><th>Radios</th><th>Spatial Streams</th><th>PoE Required</th><th>SDR</th><th>Multi-AP Coord</th></tr>
-      <tr><td>AP3000</td><td>WiFi 6</td><td>2 (2.4+5)</td><td>2×2:2</td><td>802.3at (25.5W)</td><td class="cross">No</td><td class="cross">No</td></tr>
-      <tr><td>AP4000</td><td>WiFi 6E</td><td>3 (2.4+5+6)</td><td>3×2×2:2</td><td>802.3bt (51W)</td><td class="cross">No</td><td class="cross">No</td></tr>
-      <tr><td>AP5020</td><td>WiFi 7</td><td>3 (2.4+5+6)</td><td>3×4×4:4</td><td>802.3at or bt</td><td class="check">Yes (dual-5/dual-6)</td><td class="check">Yes</td></tr>
-      <tr><td>AP5022</td><td>WiFi 7</td><td>4 (+security)</td><td>4×4:4</td><td>802.3bt (51W)</td><td class="check">Yes</td><td class="check">Yes</td></tr>
-      <tr><td>AP5060/U/D</td><td>WiFi 7</td><td>3 outdoor</td><td>3×4×4:4</td><td>802.3bt (51W)</td><td class="check">Yes</td><td class="check">Yes</td></tr>
+      <tr id="ap3000"><td><strong>AP3000</strong></td><td>WiFi 6</td><td>2 (2.4+5)</td><td>2×2:2</td><td>802.3at (25.5W)</td><td class="cross">No</td><td class="cross">No</td></tr>
+      <tr id="ap4000"><td><strong>AP4000</strong></td><td>WiFi 6E</td><td>3 (2.4+5+6)</td><td>3×2×2:2</td><td>802.3bt (51W)</td><td class="cross">No</td><td class="cross">No</td></tr>
+      <tr id="ap5020"><td><strong>AP5020</strong></td><td>WiFi 7</td><td>3 (2.4+5+6)</td><td>3×4×4:4</td><td>802.3at or bt</td><td class="check">Yes (dual-5/dual-6)</td><td class="check">Yes</td></tr>
+      <tr id="ap5022"><td><strong>AP5022</strong></td><td>WiFi 7</td><td>4 (+security)</td><td>4×4:4</td><td>802.3bt (51W)</td><td class="check">Yes</td><td class="check">Yes</td></tr>
+      <tr id="ap5060"><td><strong>AP5060/U/D</strong></td><td>WiFi 7</td><td>3 outdoor</td><td>3×4×4:4</td><td>802.3bt (51W)</td><td class="check">Yes</td><td class="check">Yes</td></tr>
     </table>
 
     <div class="arch-grid arch-2col">

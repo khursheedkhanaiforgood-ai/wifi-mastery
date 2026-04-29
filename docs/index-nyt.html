@@ -358,7 +358,7 @@
   <a href="#architecture">Architecture Docs</a>
   <a href="#design-strategy">Design Strategy</a>
   <a href="#sprint-roadmap">Sprint Roadmap</a>
-  <a href="#design-journey">Design Journey</a>
+  <a href="design-journey.html">Design Journey</a>
   <a href="#session-log">Session Log</a>
   <div class="tn-right">
     <a class="tn-doc" href="hld-wifi-digital-twin.html">HLD v1.1</a>
@@ -617,172 +617,50 @@
   <!-- ══════════════════ AP FLEET ══════════════════ -->
   <span class="section-label">Extreme Networks AP Fleet &mdash; Broadcom Chipsets (HLD Section 7)</span>
   <div class="cards cards-3" style="margin-bottom:36px">
-    <a class="card" href="hld-wifi-digital-twin.html#broadcom">
+    <a class="card" href="hld-wifi-digital-twin.html#ap3000">
       <div class="card-label">WiFi 6 &mdash; AP3000</div>
       <h2>AP3000</h2>
       <p>2&times;2:2, 2.4+5 GHz. 802.3at (25.5&nbsp;W PoE). MCS 0&ndash;11. OFDMA, BSS Color, TWT.
          No 6&nbsp;GHz band. Branch 1 baseline AP for cost-sensitive deployments.</p>
       <div style="margin-top:10px"><span class="tag tag-blue">WiFi 6</span><span class="tag tag-teal">OFDMA</span><span class="tag tag-green">802.3at</span></div>
-      <div class="cta">AP + chipset detail &rarr;</div>
+      <div class="cta">Jump to AP3000 row &rarr;</div>
     </a>
-    <a class="card" href="hld-wifi-digital-twin.html#broadcom">
+    <a class="card" href="hld-wifi-digital-twin.html#ap4000">
       <div class="card-label">WiFi 6E &mdash; AP4000</div>
       <h2>AP4000</h2>
       <p>3&times;2&times;2:2 tri-radio, 2.4+5+6&nbsp;GHz. 802.3bt (51&nbsp;W PoE). MCS 0&ndash;11.
          6&nbsp;GHz PSC channels, WPA3 mandatory, max 160&nbsp;MHz. Branch 1 tri-band upgrade.</p>
       <div style="margin-top:10px"><span class="tag tag-blue">WiFi 6E</span><span class="tag tag-green">6 GHz</span><span class="tag tag-amber">802.3bt</span></div>
-      <div class="cta">AP + chipset detail &rarr;</div>
+      <div class="cta">Jump to AP4000 row &rarr;</div>
     </a>
-    <a class="card" href="hld-wifi-digital-twin.html#broadcom">
+    <a class="card" href="hld-wifi-digital-twin.html#ap5020">
       <div class="card-label">WiFi 7 &mdash; AP5020 / 5022 / 5060</div>
       <h2>AP5020 Series</h2>
       <p>4&times;4:4, 2.4+5+6&nbsp;GHz. SDR: dual-5 or dual-6&nbsp;GHz mode. MCS 0&ndash;13.
          MLO, 320&nbsp;MHz, Multi-AP Coord, Puncturing. AP5022 adds security radio. AP5060 outdoor.</p>
       <div style="margin-top:10px"><span class="tag tag-purple">WiFi 7</span><span class="tag tag-amber">MLO</span><span class="tag tag-orange">SDR</span><span class="tag tag-teal">320 MHz</span></div>
-      <div class="cta">AP + chipset detail &rarr;</div>
+      <div class="cta">Jump to AP5020 row &rarr;</div>
     </a>
   </div>
 
   <hr class="divider">
 
   <!-- ══════════════════ DESIGN JOURNEY ══════════════════ -->
-  <span id="design-journey" class="section-label" style="scroll-margin-top:48px">Design Journey &mdash; How We Designed This Architecture (April 29, 2026)</span>
-  <p style="font-family:'Libre Baskerville',Georgia,serif;font-size:0.88rem;font-style:italic;color:#555;line-height:1.8;margin-bottom:28px">
-    A chronological account of the architectural decisions made on April 29, 2026 &mdash; from first principles
-    to a fully-specified two-branch platform. Each step links to the exact document and section where that decision lives.
-  </p>
-
-  <div class="journey-wrap">
-
-    <div class="journey-item">
-      <div class="journey-dot">&#127760;</div>
-      <a class="journey-card" href="hld-wifi-digital-twin.html#overview">
-        <div class="jc-theme">Theme 1 &mdash; Problem Framing</div>
-        <h3>Why a Digital Twin? The 3 Operational Loops</h3>
-        <p>Enterprise WiFi failures are hard to predict because RRM (AutoRF), client behaviour, and application load interact non-linearly. We framed the solution as three closed loops:
-           <strong>Design Loop</strong> (pre-deploy prediction via link budget + airtime),
-           <strong>Optimization Loop</strong> (live EP1 telemetry &harr; RRM simulation agent), and
-           <strong>Troubleshooting Loop</strong> (event-driven 30-row agent). Each loop has its own agent, data sources, and feedback path into XIQ configuration.</p>
-        <div class="jc-tags">
-          <span class="tag tag-blue">3 Operational Loops</span>
-          <span class="tag tag-teal">EP1 Telemetry</span>
-          <span class="tag tag-green">XIQ AutoRF</span>
-        </div>
-        <span class="jc-cta">HLD Section 1 &mdash; Overview &rarr;</span>
-      </a>
+  <span id="design-journey" class="section-label" style="scroll-margin-top:48px">Design Journey &mdash; How We Designed This Architecture</span>
+  <a class="feature-card" href="design-journey.html" style="margin-bottom:36px">
+    <div class="fc-icon">&#128260;</div>
+    <div>
+      <h2>Architecture Decision Record &mdash; April 29, 2026</h2>
+      <p>Seven themes documenting every architectural decision made during Phase 1 design — from first principles to a fully-specified two-branch platform. Each theme links to the exact HLD or LLD section where that decision is formally specified. Topics: 3 Operational Loops, Mixed-Mode Deferral, Strategy Pattern, DPM + Socratic Intake, Rev Wi-Fi Airtime + VoIP Trap, Orchestrator State Machine, Three Standards Sources (IEEE 802.11be / WLANPros WLPC 2026 / Rev Wi-Fi).</p>
+      <div style="margin-top:12px">
+        <span class="tag tag-blue">7 Themes</span>
+        <span class="tag tag-green">ADR Format</span>
+        <span class="tag tag-purple">Why, Not What</span>
+        <span class="tag tag-teal">Links to HLD + LLD</span>
+      </div>
+      <div class="fc-cta">Open Design Journey &rarr;</div>
     </div>
-
-    <div class="journey-item">
-      <div class="journey-dot">&#128268;</div>
-      <a class="journey-card" href="hld-wifi-digital-twin.html#wifigen">
-        <div class="jc-theme">Theme 2 &mdash; Scope Decision</div>
-        <h3>Mixed-Mode Deferral: Why Phase 1 Is Uniform WiFi 6 or WiFi 7</h3>
-        <p>The question: can the tool handle a site with both WiFi 6 and WiFi 7 APs? Yes, but only with a floor plan — because zone-boundary problems arise: MLO drops on inter-generation roam, 320&nbsp;MHz&rarr;160&nbsp;MHz ACI at borders, Multi-AP Coord clusters that only WiFi 7 APs join.
-           Without an adjacency graph, these cannot be resolved.
-           <strong>Decision: Phase 1 = one AP generation per site. User chooses WiFi 6 OR WiFi 7.
-           Mixed-mode = Sprint 4+ with floor plan ingestion.</strong>
-           The 12 additional DPM inputs needed are catalogued in LLD Appendix A.</p>
-        <div class="jc-tags">
-          <span class="tag tag-red">Mixed-Mode Deferred</span>
-          <span class="tag tag-amber">Adjacency Graph Required</span>
-          <span class="tag tag-grey">Sprint 4+</span>
-        </div>
-        <span class="jc-cta">HLD Section 9 &mdash; WiFi Generation Strategy &rarr;</span>
-      </a>
-    </div>
-
-    <div class="journey-item">
-      <div class="journey-dot">&#128260;</div>
-      <a class="journey-card" href="lld-phase1-wifi-digital-twin.html#l2">
-        <div class="jc-theme">Theme 3 &mdash; Code Architecture</div>
-        <h3>Strategy Pattern: One Engine, Two Protocols</h3>
-        <p>Rather than separate engines, we applied the Strategy Pattern.
-           <code>LinkBudgetStrategy</code> ABC. <code>WiFi6LinkBudget</code> caps MCS at 11.
-           <code>WiFi7LinkBudget</code> inherits WiFi 6 and upgrades to MCS 12/13 when SNR &ge; 36&nbsp;dB + protocol == 802.11be.
-           <code>ComparisonEngine</code> runs both on the same DPM and returns a delta report — so a single site survey instantly shows &ldquo;WiFi 7 saves you 2 APs here.&rdquo;</p>
-        <div class="jc-tags">
-          <span class="tag tag-purple">Strategy Pattern</span>
-          <span class="tag tag-blue">MCS 0–13</span>
-          <span class="tag tag-teal">ComparisonEngine</span>
-        </div>
-        <span class="jc-cta">LLD Module L2 &mdash; Link Budget Engine &rarr;</span>
-      </a>
-    </div>
-
-    <div class="journey-item">
-      <div class="journey-dot">&#128203;</div>
-      <a class="journey-card" href="lld-phase1-wifi-digital-twin.html#l1">
-        <div class="jc-theme">Theme 4 &mdash; Data Model</div>
-        <h3>Design Parameter Manifest: 7 Sections + Socratic Intake + Source Flags</h3>
-        <p>Every engine anchors to the DPM: ~60 parameters in 7 sections (A Site, B Clients, C Apps, D Network, E Channel, F Security, G RRM) plus H (WiFi 7 extras: MLO bands, 320&nbsp;MHz toggle, Multi-AP Coord). Each field carries [User provided] / [Derived from X] / [Default &mdash; confirm?]. Pydantic v2 validators enforce business rules. RRMParams hard-codes <code>dynamic_channel_width=False</code> per WLANPros WLPC 2026.</p>
-        <div class="jc-tags">
-          <span class="tag tag-blue">Pydantic v2</span>
-          <span class="tag tag-green">7 DPM Sections</span>
-          <span class="tag tag-teal">Socratic Intake</span>
-          <span class="tag tag-amber">Source Flags</span>
-        </div>
-        <span class="jc-cta">LLD Module L1 &mdash; Data Models &rarr;</span>
-      </a>
-    </div>
-
-    <div class="journey-item">
-      <div class="journey-dot">&#9881;</div>
-      <a class="journey-card" href="lld-phase1-wifi-digital-twin.html#l3">
-        <div class="jc-theme">Theme 5 &mdash; Engine Calibration</div>
-        <h3>Rev Wi-Fi Airtime Formula, CCI Scoring, and the VoIP Trap</h3>
-        <p>Core formula: <strong>Airtime% = App_Kbps / Device_Kbps</strong> per active client.
-           Available = RF_Environment% &minus; SSID Beacon Overhead% (1 SSID = 2.5% on 5&nbsp;GHz, 1.5% on 6&nbsp;GHz; 6 SSIDs = 15%). AP count = &lceil;&Sigma;(Active &times; Airtime) / Available&rceil;.
-           OFDMA modifier &times;1.30 when &gt;50% frames &lt;256&nbsp;bytes.
-           <strong>VoIP trap:</strong> G.711 is 128&nbsp;Kbps (not 64&nbsp;Kbps) due to 160-byte frames, no AMPDU &mdash; airtime is 2.5&times; higher than 5G engineers expect.
-           CCI: reuse = ap_count / channels; LOW &lt; 1.5, MEDIUM &lt; 3.0, HIGH &ge; 3.0.</p>
-        <div class="jc-tags">
-          <span class="tag tag-orange">Rev Wi-Fi Formula</span>
-          <span class="tag tag-red">VoIP Trap</span>
-          <span class="tag tag-purple">CCI Scoring</span>
-          <span class="tag tag-teal">OFDMA ×1.30</span>
-        </div>
-        <span class="jc-cta">LLD Module L3 &mdash; Airtime Calculator &rarr;</span>
-      </a>
-    </div>
-
-    <div class="journey-item">
-      <div class="journey-dot">&#129302;</div>
-      <a class="journey-card" href="lld-phase1-wifi-digital-twin.html#l7">
-        <div class="jc-theme">Theme 6 &mdash; Agent Architecture</div>
-        <h3>Intake &rarr; Design &rarr; Config: The Orchestrator State Machine</h3>
-        <p><strong>Intake Agent (L6)</strong>: Socratic DPM dialogue, validates A&ndash;H.
-           <strong>Design Agent (L7)</strong>: iterative loop — link budget &rarr; airtime &rarr; AP count &rarr; channel plan &rarr; CCI check. If CCI = HIGH, back-propagates (reduce SSIDs or widen channel) and re-runs. Exits when CCI &lt; 3.0 or max iterations.
-           <strong>Config Agent (L8)</strong>: emits XIQ YAML, EXOS CLI, VOSS CLI.
-           <strong>Orchestrator</strong>: 12-state FSM (IDLE &rarr; INTAKE &rarr; DESIGN &rarr; CONFIG &rarr; DONE) with retry logic + WebSocket event bus for live React state.</p>
-        <div class="jc-tags">
-          <span class="tag tag-blue">4 Agents</span>
-          <span class="tag tag-green">12-State FSM</span>
-          <span class="tag tag-purple">XIQ + EXOS + VOSS</span>
-          <span class="tag tag-teal">WebSocket Events</span>
-        </div>
-        <span class="jc-cta">LLD Module L7 &mdash; Design Agent + Orchestrator &rarr;</span>
-      </a>
-    </div>
-
-    <div class="journey-item">
-      <div class="journey-dot">&#128218;</div>
-      <a class="journey-card" href="hld-wifi-digital-twin.html#bridge">
-        <div class="jc-theme">Theme 7 &mdash; Standards Basis</div>
-        <h3>Three Authoritative Sources: IEEE 802.11be, WLANPros WLPC 2026, Rev Wi-Fi</h3>
-        <p><strong>IEEE 802.11be-2024</strong>: MCS table, MLO frame formats, EHT PPDU, 320&nbsp;MHz bonding, Multi-AP Coord TGbe draft.
-           <strong>WLANPros WLPC 2026</strong>: 30-row cause table, 6-process framework, &ldquo;never use dynamic channel width&rdquo; &mdash; hard-coded into RRMParams.
-           <strong>Revolution Wi-Fi Capacity Planner</strong>: airtime formula derivation, SSID overhead calculator, Network Design input taxonomy, RSSI tier definitions.
-           Teaching Agent bridges all three to 5G/cellular equivalents.</p>
-        <div class="jc-tags">
-          <span class="tag tag-blue">IEEE 802.11be-2024</span>
-          <span class="tag tag-green">WLANPros WLPC 2026</span>
-          <span class="tag tag-orange">Revolution Wi-Fi</span>
-        </div>
-        <span class="jc-cta">HLD Section 8 &mdash; 5G&harr;WiFi Teaching Bridge &rarr;</span>
-      </a>
-    </div>
-
-  </div><!-- /journey-wrap -->
+  </a>
 
   <hr class="divider">
 

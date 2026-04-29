@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design Journey — WiFi Digital Twin Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Libre+Franklin:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    background: #FFFFFF; color: #111;
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  /* ── Sticky top nav ── */
+  .top-nav {
+    position: sticky; top: 0; z-index: 200;
+    background: #111; border-bottom: 2px solid #326891;
+    width: 100%; display: flex; align-items: stretch;
+    font-family: 'Libre Franklin', Arial, sans-serif;
+    font-size: 11px; font-weight: 600;
+  }
+  .top-nav a {
+    color: #aaa; text-decoration: none; padding: 10px 14px;
+    border-bottom: 3px solid transparent; transition: all 0.12s;
+    white-space: nowrap; display: flex; align-items: center;
+  }
+  .top-nav a:hover { color: #fff; border-bottom-color: #326891; }
+  .top-nav a.tn-home { color: #e2e8f0; font-weight: 700; padding-left: 20px; }
+  .top-nav a.tn-doc  { color: #60a5fa; }
+  .top-nav a.tn-doc:hover { border-bottom-color: #60a5fa; }
+  .top-nav .tn-sep   { color: #333; padding: 10px 2px; display: flex; align-items: center; }
+  .top-nav .tn-right { margin-left: auto; display: flex; align-items: stretch; }
+
+  .container { max-width: 860px; width: 100%; padding: 0 28px 80px; }
+
+  /* ── Masthead ── */
+  .nyt-rule-top  { border: none; border-top: 3px solid #111; margin: 36px 0 6px; }
+  .nyt-rule-thin { border: none; border-top: 1px solid #111; margin-bottom: 18px; }
+  .nyt-logo {
+    font-family: 'Libre Franklin', Arial, sans-serif; font-size: 0.62rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.22em; color: #666; text-align: center; margin-bottom: 6px;
+  }
+  h1 { font-family: 'Libre Baskerville', Georgia, serif; font-size: 2.2rem; font-weight: 700; color: #111; line-height: 1.15; margin-bottom: 12px; }
+  .byline { font-family: 'Libre Franklin', Arial, sans-serif; font-size: 0.72rem; color: #666; margin-bottom: 14px; }
+  .byline strong { color: #111; font-weight: 700; }
+  .subtitle {
+    font-family: 'Libre Baskerville', Georgia, serif; font-size: 0.96rem; font-style: italic;
+    color: #444; line-height: 1.8; margin-bottom: 28px;
+    border-bottom: 1px solid #E2E2E2; padding-bottom: 28px;
+  }
+
+  /* ── Section label ── */
+  .section-label {
+    font-family: 'Libre Franklin', Arial, sans-serif; font-size: 0.62rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.18em; color: #326891;
+    margin-bottom: 16px; padding-bottom: 6px; border-bottom: 2px solid #326891; display: block;
+  }
+
+  /* ── Tags ── */
+  .tag {
+    font-family: 'Libre Franklin', Arial, sans-serif; font-size: 0.55rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; padding: 2px 7px;
+    white-space: nowrap; border: 1px solid; margin-right: 5px; margin-bottom: 4px; display: inline-block;
+  }
+  .tag-blue   { color: #1a3a6b; border-color: #93C5FD; background: #EFF6FF; }
+  .tag-green  { color: #1a5c2a; border-color: #A7D7B0; background: #F3FBF5; }
+  .tag-purple { color: #5b21b6; border-color: #C4B5FD; background: #F5F3FF; }
+  .tag-amber  { color: #78350f; border-color: #FCD34D; background: #FFFBEB; }
+  .tag-teal   { color: #134e4a; border-color: #5EEAD4; background: #F0FDFA; }
+  .tag-orange { color: #7c2d12; border-color: #FB923C; background: #FFF7ED; }
+  .tag-grey   { color: #4B5563; border-color: #D1D5DB; background: #F9FAFB; }
+  .tag-red    { color: #7f1d1d; border-color: #FCA5A5; background: #FEF2F2; }
+
+  /* ── Journey timeline ── */
+  .journey-wrap { position: relative; margin-bottom: 48px; }
+  .journey-wrap::before {
+    content: ''; position: absolute; left: 18px; top: 0; bottom: 0;
+    width: 2px; background: linear-gradient(to bottom, #326891 0%, #E2E2E2 100%);
+  }
+  .journey-item { display: flex; gap: 20px; position: relative; }
+  .journey-dot {
+    flex-shrink: 0; width: 38px; height: 38px; border-radius: 50%;
+    border: 2px solid #326891; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; z-index: 1; margin-top: 18px;
+  }
+  .journey-card {
+    flex: 1; border: 1px solid #E2E2E2; padding: 20px 24px; margin-bottom: 14px;
+    text-decoration: none; display: block; color: inherit; transition: background 0.12s;
+  }
+  .journey-card:hover { background: #F7F7F5; }
+  .journey-card .jc-theme {
+    font-family: 'Libre Franklin', Arial, sans-serif; font-size: 0.58rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.16em; color: #326891; margin-bottom: 5px;
+  }
+  .journey-card h3 {
+    font-family: 'Libre Baskerville', Georgia, serif; font-size: 1.05rem; font-weight: 700;
+    color: #111; margin-bottom: 10px; line-height: 1.3;
+  }
+  .journey-card p {
+    font-family: 'Libre Franklin', Arial, sans-serif; font-size: 0.82rem; color: #555; line-height: 1.7;
+    margin-bottom: 8px;
+  }
+  .journey-card .jc-decision {
+    font-family: 'Libre Franklin', Arial, sans-serif; font-size: 0.8rem; color: #111;
+    background: #F7FBFF; border-left: 3px solid #326891; padding: 8px 12px;
+    margin: 10px 0; line-height: 1.6;
+  }
+  .journey-card .jc-cta {
+    font-family: 'Libre Franklin', Arial, sans-serif; font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; color: #326891; margin-top: 12px; display: block;
+  }
+  .journey-card .jc-tags { margin-top: 10px; }
+
+  /* ── Back bar ── */
+  .back-bar {
+    display: flex; align-items: center; gap: 16px; padding: 14px 0 28px;
+    font-family: 'Libre Franklin', Arial, sans-serif; font-size: 0.78rem;
+    border-bottom: 1px solid #E2E2E2; margin-bottom: 36px;
+  }
+  .back-bar a { color: #326891; text-decoration: none; font-weight: 600; }
+  .back-bar a:hover { text-decoration: underline; }
+  .back-bar .sep { color: #CCC; }
+
+  footer {
+    text-align: center; padding: 36px 24px 16px;
+    border-top: 1px solid #E2E2E2; margin-top: 48px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ STICKY TOP NAV ══ -->
+<nav class="top-nav">
+  <a class="tn-home" href="../index.html">&#8592; WiFi Mastery</a>
+  <span class="tn-sep">|</span>
+  <a href="index-nyt.html">Platform Hub</a>
+  <a href="#theme1">Problem Framing</a>
+  <a href="#theme2">Scope Decision</a>
+  <a href="#theme3">Strategy Pattern</a>
+  <a href="#theme4">Data Model</a>
+  <a href="#theme5">Engine Calibration</a>
+  <a href="#theme6">Agent Architecture</a>
+  <a href="#theme7">Standards Basis</a>
+  <div class="tn-right">
+    <a class="tn-doc" href="hld-wifi-digital-twin.html">HLD v1.1</a>
+    <a class="tn-doc" href="lld-phase1-wifi-digital-twin.html">LLD Phase 1</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- Back breadcrumb -->
+  <div class="back-bar">
+    <a href="index-nyt.html">&#8592; Platform Hub</a>
+    <span class="sep">|</span>
+    <span style="color:#666">Design Journey &mdash; April 29, 2026</span>
+    <span class="sep">|</span>
+    <a href="hld-wifi-digital-twin.html">HLD v1.1</a>
+    <span class="sep">|</span>
+    <a href="lld-phase1-wifi-digital-twin.html">LLD Phase 1</a>
+  </div>
+
+  <!-- Masthead -->
+  <div class="nyt-rule-top"></div>
+  <p class="nyt-logo">Architecture Decision Record &mdash; April 29, 2026</p>
+  <div class="nyt-rule-thin"></div>
+
+  <h1>Design Journey</h1>
+  <p class="byline">
+    <strong>By Khursheed Khan</strong>
+    &nbsp;&middot;&nbsp; April 29, 2026
+    &nbsp;&middot;&nbsp; WiFi Digital Twin Platform
+    &nbsp;&middot;&nbsp; AI-assisted with Claude Code
+  </p>
+  <p class="subtitle">
+    A chronological account of the seven architectural decisions made on April 29, 2026 &mdash;
+    from first principles to a fully-specified two-branch platform ready for Sprint 1 implementation.
+    Every decision is linked to the exact document and section where it is formally specified.
+    This page is an Architecture Decision Record (ADR): <em>why we chose what we chose, not just what we chose.</em>
+  </p>
+
+  <span class="section-label">7 Themes &mdash; From Problem to Specification</span>
+
+  <div class="journey-wrap">
+
+    <!-- Theme 1 -->
+    <div class="journey-item" id="theme1">
+      <div class="journey-dot">&#127760;</div>
+      <a class="journey-card" href="hld-wifi-digital-twin.html#overview">
+        <div class="jc-theme">Theme 1 &mdash; Problem Framing</div>
+        <h3>Why a Digital Twin? The 3 Operational Loops</h3>
+        <p>Enterprise WiFi failures are hard to predict because RRM (AutoRF), client behaviour, and application load interact non-linearly. A reactive approach means catching problems only after users complain. The question was: what is the minimum viable architecture that closes the loop between prediction and production?</p>
+        <p>We framed the solution around three closed feedback loops:</p>
+        <p><strong>Design Loop</strong> — pre-deployment prediction using link budget, airtime formula, and channel planning. No physical hardware required. Output: AP count, channel plan, XIQ config template.</p>
+        <p><strong>Optimization Loop</strong> — live EP1 telemetry feeds an RRM Simulation Agent that predicts the outcome of each AutoRF adjustment before committing it. Mirrors Broadcom's DCS/TPC cycle with a 30-minute convergence window.</p>
+        <p><strong>Troubleshooting Loop</strong> — event-driven 30-row agent triggered by EP1 anomaly events. Classifies root cause (WIRELESS / LOCAL NET / INTERNET) and recommends remediation steps.</p>
+        <div class="jc-decision">Decision: Each loop has its own agent, its own data sources, and its own feedback path into XIQ. They share the DPM as a common data schema but never cross-call at runtime.</div>
+        <div class="jc-tags">
+          <span class="tag tag-blue">3 Operational Loops</span>
+          <span class="tag tag-teal">EP1 Telemetry</span>
+          <span class="tag tag-green">XIQ AutoRF</span>
+          <span class="tag tag-amber">Broadcom DCS/TPC</span>
+        </div>
+        <span class="jc-cta">See HLD Section 1 &mdash; Vision &amp; Overview &rarr;</span>
+      </a>
+    </div>
+
+    <!-- Theme 2 -->
+    <div class="journey-item" id="theme2">
+      <div class="journey-dot">&#128268;</div>
+      <a class="journey-card" href="hld-wifi-digital-twin.html#wifigen">
+        <div class="jc-theme">Theme 2 &mdash; Scope Decision</div>
+        <h3>Mixed-Mode Deferral: Why Phase 1 Is Uniform WiFi 6 or WiFi 7</h3>
+        <p>The question: can the tool handle a site with both WiFi 6 and WiFi 7 APs simultaneously? Technically yes, but only if we know the floor plan — because mixed-mode creates zone-boundary problems that cannot be resolved without topology:</p>
+        <p><strong>MLO drops on inter-generation roam</strong> — a WiFi 7 client's MLO session cannot continue when it roams to a WiFi 6 AP. The Design Agent cannot predict this without knowing which APs are adjacent.</p>
+        <p><strong>320 MHz → 160 MHz ACI at zone borders</strong> — a WiFi 7 AP running 320 MHz creates adjacent-channel interference for WiFi 6 APs running 160 MHz in adjacent zones. Severity depends on physical distance.</p>
+        <p><strong>Multi-AP Coordination cluster = WiFi 7 only</strong> — the coordination cluster cannot include WiFi 6 APs. Without a floor plan the cluster boundaries are unknown.</p>
+        <div class="jc-decision">Decision: Phase 1 = uniform AP generation per site. The user chooses WiFi 6 OR WiFi 7. Mixed-mode is explicitly deferred to Sprint 4+ when floor plan ingestion is available. The 12 additional DPM input parameters needed for mixed-mode are catalogued in LLD Appendix A so they are not lost.</div>
+        <div class="jc-tags">
+          <span class="tag tag-red">Mixed-Mode Deferred</span>
+          <span class="tag tag-amber">Adjacency Graph Required</span>
+          <span class="tag tag-grey">Sprint 4+</span>
+          <span class="tag tag-blue">LLD Appendix A</span>
+        </div>
+        <span class="jc-cta">See HLD Section 9 &mdash; WiFi Generation Strategy &rarr;</span>
+      </a>
+    </div>
+
+    <!-- Theme 3 -->
+    <div class="journey-item" id="theme3">
+      <div class="journey-dot">&#128260;</div>
+      <a class="journey-card" href="lld-phase1-wifi-digital-twin.html#l2">
+        <div class="jc-theme">Theme 3 &mdash; Code Architecture</div>
+        <h3>Strategy Pattern: One Engine, Two Protocols</h3>
+        <p>Phase 1 must handle two deployment scenarios (WiFi 6 and WiFi 7) using the same DPM inputs, the same engines, and the same orchestrator. The naive approach — two separate engines — would mean duplicating the entire link budget, airtime, and channel planning logic with only the MCS table differing.</p>
+        <p>We applied the Gang-of-Four Strategy Pattern: a single abstract base class with two concrete strategies differing only in MCS ceiling and SNR thresholds.</p>
+        <p><code>LinkBudgetStrategy</code> (ABC) → <code>WiFi6LinkBudget</code> caps MCS at 11. <code>WiFi7LinkBudget</code> inherits WiFi 6 and overrides: if SNR &ge; 36 dB AND protocol == 802.11be, use MCS 12/13. Otherwise fall through to parent. A <code>ComparisonEngine</code> runs both strategies on the same DPM and returns a <code>ComparisonReport</code> with per-AP delta.</p>
+        <div class="jc-decision">Decision: Strategy Pattern. WiFi7LinkBudget inherits WiFi6LinkBudget (not a sibling). This means WiFi 7 gracefully falls back to MCS 11 behaviour in poor SNR environments — the same code path, no separate branch logic.</div>
+        <div class="jc-tags">
+          <span class="tag tag-purple">Strategy Pattern</span>
+          <span class="tag tag-blue">MCS 0–13</span>
+          <span class="tag tag-teal">ComparisonEngine</span>
+          <span class="tag tag-green">Inheritance</span>
+        </div>
+        <span class="jc-cta">See LLD Module L2 &mdash; Link Budget Engine &rarr;</span>
+      </a>
+    </div>
+
+    <!-- Theme 4 -->
+    <div class="journey-item" id="theme4">
+      <div class="journey-dot">&#128203;</div>
+      <a class="journey-card" href="lld-phase1-wifi-digital-twin.html#l1">
+        <div class="jc-theme">Theme 4 &mdash; Data Model</div>
+        <h3>Design Parameter Manifest: 7 Sections + Socratic Intake + Source Flags</h3>
+        <p>Every engine must anchor to a common schema so that the Intake Agent, Design Agent, Config Agent, and Orchestrator speak the same language. Ad-hoc dictionaries would make validation brittle and make the comparison report meaningless.</p>
+        <p>The Design Parameter Manifest (DPM) is ~60 parameters in 7 sections: <strong>A</strong> (Site), <strong>B</strong> (Clients), <strong>C</strong> (Applications), <strong>D</strong> (Network), <strong>E</strong> (Channel), <strong>F</strong> (Security), <strong>G</strong> (RRM). WiFi 7 deployments extend with <strong>H</strong> (MLO bands, 320 MHz toggle, Multi-AP Coord on/off).</p>
+        <p>Each field carries one of three source flags: <em>[User provided]</em>, <em>[Derived from X]</em>, or <em>[Default — confirm?]</em>. This allows the Design Agent to surface uncertainty rather than silently applying defaults.</p>
+        <p>Pydantic v2 model validators enforce cross-field business rules. Example: <code>concurrent_active_pct ≤ concurrent_assoc_pct</code>. <code>RRMParams.dynamic_channel_width</code> is hard-coded <code>False</code> per WLANPros WLPC 2026 guidance — it is never surfaced as a user input.</p>
+        <div class="jc-decision">Decision: Pydantic v2 with @model_validator for cross-field constraints. Source flags are stored as metadata alongside each value, not separate fields. The Intake Agent uses a Socratic dialogue to populate sections A–H before any engine is called.</div>
+        <div class="jc-tags">
+          <span class="tag tag-blue">Pydantic v2</span>
+          <span class="tag tag-green">7 DPM Sections</span>
+          <span class="tag tag-teal">Socratic Intake</span>
+          <span class="tag tag-amber">Source Flags</span>
+        </div>
+        <span class="jc-cta">See LLD Module L1 &mdash; Data Models &rarr;</span>
+      </a>
+    </div>
+
+    <!-- Theme 5 -->
+    <div class="journey-item" id="theme5">
+      <div class="journey-dot">&#9881;</div>
+      <a class="journey-card" href="lld-phase1-wifi-digital-twin.html#l3">
+        <div class="jc-theme">Theme 5 &mdash; Engine Calibration</div>
+        <h3>Rev Wi-Fi Airtime Formula, CCI Scoring, and the VoIP Trap</h3>
+        <p>The capacity engine is built on the Revolution Wi-Fi Capacity Planner methodology. The core formula is deceptively simple but contains several non-obvious traps for engineers coming from the 5G domain.</p>
+        <p><strong>Core formula:</strong> Airtime% = App_Kbps / Device_Kbps per active client. AP count = ⌈Σ(Active × Airtime) / Available⌉ where Available = RF_Environment% − SSID Beacon Overhead%.</p>
+        <p><strong>SSID overhead:</strong> 1 SSID = 2.5% on 2.4/5 GHz, 1.5% on 6 GHz. 6 SSIDs = 15.0% on 2.4/5 GHz — a significant chunk of available airtime gone before any client transmits.</p>
+        <p><strong>VoIP trap:</strong> G.711 is not 64 Kbps — it is 128 Kbps per stream because of 160-byte frames with no AMPDU aggregation. This makes VoIP airtime 2.5× higher than a 5G engineer would expect from PRB utilization analogy.</p>
+        <p><strong>OFDMA modifier:</strong> ×1.30 efficiency gain when more than 50% of active devices have frames smaller than 256 bytes. Applies to IoT-dense and chat-heavy deployments.</p>
+        <p><strong>CCI scoring:</strong> reuse ratio = ap_count / available_channels. LOW &lt; 1.5, MEDIUM &lt; 3.0, HIGH ≥ 3.0. The Design Agent back-propagates when CCI = HIGH.</p>
+        <div class="jc-decision">Decision: VoIP is treated as a special-case application in the App model with override_frame_size=160 and ampdu=False. The OFDMA modifier is applied automatically based on the app profile mix — not a user toggle.</div>
+        <div class="jc-tags">
+          <span class="tag tag-orange">Rev Wi-Fi Formula</span>
+          <span class="tag tag-red">VoIP Trap</span>
+          <span class="tag tag-purple">CCI Scoring</span>
+          <span class="tag tag-teal">OFDMA ×1.30</span>
+        </div>
+        <span class="jc-cta">See LLD Module L3 &mdash; Airtime Calculator &rarr;</span>
+      </a>
+    </div>
+
+    <!-- Theme 6 -->
+    <div class="journey-item" id="theme6">
+      <div class="journey-dot">&#129302;</div>
+      <a class="journey-card" href="lld-phase1-wifi-digital-twin.html#l7">
+        <div class="jc-theme">Theme 6 &mdash; Agent Architecture</div>
+        <h3>Intake → Design → Config: The Orchestrator State Machine</h3>
+        <p>Four agents form the Phase 1 pipeline. The key design question was: how tightly should they couple? A monolithic pipeline would be simple to implement but impossible to test at the module level. Fully async microservices would over-engineer Sprint 1.</p>
+        <p><strong>Intake Agent (L6):</strong> Socratic DPM dialogue, validates sections A–H, emits a complete DPM object. Stateless between sessions (DPM persisted by Orchestrator).</p>
+        <p><strong>Design Agent (L7):</strong> iterative capacity↔RF loop. link budget → airtime → AP count → channel plan → CCI check. If CCI = HIGH, back-propagates: reduces SSID count OR increases channel width and re-runs. Loop exits when CCI &lt; 3.0 OR max_iterations (default 5) reached.</p>
+        <p><strong>Config Agent (L8):</strong> stateless transformer. Takes a DesignResult and emits XIQ template YAML, EXOS CLI command block, VOSS CLI command block. No network calls.</p>
+        <p><strong>Orchestrator:</strong> 12-state FSM — IDLE → INTAKE → INTAKE_RETRY → DESIGN → DESIGN_RETRY → CHANNEL → CONFIG → VALIDATE → DONE / ERROR_INTAKE / ERROR_DESIGN / ERROR_CONFIG. WebSocket event bus emits state transitions in real time.</p>
+        <div class="jc-decision">Decision: Agents are synchronous Python classes in Sprint 1 (no async). The Orchestrator wraps them in an async FastAPI endpoint so the frontend sees async behaviour via WebSocket without requiring async internals in Sprint 1.</div>
+        <div class="jc-tags">
+          <span class="tag tag-blue">4 Agents</span>
+          <span class="tag tag-green">12-State FSM</span>
+          <span class="tag tag-purple">XIQ + EXOS + VOSS</span>
+          <span class="tag tag-teal">WebSocket Events</span>
+        </div>
+        <span class="jc-cta">See LLD Module L7 &mdash; Design Agent + Orchestrator &rarr;</span>
+      </a>
+    </div>
+
+    <!-- Theme 7 -->
+    <div class="journey-item" id="theme7">
+      <div class="journey-dot">&#128218;</div>
+      <a class="journey-card" href="hld-wifi-digital-twin.html#bridge">
+        <div class="jc-theme">Theme 7 &mdash; Standards Basis</div>
+        <h3>Three Authoritative Sources: IEEE 802.11be, WLANPros WLPC 2026, Rev Wi-Fi</h3>
+        <p>Every parameter in the LLD is traceable to one of three authoritative sources. This was a deliberate design choice: parameters not traceable to one of these three require explicit justification in the code comment.</p>
+        <p><strong>IEEE 802.11be-2024 (WiFi 7 spec):</strong> MCS 0–13 table, MLO frame formats (EMLSR/STR), EHT PPDU structure, 320 MHz channel bonding rules, Multi-AP Coordination TGbe draft, Preamble Puncturing, HARQ retransmission.</p>
+        <p><strong>WLANPros WLPC 2026:</strong> 30-row potential causes table (WIRELESS / LOCAL NET / INTERNET), 6-process troubleshooting framework (MANAGE / INVESTIGATE / MEASURE / VALIDATE / ANALYZE / INTERROGATE), frame statistics interpretation, and the definitive guidance: <em>never enable dynamic channel width</em> — hard-coded as <code>RRMParams.dynamic_channel_width = False</code> with a code comment citing WLPC 2026.</p>
+        <p><strong>Revolution Wi-Fi Capacity Planner (pp.1–38):</strong> complete airtime formula derivation, SSID overhead calculator (all frequency bands), Network Design input taxonomy (all DPM Section C fields), RF Coverage RSSI tier definitions, Capacity Results output schema.</p>
+        <div class="jc-decision">Decision: The Teaching Agent (embedded in the Design Agent) maps every WiFi concept to its 5G/cellular equivalent before delivering it to the user. This is not a documentation feature — it is a runtime behaviour so 5G engineers receive explanations calibrated to their existing mental model.</div>
+        <div class="jc-tags">
+          <span class="tag tag-blue">IEEE 802.11be-2024</span>
+          <span class="tag tag-green">WLANPros WLPC 2026</span>
+          <span class="tag tag-orange">Revolution Wi-Fi</span>
+          <span class="tag tag-teal">Teaching Agent</span>
+        </div>
+        <span class="jc-cta">See HLD Section 8 &mdash; 5G↔WiFi Teaching Bridge &rarr;</span>
+      </a>
+    </div>
+
+  </div><!-- /journey-wrap -->
+
+  <!-- Footer -->
+  <footer>
+    <p style="font-family:'Libre Franklin',Arial,sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#111;margin-bottom:4px">&copy; 2026 Khursheed Khan</p>
+    <p style="font-family:'Libre Franklin',Arial,sans-serif;font-size:0.72rem;color:#666">All rights reserved &nbsp;&middot;&nbsp; April 2026 &nbsp;&middot;&nbsp; AI-assisted with Claude Code</p>
+  </footer>
+
+</div>
+</body>
+</html>
